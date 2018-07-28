@@ -15,6 +15,7 @@
             android:layout_height="40dp"
             android:text="Имя"
             android:id="@+id/buttonNameForBioritm"
+            android:background="@drawable/draw"
             android:layout_marginLeft="8dp"/>
 
     </LinearLayout>

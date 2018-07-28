@@ -32,6 +32,7 @@
         </activity>
         <activity
             android:name=".TimeActivity"
+            android:windowSoftInputMode="stateVisible"
             android:label="Число прожитых дней">
         </activity>
         <activity

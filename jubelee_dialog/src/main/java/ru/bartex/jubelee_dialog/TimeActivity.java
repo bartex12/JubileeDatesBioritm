@@ -122,7 +122,10 @@ public class TimeActivity extends AppCompatActivity implements
         //пишем дату рождения
         dataBorn.setText(namesDate);
 
-        days.setText(ss[4]);
+        //days.setText(ss[4]);
+        days.setText("10000");
+        //устанавливаем фокус в конце строки
+        days.requestFocus();
 
         Log.d(TAG, "Введённая дата MainActivity onCreate = " + ss[0] + "--" + dayNumber + "." +
                 (mounthNumber) + "." + yearNumber + "--" + daysNumber);
@@ -267,6 +270,7 @@ public class TimeActivity extends AppCompatActivity implements
         if (s.equals("")) {
             daysNumber = 0;
             ds = false;
+            //ds = true;
             myToast ("Введите желаемое число прожитых дней");
         }else {
             int i = Integer.parseInt(s);

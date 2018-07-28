@@ -55,7 +55,7 @@ public class PersonsListActivity extends AppCompatActivity {
 
     ListView mListView;
 
-    // список ArrayList строк вида
+    // csList -это список ArrayList строк вида
     //  String namesDateLived = String.format("%s  %s  %s", name, dr, past_days);
     //при этом   String dr = String.format("%s.%s.%s",day,mounth,year);
     ArrayList<String> csList = new ArrayList<>();
