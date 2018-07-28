@@ -103,11 +103,10 @@
             android:textSize="20dp"/>
     </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="top">
+        android:layout_height="wrap_content">
 
         <EditText
             android:layout_width="wrap_content"
@@ -116,13 +115,14 @@
             android:ems="10"
             android:id="@+id/editTextDays"
             android:width="150dp"
-            android:text="20000"/>
+            android:hint="От 0 до 50000"/>
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Рассчитать"
             android:id="@+id/buttonFind"
+            android:background="@drawable/draw"
             android:textSize="16dp"
             android:layout_alignBaseline="@+id/editTextDays"
             android:layout_alignBottom="@+id/editTextDays"
@@ -130,7 +130,7 @@
             android:layout_toEndOf="@+id/editTextDays"
             android:layout_marginLeft="22dp"
             android:layout_marginStart="22dp"/>
-    </RelativeLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"

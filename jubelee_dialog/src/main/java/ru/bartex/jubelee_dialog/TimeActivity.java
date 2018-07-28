@@ -58,9 +58,9 @@ public class TimeActivity extends AppCompatActivity implements
 
     int dayNumber,mounthNumber, yearNumber, daysNumber;
     int dayNumberNext,mounthNumberNext, yearNumberNext;
-    //данные их списка имён
+    //данные из списка имён
     String dataFromList;
-    //Массив данных по каждой строке их списка имён
+    //Массив данных по каждой строке из списка имён
     String[] ss;
 
     private Calendar firstCalendar;
@@ -75,7 +75,6 @@ public class TimeActivity extends AppCompatActivity implements
     long beenDays1;
     private long mKvant = 100;//время в мс между срабатываниями TimerTask
 
-    ShareActionProvider shareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,13 +111,17 @@ public class TimeActivity extends AppCompatActivity implements
 
         ss = getDataFromString(dataFromList);
 
+        //пишем имя
         userName.setText(ss[0]);
+        //рассчитываем дату рождения
         dayNumber = Integer.parseInt(ss[1]);
         mounthNumber = Integer.parseInt(ss[2]);
         yearNumber = Integer.parseInt(ss[3]);
         daysNumber = Integer.parseInt(ss[4]);
         String namesDate = String.format("%s.%s.%s", ss[1], ss[2], ss[3]);
+        //пишем дату рождения
         dataBorn.setText(namesDate);
+
         days.setText(ss[4]);
 
         Log.d(TAG, "Введённая дата MainActivity onCreate = " + ss[0] + "--" + dayNumber + "." +
@@ -359,7 +362,7 @@ public class TimeActivity extends AppCompatActivity implements
             });
         }
     }
-
+/*
     void  saveText() {
         shp = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor edit = shp.edit();
@@ -382,7 +385,7 @@ public class TimeActivity extends AppCompatActivity implements
         year.setText(shp.getString(SAVED_YEAR, ""));
         days.setText(shp.getString(SAVED_DAYS, ""));
     }
-
+*/
     void myToast (String s){
         Toast mToast = Toast.makeText(TimeActivity.this,s, Toast.LENGTH_SHORT);
         mToast.setGravity(Gravity.CENTER,0,0);

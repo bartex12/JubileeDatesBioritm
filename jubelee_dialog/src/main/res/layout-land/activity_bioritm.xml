@@ -83,13 +83,18 @@
             android:layout_height="wrap_content"
             android:text="28.12.1999"
             android:id="@+id/buttonDateForCalculate"
-            android:layout_marginLeft="8dp"/>
+            android:background="@drawable/draw"
+            android:layout_marginLeft="8dp"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"/>
 
         <Button
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:text="-10"
             android:id="@+id/buttonMinus10"
+            android:background="@drawable/draw"
             android:layout_marginLeft="100dp"
             />
 
@@ -98,12 +103,14 @@
             android:layout_height="wrap_content"
             android:text="-1"
             android:id="@+id/buttonMinus1"
+            android:background="@drawable/draw"
             android:layout_gravity="right"/>
 
         <ImageButton
             android:layout_width="60dp"
             android:layout_height="50dp"
             android:id="@+id/imageButtonRevert"
+            android:background="@drawable/draw"
             android:src="@android:drawable/ic_menu_revert"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
@@ -114,6 +121,7 @@
             android:layout_height="wrap_content"
             android:text="+1"
             android:id="@+id/buttonPlus1"
+            android:background="@drawable/draw"
             android:layout_gravity="right"/>
 
         <Button
@@ -121,6 +129,7 @@
             android:layout_height="wrap_content"
             android:text="+10"
             android:id="@+id/buttonPlus10"
+            android:background="@drawable/draw"
             android:layout_gravity="right"/>
     </LinearLayout>
 

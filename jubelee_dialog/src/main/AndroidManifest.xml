@@ -36,6 +36,7 @@
         </activity>
         <activity
             android:name=".NewActivity"
+            android:windowSoftInputMode="stateVisible"
             android:label="Ввод персональных данных">
         </activity>
         <activity
