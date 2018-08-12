@@ -50,6 +50,8 @@ public class NewActivity extends AppCompatActivity  {
     Button buttonClear;
     ImageButton btnDateDialog;
 
+    PersonDbHelper mDbHelper = new PersonDbHelper(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,8 +130,9 @@ public class NewActivity extends AppCompatActivity  {
 
                     //строка даты в формате SQLite
                     String drSQL = String.format("%s-%s-%s",year,mounth,day);
+                    Log.d(TAG, "Др: "  + drSQL + "   beenDays " + beenDays);
 
-                    PersonDbHelper mDbHelper = new PersonDbHelper(getBaseContext());
+                    //PersonDbHelper mDbHelper = new PersonDbHelper(getApplicationContext());
                     SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
                     ContentValues cv = new ContentValues();

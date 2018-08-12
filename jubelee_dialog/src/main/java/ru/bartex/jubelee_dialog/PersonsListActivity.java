@@ -214,7 +214,7 @@ public class PersonsListActivity extends AppCompatActivity {
         displayDatabaseInfo();
     }
 
-    /*
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -387,7 +387,7 @@ public class PersonsListActivity extends AppCompatActivity {
         Log.d(TAG, "PersonsListActivity place = " + place + " Есть сортировка ? " + isSort +
                 " Сортировка = " + sort);
     }
-*/
+
 
     @Override
     protected void onPause() {
@@ -858,7 +858,7 @@ public class PersonsListActivity extends AppCompatActivity {
                 // Используем индекс для получения строки или числа
                 int currentID = cursor.getInt(idColumnIndex);
                 String currentName = cursor.getString(nameColumnIndex);
-                int currentDr = cursor.getInt(drColumnIndex);
+                String currentDr = cursor.getString(drColumnIndex);
                 int currentPastDays = cursor.getInt(pastDaysColumnIndex);
 
                 // Выводим значения каждого столбца
