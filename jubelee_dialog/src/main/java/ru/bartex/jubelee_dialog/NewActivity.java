@@ -3,9 +3,11 @@ package ru.bartex.jubelee_dialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.app.FragmentManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +22,9 @@ import android.widget.Toast;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
+
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonContract;
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
 
 public class NewActivity extends AppCompatActivity  {
 
@@ -124,6 +129,8 @@ public class NewActivity extends AppCompatActivity  {
                     setResult(RESULT_OK, intent);
                     finish();
                 }
+
+                insertPerson();
             }
         });
 
@@ -266,4 +273,42 @@ public class NewActivity extends AppCompatActivity  {
         mToast.setGravity(Gravity.CENTER,0,0);
         mToast.show();
     }
+
+    private void insertPerson() {
+
+        String name = etName.getText().toString().trim();
+        String dayString = etDay.getText().toString().trim();
+        String monthString = etMounth.getText().toString().trim();
+        String yearString = etYear.getText().toString().trim();
+
+        int day = Integer.parseInt(dayString);
+        int month = Integer.parseInt(monthString);
+        int year = Integer.parseInt(yearString);
+
+        PersonDbHelper mDbHelper = new PersonDbHelper(this);
+        // Gets the database in write mode
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        // Создаем объект ContentValues, где имена столбцов ключи,
+        // а информация о госте является значениями ключей
+        ContentValues values = new ContentValues();
+        values.put(PersonContract.PersonEntry.COLUMN_NAME, name);
+        values.put(PersonContract.PersonEntry.COLUMN_DAY, day);
+        values.put(PersonContract.PersonEntry.COLUMN_MONTH, month);
+        values.put(PersonContract.PersonEntry.COLUMN_YEAR, year);
+
+        // Вставляем новый ряд в базу данных и запоминаем его идентификатор
+        long newRowId = db.insert(PersonContract.PersonEntry.TABLE_NAME, null, values);
+
+        // Выводим сообщение в успешном случае или при ошибке
+        if (newRowId == -1) {
+            // Если ID  -1, значит произошла ошибка
+            Toast.makeText(this, "Ошибка при заведении новой персоны", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Ошибка при заведении новой персоны ");
+        } else {
+            Toast.makeText(this, "Персона заведена под номером: " + newRowId, Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Персона заведена под номером: "  + newRowId );
+        }
+    }
+
 }

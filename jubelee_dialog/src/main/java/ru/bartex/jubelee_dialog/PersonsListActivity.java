@@ -2,10 +2,13 @@ package ru.bartex.jubelee_dialog;
 
 import android.app.AlertDialog;
 import android.app.SearchManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -35,6 +39,9 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonContract;
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
 
 public class PersonsListActivity extends AppCompatActivity {
 
@@ -78,6 +85,8 @@ public class PersonsListActivity extends AppCompatActivity {
 
     private SharedPreferences shp;
     private SharedPreferences prefSetting;
+
+    PersonDbHelper mPersonDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +147,9 @@ public class PersonsListActivity extends AppCompatActivity {
         loadPos();
         //устанавливаем список в позицию
         mListView.setSelectionFromTop(pos, offset);
+
+        //создаём экземрляр класса PersonDbHelper
+        mPersonDbHelper = new PersonDbHelper(this);
     }
 
     //Если в манифесте установить для android:launchMode значение "singleTop" ,
@@ -176,15 +188,23 @@ public class PersonsListActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "PersonsListActivity onStart");
+        //вывод в лог базы данных по людям
+        displayDatabaseInfo();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "PersonsListActivity onResume");
 
         //place задаётся вручную в коде ниже (case5)
        // place = Integer.parseInt(prefSetting.getString("AddPerson", "2"));
         sort = Integer.parseInt(prefSetting.getString("ListSort", "1"));
         isSort = prefSetting.getBoolean("cbSort", false);
 
-        Log.d(TAG, "PersonsListActivity onResume");
         //если была развёрнута строка поиска и был сформирован список результатов поиска
         if ((searchView!=null)&&(tempList!=null)) {
             Log.d(TAG, "PersonsListActivity Query " + searchView.getQuery());
@@ -449,6 +469,11 @@ public class PersonsListActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_add:
                 Log.d(TAG, "OptionsItem = action_add");
+
+                //тестовые две строки для проверки базы данных
+                //insertPerson();
+                //displayDatabaseInfo();
+
                 Intent intent = new Intent(this, NewActivity.class);
                 startActivityForResult(intent, NEW_ACTIVITY_ADD_REQUEST);
                 return true;
@@ -559,6 +584,9 @@ public class PersonsListActivity extends AppCompatActivity {
                     csList.remove(acmi.position);
                     //пишем в файл обновлённый список, чтобы сохранить изменения
                     writeArrayList(csList);
+
+                    //Удаление записи из базы данных
+                    // пока ничего
                 }
             });
 
@@ -773,4 +801,75 @@ public class PersonsListActivity extends AppCompatActivity {
         }
         return searchList;
     }
+
+    private void displayDatabaseInfo() {
+        // Создадим и откроем для чтения базу данных
+        SQLiteDatabase db = mPersonDbHelper.getReadableDatabase();
+
+        // Зададим условие для выборки - список столбцов
+        String[] projection = {
+                PersonContract.PersonEntry._ID,
+                PersonContract.PersonEntry.COLUMN_NAME,
+                PersonContract.PersonEntry.COLUMN_DAY,
+                PersonContract.PersonEntry.COLUMN_MONTH,
+                PersonContract.PersonEntry.COLUMN_YEAR};
+
+        // Делаем запрос
+        Cursor cursor = db.query(
+                PersonContract.PersonEntry.TABLE_NAME,   // таблица
+                projection,            // столбцы
+                null,                  // столбцы для условия WHERE
+                null,                  // значения для условия WHERE
+                null,                  // Don't group the rows
+                null,                  // Don't filter by row groups
+                null);                   // порядок сортировки
+
+
+        try {
+
+            // Узнаем индекс каждого столбца
+            int idColumnIndex = cursor.getColumnIndex(PersonContract.PersonEntry._ID);
+            int nameColumnIndex = cursor.getColumnIndex(PersonContract.PersonEntry.COLUMN_NAME);
+            int dayColumnIndex = cursor.getColumnIndex(PersonContract.PersonEntry.COLUMN_DAY);
+            int monthColumnIndex = cursor.getColumnIndex(PersonContract.PersonEntry.COLUMN_MONTH);
+            int yearColumnIndex = cursor.getColumnIndex(PersonContract.PersonEntry.COLUMN_YEAR);
+
+            // Проходим через все ряды
+            while (cursor.moveToNext()) {
+                // Используем индекс для получения строки или числа
+                int currentID = cursor.getInt(idColumnIndex);
+                String currentName = cursor.getString(nameColumnIndex);
+                int currentDay = cursor.getInt(dayColumnIndex);
+                int currentMonth = cursor.getInt(monthColumnIndex);
+                int currentYear = cursor.getInt(yearColumnIndex);
+                // Выводим значения каждого столбца
+                Log.d(TAG, "\n" + currentID + " - " +
+                        currentName + " - " +
+                        currentDay + " - " +
+                        currentMonth + " - " +
+                        currentYear);
+            }
+        } finally {
+            // Всегда закрываем курсор после чтения
+            cursor.close();
+        }
+    }
+
+
+    private void insertPerson() {
+
+        // Gets the database in write mode
+        SQLiteDatabase db = mPersonDbHelper.getWritableDatabase();
+        // Создаем объект ContentValues, где имена столбцов ключи,
+        // а информация о госте является значениями ключей
+        ContentValues values = new ContentValues();
+        values.put(PersonContract.PersonEntry.COLUMN_NAME, "Яя");
+        values.put(PersonContract.PersonEntry.COLUMN_DAY, 17);
+        values.put(PersonContract.PersonEntry.COLUMN_MONTH, 5);
+        values.put(PersonContract.PersonEntry.COLUMN_YEAR, 1961);
+
+        long newRowId = db.insert(PersonContract.PersonEntry.TABLE_NAME, null, values);
+        Log.d(TAG, "PersonsListActivity insertGuest newRowId = " + newRowId);
+    }
+
 }
