@@ -1,6 +1,8 @@
 package ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -12,22 +14,14 @@ public class PersonDbHelper extends SQLiteOpenHelper{
 
     public static final String TAG = "33333";
 
-    /**
-     * Имя файла базы данных
-     */
+    //Имя файла базы данных
     private static final String DATABASE_NAME = "bioritmDataBase.db";
 
-    /**
-     * Версия базы данных. При изменении схемы увеличить на единицу
-     */
+     // Версия базы данных. При изменении схемы увеличить на единицу
     private static final int DATABASE_VERSION = 1;
 
-    /**
-     * Конструктор {@link PersonDbHelper}.
-     *
-     * @param context Контекст приложения
-     */
 
+     //Конструктор
     public PersonDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -38,12 +32,12 @@ public class PersonDbHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Строка для создания таблицы
-        String SQL_CREATE_PERSONS_TABLE = "CREATE TABLE " + PersonContract.PersonEntry.TABLE_NAME + " ("
-                + PersonContract.PersonEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + PersonContract.PersonEntry.COLUMN_NAME + " TEXT NOT NULL, "
-                + PersonContract.PersonEntry.COLUMN_DAY + " INTEGER NOT NULL DEFAULT 0, "
-                + PersonContract.PersonEntry.COLUMN_MONTH + " INTEGER NOT NULL DEFAULT 0, "
-                + PersonContract.PersonEntry.COLUMN_YEAR + " INTEGER NOT NULL DEFAULT 0);";
+        String SQL_CREATE_PERSONS_TABLE = "CREATE TABLE " + PersonTable.TABLE_NAME + " ("
+                + PersonTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + PersonTable.COLUMN_NAME + " TEXT NOT NULL, "
+                + PersonTable.COLUMN_DAY + " INTEGER NOT NULL DEFAULT 0, "
+                + PersonTable.COLUMN_MONTH + " INTEGER NOT NULL DEFAULT 0, "
+                + PersonTable.COLUMN_YEAR + " INTEGER NOT NULL DEFAULT 0);";
 
         // Запускаем создание таблицы
         db.execSQL(SQL_CREATE_PERSONS_TABLE);
@@ -62,6 +56,27 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         // Создаём новую таблицу
         onCreate(db);
 */
+    }
+
+    // метод для добавления человека
+    public long addPerson(String name, int day, int month, int year) {
+        // создаём объект ContentValues
+        ContentValues cv = new ContentValues();
+        cv.put(PersonTable.COLUMN_NAME, name);
+        cv.put(PersonTable.COLUMN_DAY, day);
+        cv.put(PersonTable.COLUMN_MONTH, month);
+        cv.put(PersonTable.COLUMN_YEAR, year);
+        // получаем базу данных для записи и пишем
+        SQLiteDatabase sd = getWritableDatabase();
+        //the row ID of the newly inserted row, or -1 if an error occurred
+        long result = sd.insert(PersonTable.TABLE_NAME, null, cv);
+        return result;
+    }
+
+    // получить все данные из таблицы TABLE_NAME
+    public Cursor getAllData() {
+        SQLiteDatabase sd = getReadableDatabase();
+        return sd.query(PersonTable.TABLE_NAME, null, null, null, null, null, null);
     }
 
 }

@@ -23,7 +23,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
-import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonContract;
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
 
 public class NewActivity extends AppCompatActivity  {
@@ -130,6 +130,7 @@ public class NewActivity extends AppCompatActivity  {
                     finish();
                 }
 
+                //добавляем человека в базу данных
                 insertPerson();
             }
         });
@@ -286,19 +287,19 @@ public class NewActivity extends AppCompatActivity  {
         int year = Integer.parseInt(yearString);
 
         PersonDbHelper mDbHelper = new PersonDbHelper(this);
+/*
         // Gets the database in write mode
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
         // Создаем объект ContentValues, где имена столбцов ключи,
         // а информация о госте является значениями ключей
         ContentValues values = new ContentValues();
-        values.put(PersonContract.PersonEntry.COLUMN_NAME, name);
-        values.put(PersonContract.PersonEntry.COLUMN_DAY, day);
-        values.put(PersonContract.PersonEntry.COLUMN_MONTH, month);
-        values.put(PersonContract.PersonEntry.COLUMN_YEAR, year);
-
+        values.put(PersonTable.COLUMN_NAME, name);
+        values.put(PersonTable.COLUMN_DAY, day);
+        values.put(PersonTable.COLUMN_MONTH, month);
+        values.put(PersonTable.COLUMN_YEAR, year);
+*/
         // Вставляем новый ряд в базу данных и запоминаем его идентификатор
-        long newRowId = db.insert(PersonContract.PersonEntry.TABLE_NAME, null, values);
+        long newRowId = mDbHelper.addPerson(name,day,month,year );
 
         // Выводим сообщение в успешном случае или при ошибке
         if (newRowId == -1) {

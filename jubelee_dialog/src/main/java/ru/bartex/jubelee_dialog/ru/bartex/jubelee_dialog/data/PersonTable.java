@@ -5,14 +5,13 @@ import android.provider.BaseColumns;
 /**
  * Created by Андрей on 11.08.2018.
  */
-public class PersonContract {
+public class PersonTable {
 
 
-    private PersonContract(){
+    private PersonTable(){
         //пустой конструктор
     };
 
-    public static final class PersonEntry implements BaseColumns {
 
         public final static String TABLE_NAME = "persons";
 
@@ -22,5 +21,5 @@ public class PersonContract {
         public final static String COLUMN_MONTH = "month";
         public final static String COLUMN_YEAR = "year";
 
-    }
+
 }

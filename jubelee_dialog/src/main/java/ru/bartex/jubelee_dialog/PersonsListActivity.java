@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,13 +19,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -40,7 +38,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonContract;
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
 
 public class PersonsListActivity extends AppCompatActivity {
@@ -87,6 +85,9 @@ public class PersonsListActivity extends AppCompatActivity {
     private SharedPreferences prefSetting;
 
     PersonDbHelper mPersonDbHelper;
+    Cursor mCursor;
+    SimpleCursorAdapter scAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +120,7 @@ public class PersonsListActivity extends AppCompatActivity {
                     s = tempList.get(position);
                 }
                 Log.d(TAG, "Нажато в списке " + s);
+                Log.d(TAG, "position = " +position +" id = " + id);
                 Intent intent = new Intent(PersonsListActivity.this, BioritmActivity.class);
                 intent.putExtra(BioritmActivity.STRING_DATA, s);
                 startActivity(intent);
@@ -150,6 +152,24 @@ public class PersonsListActivity extends AppCompatActivity {
 
         //создаём экземрляр класса PersonDbHelper
         mPersonDbHelper = new PersonDbHelper(this);
+        //получаем данные в курсоре
+        mCursor = mPersonDbHelper.getAllData();
+        //поручаем активности присмотреть за курсором
+        startManagingCursor(mCursor);
+/*
+        //String dr = PersonTable.COLUMN_DAY + "." + PersonTable.COLUMN_MONTH +
+        //        "." + PersonTable.COLUMN_YEAR;
+
+        // формируем столбцы сопоставления
+        String[] from = new String[] {PersonTable.COLUMN_NAME,
+                PersonTable.COLUMN_DAY, PersonTable.COLUMN_MONTH };
+        int[] to = new int[] { R.id.name_list, R.id.was_born, R.id.past_Days };
+
+        // создааем адаптер и настраиваем список
+        scAdapter = new SimpleCursorAdapter(this, R.layout.list_name_date, mCursor, from, to);
+        mListView.setAdapter(scAdapter);
+*/
+        mCursor.close();
     }
 
     //Если в манифесте установить для android:launchMode значение "singleTop" ,
@@ -195,6 +215,7 @@ public class PersonsListActivity extends AppCompatActivity {
         displayDatabaseInfo();
     }
 
+    /*
     @Override
     protected void onResume() {
         super.onResume();
@@ -367,6 +388,7 @@ public class PersonsListActivity extends AppCompatActivity {
         Log.d(TAG, "PersonsListActivity place = " + place + " Есть сортировка ? " + isSort +
                 " Сортировка = " + sort);
     }
+*/
 
     @Override
     protected void onPause() {
@@ -808,15 +830,15 @@ public class PersonsListActivity extends AppCompatActivity {
 
         // Зададим условие для выборки - список столбцов
         String[] projection = {
-                PersonContract.PersonEntry._ID,
-                PersonContract.PersonEntry.COLUMN_NAME,
-                PersonContract.PersonEntry.COLUMN_DAY,
-                PersonContract.PersonEntry.COLUMN_MONTH,
-                PersonContract.PersonEntry.COLUMN_YEAR};
+                PersonTable._ID,
+                PersonTable.COLUMN_NAME,
+                PersonTable.COLUMN_DAY,
+                PersonTable.COLUMN_MONTH,
+                PersonTable.COLUMN_YEAR};
 
         // Делаем запрос
         Cursor cursor = db.query(
-                PersonContract.PersonEntry.TABLE_NAME,   // таблица
+                PersonTable.TABLE_NAME,   // таблица
                 projection,            // столбцы
                 null,                  // столбцы для условия WHERE
                 null,                  // значения для условия WHERE
@@ -828,11 +850,11 @@ public class PersonsListActivity extends AppCompatActivity {
         try {
 
             // Узнаем индекс каждого столбца
-            int idColumnIndex = cursor.getColumnIndex(PersonContract.PersonEntry._ID);
-            int nameColumnIndex = cursor.getColumnIndex(PersonContract.PersonEntry.COLUMN_NAME);
-            int dayColumnIndex = cursor.getColumnIndex(PersonContract.PersonEntry.COLUMN_DAY);
-            int monthColumnIndex = cursor.getColumnIndex(PersonContract.PersonEntry.COLUMN_MONTH);
-            int yearColumnIndex = cursor.getColumnIndex(PersonContract.PersonEntry.COLUMN_YEAR);
+            int idColumnIndex = cursor.getColumnIndex(PersonTable._ID);
+            int nameColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_NAME);
+            int dayColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_DAY);
+            int monthColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_MONTH);
+            int yearColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_YEAR);
 
             // Проходим через все ряды
             while (cursor.moveToNext()) {
@@ -855,7 +877,7 @@ public class PersonsListActivity extends AppCompatActivity {
         }
     }
 
-
+/*
     private void insertPerson() {
 
         // Gets the database in write mode
@@ -863,13 +885,13 @@ public class PersonsListActivity extends AppCompatActivity {
         // Создаем объект ContentValues, где имена столбцов ключи,
         // а информация о госте является значениями ключей
         ContentValues values = new ContentValues();
-        values.put(PersonContract.PersonEntry.COLUMN_NAME, "Яя");
-        values.put(PersonContract.PersonEntry.COLUMN_DAY, 17);
-        values.put(PersonContract.PersonEntry.COLUMN_MONTH, 5);
-        values.put(PersonContract.PersonEntry.COLUMN_YEAR, 1961);
+        values.put(PersonTable.COLUMN_NAME, "Яя");
+        values.put(PersonTable.COLUMN_DAY, 17);
+        values.put(PersonTable.COLUMN_MONTH, 5);
+        values.put(PersonTable.COLUMN_YEAR, 1961);
 
-        long newRowId = db.insert(PersonContract.PersonEntry.TABLE_NAME, null, values);
+        long newRowId = db.insert(PersonTable.TABLE_NAME, null, values);
         Log.d(TAG, "PersonsListActivity insertGuest newRowId = " + newRowId);
     }
-
+*/
 }
