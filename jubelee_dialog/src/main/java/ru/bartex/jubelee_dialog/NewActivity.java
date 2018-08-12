@@ -19,7 +19,9 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
@@ -94,6 +96,7 @@ public class NewActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
 
+                Calendar firstCalendar;
                 boolean tempDay = getDay();
                 boolean tempMounth = getMounth();
                 boolean tempYear = getYear();
@@ -109,7 +112,7 @@ public class NewActivity extends AppCompatActivity  {
                     //формируем строку даты
                     String dr = String.format("%s.%s.%s",day,mounth,year);
                     //экземпляр календаря с данными из списка
-                    Calendar firstCalendar = new GregorianCalendar(Integer.parseInt(year),
+                    firstCalendar = new GregorianCalendar(Integer.parseInt(year),
                             Integer.parseInt(mounth) - 1,Integer.parseInt(day));
                     //получаем дату в милисекундах
                     long firstCalendarMillis = firstCalendar.getTimeInMillis();
@@ -123,6 +126,31 @@ public class NewActivity extends AppCompatActivity  {
                     String namesDateLived = String.format("%s  %s  %s", name, dr, past_days);
                     Log.d(TAG, "Введено NewActivity btnOK = " + namesDateLived);
 
+                    //строка даты в формате SQLite
+                    String drSQL = String.format("%s-%s-%s",year,mounth,day);
+
+                    PersonDbHelper mDbHelper = new PersonDbHelper(getBaseContext());
+                    SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+                    ContentValues cv = new ContentValues();
+                    cv.put(PersonTable.COLUMN_NAME, name);
+                    cv.put(PersonTable.COLUMN_DR, drSQL);
+                    cv.put(PersonTable.COLUMN_DR, beenDays);
+
+                    long newRowId = db.insert(PersonTable.TABLE_NAME, null, cv);
+
+                    // Выводим сообщение в успешном случае или при ошибке
+                    if (newRowId == -1) {
+                        // Если ID  -1, значит произошла ошибка
+                        Toast.makeText(getBaseContext(),
+                                "Ошибка при заведении новой персоны", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "Ошибка при заведении новой персоны ");
+                    } else {
+                        Toast.makeText(getBaseContext(),
+                                "Персона заведена под номером: " + newRowId, Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "Персона заведена под номером: "  + newRowId );
+                    }
+
                     Intent intent = new Intent();
                     intent.putExtra("namesDateLived", namesDateLived);
                     intent.putExtra("position", position);
@@ -130,8 +158,9 @@ public class NewActivity extends AppCompatActivity  {
                     finish();
                 }
 
+
                 //добавляем человека в базу данных
-                insertPerson();
+                //insertPerson();
             }
         });
 
@@ -275,6 +304,7 @@ public class NewActivity extends AppCompatActivity  {
         mToast.show();
     }
 
+  /*
     private void insertPerson() {
 
         String name = etName.getText().toString().trim();
@@ -287,7 +317,7 @@ public class NewActivity extends AppCompatActivity  {
         int year = Integer.parseInt(yearString);
 
         PersonDbHelper mDbHelper = new PersonDbHelper(this);
-/*
+
         // Gets the database in write mode
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         // Создаем объект ContentValues, где имена столбцов ключи,
@@ -297,7 +327,7 @@ public class NewActivity extends AppCompatActivity  {
         values.put(PersonTable.COLUMN_DAY, day);
         values.put(PersonTable.COLUMN_MONTH, month);
         values.put(PersonTable.COLUMN_YEAR, year);
-*/
+
         // Вставляем новый ряд в базу данных и запоминаем его идентификатор
         long newRowId = mDbHelper.addPerson(name,day,month,year );
 
@@ -311,5 +341,7 @@ public class NewActivity extends AppCompatActivity  {
             Log.d(TAG, "Персона заведена под номером: "  + newRowId );
         }
     }
+ */
+
 
 }

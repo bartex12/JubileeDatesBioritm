@@ -156,19 +156,18 @@ public class PersonsListActivity extends AppCompatActivity {
         mCursor = mPersonDbHelper.getAllData();
         //поручаем активности присмотреть за курсором
         startManagingCursor(mCursor);
-/*
-        //String dr = PersonTable.COLUMN_DAY + "." + PersonTable.COLUMN_MONTH +
-        //        "." + PersonTable.COLUMN_YEAR;
+
+       // String dr = PersonTable.COLUMN_DAY + "." + PersonTable.COLUMN_MONTH +
+         //       "." + PersonTable.COLUMN_YEAR;
 
         // формируем столбцы сопоставления
         String[] from = new String[] {PersonTable.COLUMN_NAME,
-                PersonTable.COLUMN_DAY, PersonTable.COLUMN_MONTH };
+                PersonTable.COLUMN_DR, PersonTable.COLUMN_PAST_DAYS };
         int[] to = new int[] { R.id.name_list, R.id.was_born, R.id.past_Days };
 
         // создааем адаптер и настраиваем список
         scAdapter = new SimpleCursorAdapter(this, R.layout.list_name_date, mCursor, from, to);
         mListView.setAdapter(scAdapter);
-*/
         mCursor.close();
     }
 
@@ -832,9 +831,8 @@ public class PersonsListActivity extends AppCompatActivity {
         String[] projection = {
                 PersonTable._ID,
                 PersonTable.COLUMN_NAME,
-                PersonTable.COLUMN_DAY,
-                PersonTable.COLUMN_MONTH,
-                PersonTable.COLUMN_YEAR};
+                PersonTable.COLUMN_DR,
+                PersonTable.COLUMN_PAST_DAYS};
 
         // Делаем запрос
         Cursor cursor = db.query(
@@ -852,24 +850,22 @@ public class PersonsListActivity extends AppCompatActivity {
             // Узнаем индекс каждого столбца
             int idColumnIndex = cursor.getColumnIndex(PersonTable._ID);
             int nameColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_NAME);
-            int dayColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_DAY);
-            int monthColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_MONTH);
-            int yearColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_YEAR);
+            int drColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_DR);
+            int pastDaysColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_PAST_DAYS);
 
             // Проходим через все ряды
             while (cursor.moveToNext()) {
                 // Используем индекс для получения строки или числа
                 int currentID = cursor.getInt(idColumnIndex);
                 String currentName = cursor.getString(nameColumnIndex);
-                int currentDay = cursor.getInt(dayColumnIndex);
-                int currentMonth = cursor.getInt(monthColumnIndex);
-                int currentYear = cursor.getInt(yearColumnIndex);
+                int currentDr = cursor.getInt(drColumnIndex);
+                int currentPastDays = cursor.getInt(pastDaysColumnIndex);
+
                 // Выводим значения каждого столбца
                 Log.d(TAG, "\n" + currentID + " - " +
                         currentName + " - " +
-                        currentDay + " - " +
-                        currentMonth + " - " +
-                        currentYear);
+                        currentDr + " - " +
+                        currentPastDays);
             }
         } finally {
             // Всегда закрываем курсор после чтения

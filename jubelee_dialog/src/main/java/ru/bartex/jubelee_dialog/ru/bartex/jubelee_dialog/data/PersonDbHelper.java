@@ -15,7 +15,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
     public static final String TAG = "33333";
 
     //Имя файла базы данных
-    private static final String DATABASE_NAME = "bioritmDataBase.db";
+    private static final String DATABASE_NAME = "bioritmDataBase1.db";
 
      // Версия базы данных. При изменении схемы увеличить на единицу
     private static final int DATABASE_VERSION = 1;
@@ -35,9 +35,8 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         String SQL_CREATE_PERSONS_TABLE = "CREATE TABLE " + PersonTable.TABLE_NAME + " ("
                 + PersonTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + PersonTable.COLUMN_NAME + " TEXT NOT NULL, "
-                + PersonTable.COLUMN_DAY + " INTEGER NOT NULL DEFAULT 0, "
-                + PersonTable.COLUMN_MONTH + " INTEGER NOT NULL DEFAULT 0, "
-                + PersonTable.COLUMN_YEAR + " INTEGER NOT NULL DEFAULT 0);";
+                + PersonTable.COLUMN_DR + " TEXT NOT NULL, "
+                + PersonTable.COLUMN_PAST_DAYS + " INTEGER NOT NULL DEFAULT 0);";
 
         // Запускаем создание таблицы
         db.execSQL(SQL_CREATE_PERSONS_TABLE);
@@ -59,13 +58,12 @@ public class PersonDbHelper extends SQLiteOpenHelper{
     }
 
     // метод для добавления человека
-    public long addPerson(String name, int day, int month, int year) {
+    public long addPerson(String name, String dr, int pastDays) {
         // создаём объект ContentValues
         ContentValues cv = new ContentValues();
         cv.put(PersonTable.COLUMN_NAME, name);
-        cv.put(PersonTable.COLUMN_DAY, day);
-        cv.put(PersonTable.COLUMN_MONTH, month);
-        cv.put(PersonTable.COLUMN_YEAR, year);
+        cv.put(PersonTable.COLUMN_DR, dr);
+        cv.put(PersonTable.COLUMN_PAST_DAYS, pastDays);
         // получаем базу данных для записи и пишем
         SQLiteDatabase sd = getWritableDatabase();
         //the row ID of the newly inserted row, or -1 if an error occurred
