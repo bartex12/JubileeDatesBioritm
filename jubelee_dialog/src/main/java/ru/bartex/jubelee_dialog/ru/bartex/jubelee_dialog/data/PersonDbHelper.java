@@ -58,7 +58,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
     }
 
     // метод для добавления человека
-    public long addPerson(String name, String dr, int pastDays) {
+    public long addPerson(String name, String dr, long pastDays) {
         // создаём объект ContentValues
         ContentValues cv = new ContentValues();
         cv.put(PersonTable.COLUMN_NAME, name);

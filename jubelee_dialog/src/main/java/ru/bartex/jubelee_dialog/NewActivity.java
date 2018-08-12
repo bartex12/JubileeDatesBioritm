@@ -131,26 +131,26 @@ public class NewActivity extends AppCompatActivity  {
                     //строка даты в формате SQLite
                     String drSQL = String.format("%s-%s-%s",year,mounth,day);
                     Log.d(TAG, "Др: "  + drSQL + "   beenDays " + beenDays);
-
-                    //PersonDbHelper mDbHelper = new PersonDbHelper(getApplicationContext());
+/*
+                    //получаем базу данных
                     SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
+                    //вводим ключ-значение
                     ContentValues cv = new ContentValues();
                     cv.put(PersonTable.COLUMN_NAME, name);
                     cv.put(PersonTable.COLUMN_DR, drSQL);
-                    cv.put(PersonTable.COLUMN_DR, beenDays);
+                    cv.put(PersonTable.COLUMN_PAST_DAYS, beenDays);
 
-                    long newRowId = db.insert(PersonTable.TABLE_NAME, null, cv);
+                    //пишем в таблицу базы новую строку
+                    //long newRowId = db.insert(PersonTable.TABLE_NAME, null, cv);
+*/
+                    long newRowId = mDbHelper.addPerson(name,drSQL,beenDays);
 
                     // Выводим сообщение в успешном случае или при ошибке
                     if (newRowId == -1) {
                         // Если ID  -1, значит произошла ошибка
-                        Toast.makeText(getBaseContext(),
-                                "Ошибка при заведении новой персоны", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "Ошибка при заведении новой персоны ");
                     } else {
-                        Toast.makeText(getBaseContext(),
-                                "Персона заведена под номером: " + newRowId, Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "Персона заведена под номером: "  + newRowId );
                     }
 

@@ -168,7 +168,7 @@ public class PersonsListActivity extends AppCompatActivity {
         // создааем адаптер и настраиваем список
         scAdapter = new SimpleCursorAdapter(this, R.layout.list_name_date, mCursor, from, to);
         mListView.setAdapter(scAdapter);
-        mCursor.close();
+
     }
 
     //Если в манифесте установить для android:launchMode значение "singleTop" ,
@@ -214,7 +214,7 @@ public class PersonsListActivity extends AppCompatActivity {
         displayDatabaseInfo();
     }
 
-
+/*
     @Override
     protected void onResume() {
         super.onResume();
@@ -387,7 +387,7 @@ public class PersonsListActivity extends AppCompatActivity {
         Log.d(TAG, "PersonsListActivity place = " + place + " Есть сортировка ? " + isSort +
                 " Сортировка = " + sort);
     }
-
+*/
 
     @Override
     protected void onPause() {
@@ -423,6 +423,7 @@ public class PersonsListActivity extends AppCompatActivity {
         super.onDestroy();
         Log.d(TAG, "PersonsListActivity onDestroy");
         writeArrayList(csList);
+        mCursor.close();
     }
 
     @Override
