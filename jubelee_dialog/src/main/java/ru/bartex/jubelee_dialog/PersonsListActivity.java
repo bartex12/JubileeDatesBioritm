@@ -150,24 +150,12 @@ public class PersonsListActivity extends AppCompatActivity {
         //устанавливаем список в позицию
         mListView.setSelectionFromTop(pos, offset);
 
+        //============== следующий код для отображения списка из базы данных===========//
+
         //создаём экземрляр класса PersonDbHelper
         mPersonDbHelper = new PersonDbHelper(this);
-        //получаем данные в курсоре
-        mCursor = mPersonDbHelper.getAllData();
-        //поручаем активности присмотреть за курсором
-        startManagingCursor(mCursor);
-
-       // String dr = PersonTable.COLUMN_DAY + "." + PersonTable.COLUMN_MONTH +
-         //       "." + PersonTable.COLUMN_YEAR;
-
-        // формируем столбцы сопоставления
-        String[] from = new String[] {PersonTable.COLUMN_NAME,
-                PersonTable.COLUMN_DR, PersonTable.COLUMN_PAST_DAYS };
-        int[] to = new int[] { R.id.name_list, R.id.was_born, R.id.past_Days };
-
-        // создааем адаптер и настраиваем список
-        scAdapter = new SimpleCursorAdapter(this, R.layout.list_name_date, mCursor, from, to);
-        mListView.setAdapter(scAdapter);
+        //показываем список на экране
+        showPersonList();
 
     }
 
@@ -608,7 +596,11 @@ public class PersonsListActivity extends AppCompatActivity {
                     writeArrayList(csList);
 
                     //Удаление записи из базы данных
-                    // пока ничего
+                    mPersonDbHelper.deletePerson(acmi.id);
+                    //показываем список на экране
+                    showPersonList();
+                    //выводим список в лог
+                    displayDatabaseInfo();
                 }
             });
 
@@ -891,4 +883,22 @@ public class PersonsListActivity extends AppCompatActivity {
         Log.d(TAG, "PersonsListActivity insertGuest newRowId = " + newRowId);
     }
 */
+
+
+    private void showPersonList() {
+
+        //получаем данные в курсоре
+        mCursor = mPersonDbHelper.getAllData();
+        //поручаем активности присмотреть за курсором
+        startManagingCursor(mCursor);
+
+        // формируем столбцы сопоставления
+        String[] from = new String[] {PersonTable.COLUMN_NAME,
+                PersonTable.COLUMN_DR, PersonTable.COLUMN_PAST_DAYS };
+        int[] to = new int[] { R.id.name_list, R.id.was_born, R.id.past_Days };
+
+        // создааем адаптер и настраиваем список
+        scAdapter = new SimpleCursorAdapter(this, R.layout.list_name_date, mCursor, from, to);
+        mListView.setAdapter(scAdapter);
+    }
 }

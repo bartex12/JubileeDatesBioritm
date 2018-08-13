@@ -3,6 +3,7 @@ package ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -57,7 +58,9 @@ public class PersonDbHelper extends SQLiteOpenHelper{
 */
     }
 
-    // метод для добавления человека
+    /**
+    * Метод для добавления нового человека в список
+    */
     public long addPerson(String name, String dr, long pastDays) {
         // создаём объект ContentValues
         ContentValues cv = new ContentValues();
@@ -71,10 +74,52 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         return result;
     }
 
-    // получить все данные из таблицы TABLE_NAME
+    /**
+     * Метод обновления строки списка
+     */
+    public boolean updatePerson(long rowId, String name, String dr, long pastDays) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues updatedValues = new ContentValues();
+        updatedValues.put(PersonTable.COLUMN_NAME, name);
+        updatedValues.put(PersonTable.COLUMN_DR, dr);
+        updatedValues.put(PersonTable.COLUMN_PAST_DAYS, pastDays);
+
+        long result = db.update(PersonTable.TABLE_NAME, updatedValues, PersonTable._ID + "=" + rowId, null);
+        return  result > 0;
+    }
+
+    /**
+     * Удаляет элемент списка
+     */
+    public void deletePerson(long rowId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(PersonTable.TABLE_NAME, PersonTable._ID + "=" + rowId, null);
+        db.close();
+    }
+
+    // получить курсор с данными из таблицы TABLE_NAME
     public Cursor getAllData() {
         SQLiteDatabase sd = getReadableDatabase();
-        return sd.query(PersonTable.TABLE_NAME, null, null, null, null, null, null);
+        return sd.query(PersonTable.TABLE_NAME,
+                new String[]{PersonTable._ID,PersonTable.COLUMN_NAME,
+                        PersonTable.COLUMN_DR,PersonTable.COLUMN_PAST_DAYS},
+                null, null, null, null, null);
+    }
+
+    /**
+     * Возвращает курсор с указанной записи
+     */
+    public Cursor getPerson(long rowId) throws SQLException {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor mCursor = db.query(true, PersonTable.TABLE_NAME,
+                new String[] { PersonTable._ID,PersonTable.COLUMN_NAME,
+                        PersonTable.COLUMN_DR,PersonTable.COLUMN_PAST_DAYS },
+                PersonTable._ID + "=" + rowId,
+                null, null, null, null, null);
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        return mCursor;
     }
 
 }
