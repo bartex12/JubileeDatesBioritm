@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.app.FragmentManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,12 +39,19 @@ public class NewActivity extends AppCompatActivity  {
     public static final String YEAR_NUMBER = "yearNumberNewActivity";
     public static final String DAYS_NUMBER = "daysNumberNewActivity";
     public static final String POSITION = "positionNewActivity";
+    public static final String ID_SQL = "sqlNewActivity";
+
 
     static EditText etName, etDay, etMounth, etYear;
 
     int dayNumber,mounthNumber, yearNumber, daysNumber;
     int requestCode;
     int position=0;
+    long id_sql;
+    long newRowId;
+    boolean change;
+    PersonDbHelper mPersonDbHelper;
+    private Cursor mCursor;
 
     Button btnOK;
     Button buttonCancel;
@@ -65,13 +73,34 @@ public class NewActivity extends AppCompatActivity  {
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            //requestCode = extras.getInt(REQUEST_CODE);
-            if (extras.getInt(REQUEST_CODE) == 111) {
-                etName.setText(extras.getString(PERSON_NAME));
-                etDay.setText(extras.getString(DAY_NUMBER));
-                etMounth.setText(extras.getString(MOUNTH_NUMBER));
-                etYear.setText(extras.getString(YEAR_NUMBER));
-                position = extras.getInt(POSITION);
+            requestCode = extras.getInt(REQUEST_CODE);
+            if (requestCode == 111) {
+
+                id_sql = extras.getLong(ID_SQL);
+                //получаем экхземпляр PersonDbHelper
+                PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);
+                //получаем курсор с данными строки с id
+                Cursor mCursor = mPersonDbHelper.getPerson(id_sql);
+
+                // Узнаем индекс каждого столбца
+                int nameColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_NAME);
+                int dayColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_DAY);
+                int monthColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_MONTH);
+                int yearColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_YEAR);
+
+                String currentName = mCursor.getString(nameColumnIndex);
+                String currentDay = mCursor.getString(dayColumnIndex);
+                String currentMonth = mCursor.getString(monthColumnIndex);
+                String currentYear = mCursor.getString(yearColumnIndex);
+
+                //закрываем курсор
+                mCursor.close();
+
+                //заполняем поля экрана
+                etName.setText(currentName);
+                etDay.setText(currentDay);
+                etMounth.setText(currentMonth);
+                etYear.setText(currentYear);
             }
         }
 
@@ -111,7 +140,7 @@ public class NewActivity extends AppCompatActivity  {
                     String day = etDay.getText().toString();
                     String mounth = etMounth.getText().toString();
                     String year = etYear.getText().toString();
-                    //формируем строку даты
+                    //формируем строку даты в формате %s.%s.%s
                     String dr = String.format("%s.%s.%s",day,mounth,year);
                     //экземпляр календаря с данными из списка
                     firstCalendar = new GregorianCalendar(Integer.parseInt(year),
@@ -121,49 +150,39 @@ public class NewActivity extends AppCompatActivity  {
                     long nowTimeMillis = System.currentTimeMillis();
                     //количество прошедших дней с даты рождения
                     long beenDays = (nowTimeMillis-firstCalendarMillis)/86400000;
-                    //количество прожитых дней
+                    //количество прожитых дней как строка
                     String past_days = Long.toString(beenDays);
 
-                    //формируем строку имя__день.месяц.год__прожитоДней
-                    String namesDateLived = String.format("%s  %s  %s", name, dr, past_days);
-                    Log.d(TAG, "Введено NewActivity btnOK = " + namesDateLived);
-
-                    //строка даты в формате SQLite
+                    //строка даты в формате SQLite %s-%s-%s
                     String drSQL = String.format("%s-%s-%s",year,mounth,day);
                     Log.d(TAG, "Др: "  + drSQL + "   beenDays " + beenDays);
-/*
-                    //получаем базу данных
-                    SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-                    //вводим ключ-значение
-                    ContentValues cv = new ContentValues();
-                    cv.put(PersonTable.COLUMN_NAME, name);
-                    cv.put(PersonTable.COLUMN_DR, drSQL);
-                    cv.put(PersonTable.COLUMN_PAST_DAYS, beenDays);
-
-                    //пишем в таблицу базы новую строку
-                    //long newRowId = db.insert(PersonTable.TABLE_NAME, null, cv);
-*/
-                    long newRowId = mDbHelper.addPerson(name,drSQL,beenDays);
-
-                    // Выводим сообщение в успешном случае или при ошибке
-                    if (newRowId == -1) {
-                        // Если ID  -1, значит произошла ошибка
-                        Log.d(TAG, "Ошибка при заведении новой персоны ");
-                    } else {
-                        Log.d(TAG, "Персона заведена под номером: "  + newRowId );
+                    if (requestCode ==111){
+                        //изменяем строку в базе
+                        change = mDbHelper.updatePerson(id_sql, name,day,mounth,year, dr, past_days);
+                        // Выводим сообщение в успешном случае или при ошибке
+                        if (!change) {
+                            Log.d(TAG, "Ошибка при редактировании персоны " + id_sql);
+                        } else {
+                            Log.d(TAG, "Отредактирована персона  под номером: "  + id_sql);
+                        }
+                    }else {
+                        //пишем в таблицу базы новую строку
+                        newRowId = mDbHelper.addPerson(name,day,mounth,year,dr,past_days);
+                        // Выводим сообщение в успешном случае или при ошибке
+                        if (newRowId == -1) {
+                            // Если ID  -1, значит произошла ошибка
+                            Log.d(TAG, "Ошибка при заведении новой персоны ");
+                        } else {
+                            Log.d(TAG, "Персона заведена под номером: "  + newRowId );
+                        }
                     }
 
                     Intent intent = new Intent();
-                    intent.putExtra("namesDateLived", namesDateLived);
-                    intent.putExtra("position", position);
+                    intent.putExtra("id_sql", id_sql);
                     setResult(RESULT_OK, intent);
                     finish();
                 }
-
-
-                //добавляем человека в базу данных
-                //insertPerson();
             }
         });
 

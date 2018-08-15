@@ -6,6 +6,7 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
@@ -31,9 +32,13 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
+
 public class BioritmActivity extends AppCompatActivity {
 
     public static final String STRING_DATA = "ru.bartex.jubelee_dialog.string_data";
+    public static final String ID_SQL = "sqlBioritmActivity";
 
     private Calendar firstCalendar;
 
@@ -88,6 +93,8 @@ public class BioritmActivity extends AppCompatActivity {
     private SharedPreferences prefSetting;
     File file;
 
+    long id_sql;  //id строки с данными в базе данных
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,15 +130,34 @@ public class BioritmActivity extends AppCompatActivity {
 
         //получаем интент
         Intent intent = getIntent();
-        //получаем строку с данными
-        dataFromList = intent.getStringExtra(STRING_DATA);
-        //преобразуем строку с данными в массив строк с именем, днём, месяцем, годом
-        String[] dataFromString = TimeActivity.getDataFromString(dataFromList);
+        //получаем id строки с данными в базе
+        id_sql = intent.getLongExtra(ID_SQL,0);
+
+        //получаем экхземпляр PersonDbHelper
+        PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);
+        //получаем курсор с данными строки с id
+        Cursor mCursor = mPersonDbHelper.getPerson(id_sql);
+
+        // Узнаем индекс каждого столбца
+        int nameColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_NAME);
+        int dayColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_DAY);
+        int monthColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_MONTH);
+        int yearColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_YEAR);
+
+        //получаем значения по индексу столбца
+        String currentName = mCursor.getString(nameColumnIndex);
+        String currentDay = mCursor.getString(dayColumnIndex);
+        String currentMonth = mCursor.getString(monthColumnIndex);
+        String currentYear = mCursor.getString(yearColumnIndex);
+
+        //закрываем курсор
+        mCursor.close();
+
         //присваиваем переменным значения из массива
-        userName = dataFromString[0];
-        dayNumber = Integer.parseInt(dataFromString[1]);
-        mounthNumber  = Integer.parseInt(dataFromString[2]);
-        yearNumber   = Integer.parseInt(dataFromString[3]);
+        userName = currentName;
+        dayNumber = Integer.parseInt(currentDay);
+        mounthNumber  = Integer.parseInt(currentMonth);
+        yearNumber   = Integer.parseInt(currentYear);
 
         Log.d(TAG, "deltaPlus = " + deltaPlus);
 
@@ -310,14 +336,14 @@ public class BioritmActivity extends AppCompatActivity {
             case R.id.action_time:
                 Log.d(TAG, "action_time");
                 Intent intentDays = new Intent(this,TimeActivity.class);
-                intentDays.putExtra(TimeActivity.LIST_DATA,dataFromList);
+                intentDays.putExtra(TimeActivity.ID_SQL,id_sql);
                 startActivity(intentDays);
                 return true;
 
             case R.id.action_table:
                 Log.d(TAG, "action_table");
                 Intent intent = new Intent(BioritmActivity.this,TableActivity.class);
-                intent.putExtra(TableActivity.DATA_LIST,dataFromList);
+                intent.putExtra(TableActivity.ID_SQL,id_sql);
                 startActivity(intent);
                 return true;
 

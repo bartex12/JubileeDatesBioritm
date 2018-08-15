@@ -84,7 +84,7 @@ public class PersonsListActivity extends AppCompatActivity {
     private SharedPreferences shp;
     private SharedPreferences prefSetting;
 
-    PersonDbHelper mPersonDbHelper;
+    PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);
     Cursor mCursor;
     SimpleCursorAdapter scAdapter;
 
@@ -111,51 +111,36 @@ public class PersonsListActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //определяем размер списка данных в адаптере
                 int n = parent.getCount();
-                Log.d(TAG, "Размер списка " + n);
+                Log.d(TAG, "Размер списка " + n +"  AdapterView  =  " +parent);
                 //если размер списка равен размеру списка из файла, берём данные из этого списка
                 if (n == csList.size()) {
-                    s = csList.get(position);
+                   // s = csList.get(position);
                     //в противном случае берём данные из списка совпадений по поиску
                 } else {
-                    s = tempList.get(position);
+                    //s = tempList.get(position);
                 }
-                Log.d(TAG, "Нажато в списке " + s);
+               // Log.d(TAG, "Нажато в списке " + s);
                 Log.d(TAG, "position = " +position +" id = " + id);
                 Intent intent = new Intent(PersonsListActivity.this, BioritmActivity.class);
-                intent.putExtra(BioritmActivity.STRING_DATA, s);
+                intent.putExtra(BioritmActivity.ID_SQL, id);
                 startActivity(intent);
                 finish();
             }
         });
+
         //объявляем о регистрации контекстного меню
         registerForContextMenu(mListView);
 
-        //Читаем список с персональными данными из файла
-        readArrayList(csList, FILENAME);
-        //Заполняем первую строку списка, если список пуст
-        String s = "Анжелина Джоли  4.6.1975  10000";
-        //Log.d(TAG, "csList.contains(s) " + csList.contains(s));
-        if ((csList.size() == 0)) {
-            csList.add(0, s);
-            //сохраняем список в файл
-            writeArrayList(csList);
-        }
-        Log.d(TAG, "PersonsListActivity onCreate " + csList.get(csList.size() - 1));
-        //получаем адаптер с данными из списка строк csList
-        sara = doDataFromList(csList);
-        //присваиваем адаптер списку экрана и обновляем данные на экране
-        mListView.setAdapter(sara);
+        //============== следующий код для отображения списка из базы данных===========//
+        //создаём экземрляр класса PersonDbHelper
+        //mPersonDbHelper = new PersonDbHelper(this);
+        //показываем список на экране
+        showSQLitePersonList();
         //Загружаем сохранённую позицию списка
         loadPos();
         //устанавливаем список в позицию
         mListView.setSelectionFromTop(pos, offset);
-
-        //============== следующий код для отображения списка из базы данных===========//
-
-        //создаём экземрляр класса PersonDbHelper
-        mPersonDbHelper = new PersonDbHelper(this);
-        //показываем список на экране
-        showPersonList();
+        Log.d(TAG, "PersonsListActivity onCreate   pos = " + pos + "  offset = " + offset);
 
     }
 
@@ -202,7 +187,7 @@ public class PersonsListActivity extends AppCompatActivity {
         displayDatabaseInfo();
     }
 
-/*
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -216,10 +201,17 @@ public class PersonsListActivity extends AppCompatActivity {
         //если была развёрнута строка поиска и был сформирован список результатов поиска
         if ((searchView!=null)&&(tempList!=null)) {
             Log.d(TAG, "PersonsListActivity Query " + searchView.getQuery());
-            //получаем адаптер с данными из списка tempList
-            sara = doDataFromList(tempList);
-            //присваиваем адаптер списку экрана и обновляем данные на экране
-            mListView.setAdapter(sara);
+
+            mCursor = searchInSQLite(searchView.getQuery().toString());
+            //поручаем активности присмотреть за курсором
+            startManagingCursor(mCursor);
+            // формируем столбцы сопоставления
+            String[] from = new String[] {PersonTable.COLUMN_NAME,
+                    PersonTable.COLUMN_DR, PersonTable.COLUMN_PAST_DAYS };
+            int[] to = new int[] { R.id.name_list, R.id.was_born, R.id.past_Days };
+            // создааем адаптер и настраиваем список
+            scAdapter = new SimpleCursorAdapter(this, R.layout.list_name_date, mCursor, from, to);
+            mListView.setAdapter(scAdapter);
 
             //если НЕ была развёрнута строка поиска и НЕ был сформирован список результатов поиска
         } else{
@@ -229,153 +221,60 @@ public class PersonsListActivity extends AppCompatActivity {
                 switch (sort) {
                     case 1:
                         Log.d(TAG, "PersonsListActivity Сортировка по имени по возрастанию");
-                        String[] s1 = new String[csList.size()];
-                        for (int i = 0; i < csList.size(); i++) {
-                            s1[i] = csList.get(i);
-                        }
-                        //сортируем массив строк данных
-                        Arrays.sort(s1);
-                        //делаем новый список из сортированного массива
-                        csList = new ArrayList<String>(Arrays.asList(s1));
-                        //получаем адаптер с данными из списка строк csList
-                        sara = doDataFromList(csList);
-                        //присваиваем адаптер списку экрана и обновляем данные на экране
-                        mListView.setAdapter(sara);
-                        //sara.notifyDataSetChanged();
-                        //Загружаем сохранённую позицию списка
-                        loadPos();
-                        //устанавливаем список в позицию
-                        mListView.setSelectionFromTop(pos, offset);
+                        //получаем данные в курсоре
+                        mCursor = mPersonDbHelper.getAllDataSortNameUp();
                         break;
+
                     case 2:
                         Log.d(TAG, "PersonsListActivity Сортировка по имени по убыванию");
-                        String[] s2 = new String[csList.size()];
-                        for (int i = 0; i < csList.size(); i++) {
-                            s2[i] = csList.get(i);
-                        }
-                        Arrays.sort(s2);
-                        //делаем новый список из сортированного массива
-                        csList = new ArrayList<String>(Arrays.asList(s2));
-                        //Переворачиваем массив= сортировка по убыванию
-                        Collections.reverse(csList);
-                        //получаем адаптер с данными из списка строк csList
-                        sara = doDataFromList(csList);
-                        //присваиваем адаптер списку экрана и обновляем данные на экране
-                        mListView.setAdapter(sara);
-                        //Загружаем сохранённую позицию списка
-                        loadPos();
-                        //устанавливаем список в позицию
-                        mListView.setSelectionFromTop(pos, offset);
+                        //получаем данные в курсоре
+                        mCursor = mPersonDbHelper.getAllDataSortNameDown();
                         break;
+
                     case 3:
                         Log.d(TAG, "PersonsListActivity Сортировка по дате по возрастанию ");
-
-                        int sizeMap = csList.size();
-                        int[] s_int = new int[sizeMap];
-                        Map<String, Object> m;
-
-                        for (int i = 0; i < sizeMap; i++) {
-                            //получаем пары ключ-значение для i строки
-                            m = data.get(i);
-                            //формируем массив прожитых дней для сортировки
-                            s_int[i] = Integer.parseInt((String) m.get(ATTR_PAST_DAYS));
-                        }
-                        //сортировка
-                        for (int i = 0; i < sizeMap; i++) {
-                            for (int j = 0; j < sizeMap - 1; j++) {
-                                int one = s_int[j];
-                                int two = s_int[j + 1];
-                                if (one > two) {
-                                    int tempInt = s_int[j];
-                                    String tempString = csList.get(j);
-                                    //сортируем список
-                                    csList.set(j, csList.get(j + 1));
-                                    csList.set(j + 1, tempString);
-                                    //сортируем вспомогательный массив
-                                    s_int[j] = s_int[j + 1];
-                                    s_int[j + 1] = tempInt;
-                                }
-                            }
-                        }
-                        //получаем адаптер с данными из списка строк csList
-                        sara = doDataFromList(csList);
-                        //присваиваем адаптер списку экрана и обновляем данные на экране
-                        mListView.setAdapter(sara);
-                        //Загружаем сохранённую позицию списка
-                        loadPos();
-                        //устанавливаем список в позицию
-                        mListView.setSelectionFromTop(pos, offset);
+                        //получаем данные в курсоре
+                        mCursor = mPersonDbHelper.getAllDataSortDateUp();
                         break;
 
                     case 4:
                         Log.d(TAG, "PersonsListActivity Сортировка по дате по убыванию ");
-                        int sizeMapDown = csList.size();
-                        int[] s_int_down = new int[sizeMapDown];
-
-                        for (int i = 0; i < sizeMapDown; i++) {
-                            //получаем пары ключ-значение для i строки
-                            m = data.get(i);
-                            //формируем массив прожитых дней для сортировки
-                            s_int_down[i] = Integer.parseInt((String) m.get(ATTR_PAST_DAYS));
-                        }
-                        //сортировка
-                        for (int i = 0; i < sizeMapDown; i++) {
-                            for (int j = 0; j < sizeMapDown - 1; j++) {
-                                int one = s_int_down[j];
-                                int two = s_int_down[j + 1];
-                                if (one > two) {
-                                    int tempInt = s_int_down[j];
-                                    String tempString = csList.get(j);
-                                    //сортируем список
-                                    csList.set(j, csList.get(j + 1));
-                                    csList.set(j + 1, tempString);
-                                    //сортируем вспомогательный массив
-                                    s_int_down[j] = s_int_down[j + 1];
-                                    s_int_down[j + 1] = tempInt;
-                                }
-                            }
-                        }
-                        //Переворачиваем массив= сортировка по убыванию
-                        Collections.reverse(csList);
-                        //получаем адаптер с данными из списка строк csList
-                        sara = doDataFromList(csList);
-                        //присваиваем адаптер списку экрана и обновляем данные на экране
-                        mListView.setAdapter(sara);
-                        //Загружаем сохранённую позицию списка
-                        loadPos();
-                        //устанавливаем список в позицию
-                        mListView.setSelectionFromTop(pos, offset);
-
-                        break;
-
-                    case 5:
-                        place = 1;
-                        Log.d(TAG, "PersonsListActivity Без сортировки/Вставка в начало  place = " + place);
-                        //Загружаем сохранённую позицию списка
-                        loadPos();
-                        //устанавливаем список в позицию
-                        mListView.setSelectionFromTop(pos, offset);
+                        //получаем данные в курсоре
+                        mCursor = mPersonDbHelper.getAllDataSortDateDown();
                         break;
 
                     default:
-                        place = 2;
-                        Log.d(TAG, "PersonsListActivity Без сортировки/default  place = " + place);
-                        //Загружаем сохранённую позицию списка
-                        loadPos();
-                        //устанавливаем список в позицию
-                        mListView.setSelectionFromTop(pos, offset);
+                        Log.d(TAG, "PersonsListActivity default: сортировка по имени вверх");
+                        //получаем данные в курсоре
+                        mCursor = mPersonDbHelper.getAllDataSortNameUp();
                         break;
                 }
 
             } else {
                 Log.d(TAG, "PersonsListActivity Без сортировки");
+                //получаем данные в курсоре
+                mCursor = mPersonDbHelper.getAllData();
             }
+
+            // формируем столбцы сопоставления
+            String[] from = new String[] {PersonTable.COLUMN_NAME,
+                    PersonTable.COLUMN_DR, PersonTable.COLUMN_PAST_DAYS };
+            int[] to = new int[] { R.id.name_list, R.id.was_born, R.id.past_Days };
+
+            //поручаем активности присмотреть за курсором
+            startManagingCursor(mCursor);
+            // создааем адаптер и настраиваем список
+            scAdapter = new SimpleCursorAdapter(this, R.layout.list_name_date, mCursor, from, to);
+            mListView.setAdapter(scAdapter);
+            //Загружаем сохранённую позицию списка
+            loadPos();
+            //устанавливаем список в позицию
+            mListView.setSelectionFromTop(pos, offset);
+            Log.d(TAG, "PersonsListActivity isSort   pos = " + pos + "  offset = " + offset);
         }
 
-        Log.d(TAG, "PersonsListActivity place = " + place + " Есть сортировка ? " + isSort +
-                " Сортировка = " + sort);
     }
-*/
+
 
     @Override
     protected void onPause() {
@@ -410,7 +309,6 @@ public class PersonsListActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "PersonsListActivity onDestroy");
-        writeArrayList(csList);
         mCursor.close();
     }
 
@@ -461,12 +359,27 @@ public class PersonsListActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+
+                mCursor = searchInSQLite(searchView.getQuery().toString());
+                //поручаем активности присмотреть за курсором
+                startManagingCursor(mCursor);
+                // формируем столбцы сопоставления
+                String[] from = new String[] {PersonTable.COLUMN_NAME,
+                        PersonTable.COLUMN_DR, PersonTable.COLUMN_PAST_DAYS };
+                int[] to = new int[] { R.id.name_list, R.id.was_born, R.id.past_Days };
+                // создааем адаптер и настраиваем список
+                scAdapter = new SimpleCursorAdapter(getBaseContext(),
+                        R.layout.list_name_date, mCursor, from, to);
+                mListView.setAdapter(scAdapter);
+
+
+
                 //ищем строки в csList, в которых есть newText и формируем tempList
-                tempList = searchInListQueryString(csList,newText);
+                //tempList = searchInListQueryString(csList,newText);
                 //получаем адаптер с данными из списка строк tempList
-                sara = doDataFromList(tempList);
+                //sara = doDataFromList(tempList);
                 //присваиваем адаптер списку экрана и обновляем данные на экране
-                mListView.setAdapter(sara);
+                //mListView.setAdapter(sara);
                 return true;
             }
         });
@@ -479,10 +392,6 @@ public class PersonsListActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_add:
                 Log.d(TAG, "OptionsItem = action_add");
-
-                //тестовые две строки для проверки базы данных
-                //insertPerson();
-                //displayDatabaseInfo();
 
                 Intent intent = new Intent(this, NewActivity.class);
                 startActivityForResult(intent, NEW_ACTIVITY_ADD_REQUEST);
@@ -512,36 +421,20 @@ public class PersonsListActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-
-            int position = data.getIntExtra("position", 0);
-            String namesDate = data.getStringExtra("namesDateLived");
-            Log.d(TAG, "PersonsListActivity onActivityResult ADD_REQUEST= " + namesDate);
-
             //если вернулось из NEW_ACTIVITY по нажатию здесь кнопки  Добавить
             if (requestCode == NEW_ACTIVITY_ADD_REQUEST) {
                 // если в настройках выбрана вставка в начало списка
                 if (place == 1) {
                     //заносим в начало списка новую строку с данными
-                    csList.add(0, namesDate);
+                    //csList.add(0, namesDate);
                     // иначе заносим в конец списка новую строку с данными
-                } else csList.add(namesDate);
-                //writeArrayList(csList);
-                Log.d(TAG, "onActivityResult csList size after= " + csList.size() +
-                        "  " + csList.get(csList.size() - 1));
-
+                } else {
+                    //тогда в конец списка
+                    //csList.add(namesDate);
+                }
                 //если вернулось из NEW_ACTIVITY по выбору здесь из контексного меню строки Изменить
             } else if (requestCode == NEW_ACTIVITY_CHANGE_REQUEST) {
-                //при условии, что в списке что-то было
-                if (csList.size() > 0) {
-                    //замена элемента в позиции listPosition
-                    csList.set(position, namesDate);
-                    //Можно было и так - добавление вставкой и удаление старого
-                    //namesDateList.add(listPosition, namesDate);
-                    //namesDateList.remove(listPosition + 1);
-
-                    //если список был пуст, записываем как первый элемент
-                } else csList.add(0, namesDate);
-
+               //здесь ничего
             } else if (requestCode == SEARCH_ACTIVITY) {
                 String dataSearch = data.getStringExtra(BioritmActivity.STRING_DATA);
                 Intent intent = new Intent(PersonsListActivity.this, BioritmActivity.class);
@@ -549,12 +442,9 @@ public class PersonsListActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-            //сохраняем список в файл
-            writeArrayList(csList);
-            //заполняем адаптер данными
-            sara = doDataFromList(csList);
-            //обновляем данные на экране
-            mListView.setAdapter(sara);
+            //============== следующий код для отображения списка из базы данных===========//
+            //показываем список на экране
+            showSQLitePersonList();
         }
     }
 
@@ -586,19 +476,11 @@ public class PersonsListActivity extends AppCompatActivity {
             deleteDialog.setNegativeButton("Да", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    // удаляем пункт, используя позицию пункта в списке
-                    data.remove(acmi.position);
-                    // уведомляем, что данные data изменились для вывода на экран
-                    sara.notifyDataSetChanged();
-                    //удаляем строку списка csList с тем же номером, что и позиция данных для адаптера
-                    csList.remove(acmi.position);
-                    //пишем в файл обновлённый список, чтобы сохранить изменения
-                    writeArrayList(csList);
-
                     //Удаление записи из базы данных
                     mPersonDbHelper.deletePerson(acmi.id);
+                    Log.d(TAG, "PersonsListActivity удалена позиция с ID " + acmi.id);
                     //показываем список на экране
-                    showPersonList();
+                    showSQLitePersonList();
                     //выводим список в лог
                     displayDatabaseInfo();
                 }
@@ -609,25 +491,11 @@ public class PersonsListActivity extends AppCompatActivity {
 
             //если выбран пункт Изменить запись
         } else if (item.getItemId() == CHANGE_ID) {
-
             Log.d(TAG, "PersonsListActivity CM_CHANGE_ID");
-            csList.get(acmi.position);
-
-            String userName = getDataFromList(csList, acmi.position)[0];
-            String day = getDataFromList(csList, acmi.position)[1];
-            String mounth = getDataFromList(csList, acmi.position)[2];
-            String year = getDataFromList(csList, acmi.position)[3];
 
             Intent intent = new Intent(PersonsListActivity.this, NewActivity.class);
-            //вставляем в интент имя, дату рожд, request_code =111(признак того, что нужно изменить)
-            //и номер позиции в списке, который потом передадим обратно
-            intent.putExtra(NewActivity.PERSON_NAME, userName);
-            intent.putExtra(NewActivity.DAY_NUMBER, day);
-            intent.putExtra(NewActivity.MOUNTH_NUMBER, mounth);
-            intent.putExtra(NewActivity.YEAR_NUMBER, year);
             intent.putExtra(NewActivity.REQUEST_CODE, request_code);
-            intent.putExtra(NewActivity.POSITION, acmi.position);
-
+            intent.putExtra(NewActivity.ID_SQL, acmi.id);
             startActivityForResult(intent, NEW_ACTIVITY_CHANGE_REQUEST);
 
             return true;
@@ -723,30 +591,6 @@ public class PersonsListActivity extends AppCompatActivity {
         }
     }
 
-    //Прочитать список имён с данными из файла
-    void readArrayList(ArrayList<String> arrayList, String fileName) {
-        try {
-            //ArrayList<String> arcsIn = new ArrayList<String>();
-            // открываем поток для чтения
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    openFileInput(fileName)));
-            try {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    arrayList.add(line);
-                }
-                //Выводим в лог весь файл построчно
-                //for (String s:arrayList){
-                // Log.d(TAG, s);
-                //}
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
     //Создать и открыть диалог выхода из программы
     private void openQuitDialog() {
         AlertDialog.Builder quitDialog = new AlertDialog.Builder(this);
@@ -816,6 +660,62 @@ public class PersonsListActivity extends AppCompatActivity {
         return searchList;
     }
 
+    private Cursor searchInSQLite (String query){
+        ArrayList<String> array_id = new ArrayList<>();
+        query = query.toLowerCase();
+        PersonDbHelper mHelper = new PersonDbHelper(this);
+        SQLiteDatabase db = mHelper.getReadableDatabase();
+
+        // Зададим условие для выборки - список столбцов
+        String[] projection = {PersonTable._ID, PersonTable.COLUMN_NAME};
+        // Делаем запрос
+        Cursor cursor = db.query(PersonTable.TABLE_NAME, projection,
+                null, null,null,null,null);
+        // Узнаем индекс каждого столбца
+        int idColumnIndex = cursor.getColumnIndex(PersonTable._ID);
+        int nameColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_NAME);
+
+        String currentName;
+        // Проходим через все ряды
+        while (cursor.moveToNext()) {
+            // Используем индекс для получения строки или числа
+            int currentID = cursor.getInt(idColumnIndex);
+            currentName = cursor.getString(nameColumnIndex);
+
+            if (currentName.contains(query)) {
+                Log.d(TAG, "String " + currentName +
+                        " currentID=" + currentID + " contains query= " + query);
+                //Добавляем в список очередное совпадение
+                array_id.add(Integer.toString(currentID));
+            }
+        }
+
+        String[] id = array_id.toArray(new String[array_id.size()]);
+        for (int i = 0; i< id.length; i++){
+            Log.d(TAG, "String[] id " + id[i] );
+        }
+
+        String[] col = {PersonTable._ID,
+                PersonTable.COLUMN_NAME,
+                PersonTable.COLUMN_DR,
+                PersonTable.COLUMN_PAST_DAYS};
+
+        Cursor  cursor1 = db.rawQuery("SELECT _id,name,dr, past_days FROM " + PersonTable.TABLE_NAME +
+                " WHERE " + PersonTable._ID + "=?", new String[] { id + "" });
+
+        Log.d(TAG, "cursor1 " + cursor1);
+
+        if (cursor1 != null) {
+            Log.d(TAG, "cursor1.getCount() = " + cursor1.getCount() );
+            while (cursor1.moveToNext()) {
+                String s = cursor1.getString(cursor1.getColumnIndex(PersonTable.COLUMN_NAME));
+                Log.d(TAG, "String s " + s);
+            }
+        }else Log.d(TAG, "cursor1 = " + "null");
+
+        return cursor1;
+    }
+
     private void displayDatabaseInfo() {
         // Создадим и откроем для чтения базу данных
         SQLiteDatabase db = mPersonDbHelper.getReadableDatabase();
@@ -866,26 +766,7 @@ public class PersonsListActivity extends AppCompatActivity {
         }
     }
 
-/*
-    private void insertPerson() {
-
-        // Gets the database in write mode
-        SQLiteDatabase db = mPersonDbHelper.getWritableDatabase();
-        // Создаем объект ContentValues, где имена столбцов ключи,
-        // а информация о госте является значениями ключей
-        ContentValues values = new ContentValues();
-        values.put(PersonTable.COLUMN_NAME, "Яя");
-        values.put(PersonTable.COLUMN_DAY, 17);
-        values.put(PersonTable.COLUMN_MONTH, 5);
-        values.put(PersonTable.COLUMN_YEAR, 1961);
-
-        long newRowId = db.insert(PersonTable.TABLE_NAME, null, values);
-        Log.d(TAG, "PersonsListActivity insertGuest newRowId = " + newRowId);
-    }
-*/
-
-
-    private void showPersonList() {
+    private void showSQLitePersonList() {
 
         //получаем данные в курсоре
         mCursor = mPersonDbHelper.getAllData();
@@ -901,4 +782,5 @@ public class PersonsListActivity extends AppCompatActivity {
         scAdapter = new SimpleCursorAdapter(this, R.layout.list_name_date, mCursor, from, to);
         mListView.setAdapter(scAdapter);
     }
+
 }

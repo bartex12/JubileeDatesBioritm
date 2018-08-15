@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.net.Uri;
@@ -34,34 +35,23 @@ import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
+
 public class TimeActivity extends AppCompatActivity implements
         TextWatcher {
 
     public final String TAG = "33333";
-    final int NEW_ACTIVITY = 1;
-    final int PERSONAL_LIST_ACTIVITY = 2;
-    public static final String CS_LIST = "ru.bartex.jubelee_dialog.cs_list";
-    public static final String LIST_DATA = "ru.bartex.jubelee_dialog.list_data";
-
-    SharedPreferences shp;
-    ArrayList<CharSequence> namesDateList = new ArrayList<CharSequence>();
-
-    final String SAVED_NAME = "saved_name";
-    final String SAVED_DAY = "saved_day";
-    final String SAVED_MOUNTH = "saved_mounth";
-    final String SAVED_YEAR = "saved_year";
-    final String SAVED_DAYS = "saved_days";
+    public static final String ID_SQL = "sqlTimeActivity";
 
     TextView willBe, lastDays, userName, dataBorn;
-    static EditText day, mounth, year, days;
+    static EditText  days;
     Button findDate;//кнопка Рассчитать
 
     int dayNumber,mounthNumber, yearNumber, daysNumber;
     int dayNumberNext,mounthNumberNext, yearNumberNext;
-    //данные из списка имён
-    String dataFromList;
-    //Массив данных по каждой строке из списка имён
-    String[] ss;
+
+    long id_sql;  // id строки из базы данных
 
     private Calendar firstCalendar;
     private Timer mTimer;
@@ -107,33 +97,48 @@ public class TimeActivity extends AppCompatActivity implements
 
         //Загружаем данные из интента
         Intent intent = getIntent();
-        dataFromList = intent.getStringExtra(LIST_DATA);
+        id_sql = intent.getLongExtra(ID_SQL,0);
 
-        ss = getDataFromString(dataFromList);
+        //получаем экхземпляр PersonDbHelper
+        PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);
+        //получаем курсор с данными строки с id
+        Cursor mCursor = mPersonDbHelper.getPerson(id_sql);
+
+        // Узнаем индекс каждого столбца
+        int nameColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_NAME);
+        int drColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_DR);
+        int dayColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_DAY);
+        int monthColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_MONTH);
+        int yearColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_YEAR);
+
+        String currentName = mCursor.getString(nameColumnIndex);
+        String currentDr = mCursor.getString(drColumnIndex);
+        String currentDay = mCursor.getString(dayColumnIndex);
+        String currentMonth = mCursor.getString(monthColumnIndex);
+        String currentYear = mCursor.getString(yearColumnIndex);
+
+        //закрываем курсор
+        mCursor.close();
+
+        //рассчитываем дату рождения
+        dayNumber = Integer.parseInt(currentDay);
+        mounthNumber = Integer.parseInt(currentMonth);
+        yearNumber = Integer.parseInt(currentYear);
 
         //пишем имя
-        userName.setText(ss[0]);
-        //рассчитываем дату рождения
-        dayNumber = Integer.parseInt(ss[1]);
-        mounthNumber = Integer.parseInt(ss[2]);
-        yearNumber = Integer.parseInt(ss[3]);
-        daysNumber = Integer.parseInt(ss[4]);
-        String namesDate = String.format("%s.%s.%s", ss[1], ss[2], ss[3]);
+        userName.setText(currentName);
         //пишем дату рождения
-        dataBorn.setText(namesDate);
+        dataBorn.setText(currentDr);
 
-        //days.setText(ss[4]);
         days.setText("10000");
         //устанавливаем фокус в конце строки
         days.requestFocus();
-
-        Log.d(TAG, "Введённая дата MainActivity onCreate = " + ss[0] + "--" + dayNumber + "." +
-                (mounthNumber) + "." + yearNumber + "--" + daysNumber);
 
         mToast = new Toast(this);
         mToast.setGravity(Gravity.CENTER,0,0);
 
         //вызов обработчика кнопки Рассчитать без скрытия клавиатуры
+        //здесь запускаем myTimerTask
         onFindDateSimple();
     }
 
@@ -197,7 +202,7 @@ public class TimeActivity extends AppCompatActivity implements
             case R.id.action_table:
                 Log.d(TAG, "action_table");
                 Intent intent = new Intent(TimeActivity.this,TableActivity.class);
-                intent.putExtra(TableActivity.DATA_LIST,dataFromList);
+                intent.putExtra(TableActivity.ID_SQL,id_sql);
                 startActivity(intent);
                 return true;
 
@@ -366,57 +371,11 @@ public class TimeActivity extends AppCompatActivity implements
             });
         }
     }
-/*
-    void  saveText() {
-        shp = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor edit = shp.edit();
-        //edit.putString(SAVED_NAME, Integer.toString(dayNumber));
-        edit.putString(SAVED_DAY, Integer.toString(dayNumber));
-        edit.apply();
-        edit.putString(SAVED_MOUNTH, Integer.toString(mounthNumber));
-        edit.apply();
-        edit.putString(SAVED_YEAR, Integer.toString(yearNumber));
-        edit.apply();
-        edit.putString(SAVED_DAYS, Integer.toString(daysNumber));
-        edit.apply();
-    }
 
-    void loadText() {
-        shp = getPreferences(MODE_PRIVATE);
-        String sDelay = shp.getString(SAVED_DAY, "");
-        day.setText(sDelay);
-        mounth.setText(shp.getString(SAVED_MOUNTH, ""));
-        year.setText(shp.getString(SAVED_YEAR, ""));
-        days.setText(shp.getString(SAVED_DAYS, ""));
-    }
-*/
     void myToast (String s){
         Toast mToast = Toast.makeText(TimeActivity.this,s, Toast.LENGTH_SHORT);
         mToast.setGravity(Gravity.CENTER,0,0);
         mToast.show();
-    }
-
-    //метод получения данных из строки  (из строки списка - в PersonsListActivity)
-    public static String[] getDataFromString(String ss){
-        //индекс последней точки в строке
-        int i1 =ss.lastIndexOf (".");
-        String stringYear = ss.substring(i1+1, i1+5);
-        String stringNoYear = ss.substring(0, ss.lastIndexOf("."));
-        //индекс первой точки в строке
-        int i2 =stringNoYear.lastIndexOf (".");
-        String stringNoYearMonth = ss.substring(0, stringNoYear.lastIndexOf("."));
-        String stringMonth = stringNoYear.substring(i2+1, stringNoYear.length());
-        //индекс последнего пробела
-        int i3 = stringNoYearMonth.lastIndexOf (" ");
-        String stringDay = stringNoYearMonth.substring(i3+1, stringNoYearMonth.length());
-        String stringName = stringNoYearMonth.substring(0, i3-1);
-        //индекс последнего пробела в строке
-        int i4 =ss.lastIndexOf (" ");
-        String stringDays = ss.substring(i4+1, ss.length());
-
-        String[]data = {stringName,stringDay,stringMonth,stringYear,stringDays};
-
-        return data;
     }
 
 }

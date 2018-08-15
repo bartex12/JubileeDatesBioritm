@@ -17,6 +17,9 @@ public class PersonTable {
 
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_NAME = "name";
+        public final static String COLUMN_DAY = "day";
+        public final static String COLUMN_MONTH = "month";
+        public final static String COLUMN_YEAR = "year";
         public final static String COLUMN_DR = "dr";
         public final static String COLUMN_PAST_DAYS = "past_days";
 

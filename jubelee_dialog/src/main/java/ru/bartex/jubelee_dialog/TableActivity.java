@@ -2,6 +2,7 @@ package ru.bartex.jubelee_dialog;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.net.Uri;
@@ -28,6 +29,9 @@ import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
+
 public class TableActivity extends AppCompatActivity implements View.OnClickListener{
 
     public static final String PERSON_NAME = "personNameTableActivity";
@@ -36,6 +40,7 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
     public static final String YEAR_NUMBER = "yearNumber";
     public static final String DAYS_NUMBER = "daysNumber";
     public static final String DATA_LIST = "dataList";
+    public static final String ID_SQL = "sqlTableActivity";
 
     TextView mTextViewNameTwoAct;
 
@@ -67,6 +72,8 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
 
     ShareActionProvider shareActionProvider;
 
+    long id_sql; //id строки с данными из базы данных
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,14 +100,35 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
         mCheckBox5000.setEnabled(false);
 
         Intent intent = getIntent();
-        dataString = intent.getStringExtra(DATA_LIST);
-        ss = TimeActivity.getDataFromString(dataString);
+        id_sql = intent.getLongExtra(ID_SQL,0);
+        //ss = TimeActivity.getDataFromString(dataString);
 
-        name = ss[0];
-        day = Integer.parseInt(ss[1]);
-        month = Integer.parseInt(ss[2]);
-        year = Integer.parseInt(ss[3]);
-        days = Integer.parseInt(ss[4]);
+        //получаем экхземпляр PersonDbHelper
+        PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);
+        //получаем курсор с данными строки с id
+        Cursor mCursor = mPersonDbHelper.getPerson(id_sql);
+
+        // Узнаем индекс каждого столбца
+        int nameColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_NAME);
+        int drColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_DR);
+        int dayColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_DAY);
+        int monthColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_MONTH);
+        int yearColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_YEAR);
+
+        String currentName = mCursor.getString(nameColumnIndex);
+        String currentDr = mCursor.getString(drColumnIndex);
+        String currentDay = mCursor.getString(dayColumnIndex);
+        String currentMonth = mCursor.getString(monthColumnIndex);
+        String currentYear = mCursor.getString(yearColumnIndex);
+
+        //закрываем курсор
+        mCursor.close();
+
+        name = currentName;
+        day = Integer.parseInt(currentDay);
+        month = Integer.parseInt(currentMonth);
+        year = Integer.parseInt(currentYear);
+        //days = Integer.parseInt(ss[4]);
 
         //показываем имя
         mTextViewNameTwoAct.setText(name);

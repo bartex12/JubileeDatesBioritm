@@ -89,7 +89,6 @@
         <item>По имени вниз</item>
         <item>По дате вверх</item>
         <item>По дате вниз</item>
-        <item>Без сортировки\nВставка в начало списка</item>
     </string-array>
 
     <string-array name="pref_entryValues_sort">
@@ -97,7 +96,6 @@
         <item>2</item>
         <item>3</item>
         <item>4</item>
-        <item>5</item>
     </string-array>
 
     <string name="pref_title_system_sync_settings">System sync settings</string>
