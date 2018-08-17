@@ -175,4 +175,88 @@ public class PersonDbHelper extends SQLiteOpenHelper{
                 null, null, null, null, PersonTable.COLUMN_PAST_DAYS + " DESC");
     }
 
+    //метод поиска в базе данных из строки поиска по поисковому запросу query
+    public Cursor searchInSQLite (String query){
+
+        query = query.toLowerCase();
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.query(
+                PersonTable.TABLE_NAME,  //имя таблицы, к которой передается запрос
+                new String[] {          //список имен возвращаемых полей
+                        PersonTable._ID,
+                        PersonTable.COLUMN_NAME,
+                        PersonTable.COLUMN_DR,
+                        PersonTable.COLUMN_PAST_DAYS },
+                PersonTable.COLUMN_NAME + " LIKE" + "'%" + query + "%'", // условие выбора
+                null,  //значения аргументов фильтра
+                null,//фильтр для группировки
+                null, //фильтр для группировки, формирующий выражение HAVING
+                PersonTable.COLUMN_NAME ); //порядок сортировки
+
+
+        if (cursor != null) {
+            Log.d(TAG, "cursor1.getCount() = " + cursor.getCount() );
+            while (cursor.moveToNext()) {
+                String s = cursor.getString(cursor.getColumnIndex(PersonTable.COLUMN_NAME));
+                Log.d(TAG, "Найдена строка " + s);
+            }
+        }else Log.d(TAG, "cursor1 = " + "null");
+
+        return cursor;
+    }
+
+    //вывод в лог всех строк базы
+    public void displayDatabaseInfo() {
+        // Создадим и откроем для чтения базу данных
+        SQLiteDatabase db = getReadableDatabase();
+
+        // Зададим условие для выборки - список столбцов
+        String[] projection = {
+                PersonTable._ID,
+                PersonTable.COLUMN_NAME,
+                PersonTable.COLUMN_DR,
+                PersonTable.COLUMN_PAST_DAYS};
+
+        // Делаем запрос
+        Cursor cursor = db.query(
+                PersonTable.TABLE_NAME,   // таблица
+                projection,            // столбцы
+                null,                  // столбцы для условия WHERE
+                null,                  // значения для условия WHERE
+                null,                  // Don't group the rows
+                null,                  // Don't filter by row groups
+                null);                   // порядок сортировки
+
+
+        try {
+
+            // Узнаем индекс каждого столбца
+            int idColumnIndex = cursor.getColumnIndex(PersonTable._ID);
+            int nameColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_NAME);
+            int drColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_DR);
+            int pastDaysColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_PAST_DAYS);
+
+            // Проходим через все ряды
+            while (cursor.moveToNext()) {
+                // Используем индекс для получения строки или числа
+                int currentID = cursor.getInt(idColumnIndex);
+                String currentName = cursor.getString(nameColumnIndex);
+                String currentDr = cursor.getString(drColumnIndex);
+                int currentPastDays = cursor.getInt(pastDaysColumnIndex);
+
+                // Выводим значения каждого столбца
+                Log.d(TAG, "\n" + currentID + " - " +
+                        currentName + " - " +
+                        currentDr + " - " +
+                        currentPastDays);
+            }
+        } finally {
+            // Всегда закрываем курсор после чтения
+            cursor.close();
+        }
+    }
+
+
 }

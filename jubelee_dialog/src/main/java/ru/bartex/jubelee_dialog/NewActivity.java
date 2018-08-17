@@ -33,25 +33,15 @@ public class NewActivity extends AppCompatActivity  {
 
     public final String TAG = "33333";
     public static final String REQUEST_CODE = "request_codeNewActivity";
-    public static final String PERSON_NAME = "personNameNewActivity";
-    public static final String DAY_NUMBER = "dayNumberNewActivity";
-    public static final String MOUNTH_NUMBER = "mounthNumberNewActivity";
-    public static final String YEAR_NUMBER = "yearNumberNewActivity";
-    public static final String DAYS_NUMBER = "daysNumberNewActivity";
-    public static final String POSITION = "positionNewActivity";
     public static final String ID_SQL = "sqlNewActivity";
-
 
     static EditText etName, etDay, etMounth, etYear;
 
-    int dayNumber,mounthNumber, yearNumber, daysNumber;
+    int dayNumber,mounthNumber, yearNumber;
     int requestCode;
-    int position=0;
     long id_sql;
     long newRowId;
     boolean change;
-    PersonDbHelper mPersonDbHelper;
-    private Cursor mCursor;
 
     Button btnOK;
     Button buttonCancel;
@@ -157,6 +147,7 @@ public class NewActivity extends AppCompatActivity  {
                     String drSQL = String.format("%s-%s-%s",year,mounth,day);
                     Log.d(TAG, "Др: "  + drSQL + "   beenDays " + beenDays);
 
+                    //если изменить запись
                     if (requestCode ==111){
                         //изменяем строку в базе
                         change = mDbHelper.updatePerson(id_sql, name,day,mounth,year, dr, past_days);
@@ -298,72 +289,11 @@ public class NewActivity extends AppCompatActivity  {
         }
         return y;
     }
-/*
-    boolean getDays (){
-        boolean ds;
-        if (etDays.getText().toString().equals("")) {
-            daysNumber = 0;
-            ds = false;
-            myToast ("Введите желаемое число прожитых дней");
-        }else {
-
-            int i = Integer.parseInt(etDays.getText().toString());
-            if (i>=0 && i<= 50000){
-                daysNumber = i;
-                ds = true;
-            }else {
-                ds = false;
-                myToast ("Количество прожитых дней\nЧисло от 0 до 50000");
-            }
-        }
-        return ds;
-    }
-    */
 
     void myToast (String s){
         Toast mToast = Toast.makeText(NewActivity.this,s, Toast.LENGTH_SHORT);
         mToast.setGravity(Gravity.CENTER,0,0);
         mToast.show();
     }
-
-  /*
-    private void insertPerson() {
-
-        String name = etName.getText().toString().trim();
-        String dayString = etDay.getText().toString().trim();
-        String monthString = etMounth.getText().toString().trim();
-        String yearString = etYear.getText().toString().trim();
-
-        int day = Integer.parseInt(dayString);
-        int month = Integer.parseInt(monthString);
-        int year = Integer.parseInt(yearString);
-
-        PersonDbHelper mDbHelper = new PersonDbHelper(this);
-
-        // Gets the database in write mode
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        // Создаем объект ContentValues, где имена столбцов ключи,
-        // а информация о госте является значениями ключей
-        ContentValues values = new ContentValues();
-        values.put(PersonTable.COLUMN_NAME, name);
-        values.put(PersonTable.COLUMN_DAY, day);
-        values.put(PersonTable.COLUMN_MONTH, month);
-        values.put(PersonTable.COLUMN_YEAR, year);
-
-        // Вставляем новый ряд в базу данных и запоминаем его идентификатор
-        long newRowId = mDbHelper.addPerson(name,day,month,year );
-
-        // Выводим сообщение в успешном случае или при ошибке
-        if (newRowId == -1) {
-            // Если ID  -1, значит произошла ошибка
-            Toast.makeText(this, "Ошибка при заведении новой персоны", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "Ошибка при заведении новой персоны ");
-        } else {
-            Toast.makeText(this, "Персона заведена под номером: " + newRowId, Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "Персона заведена под номером: "  + newRowId );
-        }
-    }
- */
-
 
 }

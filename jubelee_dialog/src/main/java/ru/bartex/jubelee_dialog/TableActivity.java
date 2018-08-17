@@ -34,12 +34,6 @@ import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
 
 public class TableActivity extends AppCompatActivity implements View.OnClickListener{
 
-    public static final String PERSON_NAME = "personNameTableActivity";
-    public static final String DAY_NUMBER = "dayNumber";
-    public static final String MOUNTH_NUMBER = "mounthNumber";
-    public static final String YEAR_NUMBER = "yearNumber";
-    public static final String DAYS_NUMBER = "daysNumber";
-    public static final String DATA_LIST = "dataList";
     public static final String ID_SQL = "sqlTableActivity";
 
     TextView mTextViewNameTwoAct;
@@ -52,25 +46,19 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
 
     private Calendar secondCalendar;
 
-    private Timer mTimer;
-    private TimerTask mTimerTask;
     ArrayList<String> mArrayListDMY;
     ArrayAdapter mAdapter;
 
     public final String TAG = "33333";
 
     String name;
-    String dataString;
-    String[] ss;
 
     int i= 0;
     int j = 0;
     int k = 0;
 
-    int day, month, year, days;
+    int day, month, year;
     int dayNumberNext2,mounthNumberNext2, yearNumberNext2;
-
-    ShareActionProvider shareActionProvider;
 
     long id_sql; //id строки с данными из базы данных
 
@@ -128,7 +116,6 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
         day = Integer.parseInt(currentDay);
         month = Integer.parseInt(currentMonth);
         year = Integer.parseInt(currentYear);
-        //days = Integer.parseInt(ss[4]);
 
         //показываем имя
         mTextViewNameTwoAct.setText(name);

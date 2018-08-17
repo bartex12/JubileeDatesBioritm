@@ -37,8 +37,7 @@ import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
 
 public class BioritmActivity extends AppCompatActivity {
 
-    public static final String STRING_DATA = "ru.bartex.jubelee_dialog.string_data";
-    public static final String ID_SQL = "sqlBioritmActivity";
+    public static final String ID_SQL = "sqlBioritmActivity"; // id  строки даных
 
     private Calendar firstCalendar;
 
@@ -57,8 +56,6 @@ public class BioritmActivity extends AppCompatActivity {
     long nowTimeMillis;
     //количество прошедших дней с даты рождения
     long beenDays;
-    //количество долей текущего дня
-    long beenDays1;
 
     static int levelF=0;
     static int levelA=0;
@@ -82,16 +79,12 @@ public class BioritmActivity extends AppCompatActivity {
 
     static GraphView graph;
 
-    //Строка с данными из интента
-    String dataFromList;
     String userName;
     static int dayNumber = 17;
     static int mounthNumber = 5;
     static int yearNumber = 1961;
 
-    ShareActionProvider shareActionProvider;
     private SharedPreferences prefSetting;
-    File file;
 
     long id_sql;  //id строки с данными в базе данных
 
@@ -453,14 +446,7 @@ public class BioritmActivity extends AppCompatActivity {
         DataPoint[] pointsF = new DataPoint[n];
         DataPoint[] pointsA = new DataPoint[n];
         DataPoint[] pointsI = new DataPoint[n];
-/*
-        nowCalendar = new GregorianCalendar();
-        dayNumberNow = nowCalendar.get(Calendar.DAY_OF_MONTH);
-        mounthNumberNow = nowCalendar.get(Calendar.MONTH);
-        yearNumberNow = nowCalendar.get(Calendar.YEAR);
-        Log.d(TAG, "dayNumberNow = " + dayNumberNow + "  " +
-                "mounthNumberNow = " + mounthNumberNow);
-*/
+
         for (int i = 0; i < n; i++) {
             pointsF[i] = new DataPoint(dayNumberNext +i,
                     Math.sin(2*3.14159265358979*(beenDays+i)/23.688437) * 100);
@@ -657,14 +643,7 @@ public class BioritmActivity extends AppCompatActivity {
         DataPoint[] pointsF = new DataPoint[n];
         DataPoint[] pointsA = new DataPoint[n];
         DataPoint[] pointsI = new DataPoint[n];
-/*
-        nowCalendar = new GregorianCalendar();
-        dayNumberNow = nowCalendar.get(Calendar.DAY_OF_MONTH);
-        mounthNumberNow = nowCalendar.get(Calendar.MONTH);
-        yearNumberNow = nowCalendar.get(Calendar.YEAR);
-        Log.d(TAG, "dayNumberNow = " + dayNumberNow + "  " +
-                "mounthNumberNow = " + mounthNumberNow);
-*/
+
         for (int i = 0; i < n; i++) {
             pointsF[i] = new DataPoint(dayNumberNext +i,
                     Math.sin(2*3.14159265358979*(beenDays+i)/23.688437) * 100);

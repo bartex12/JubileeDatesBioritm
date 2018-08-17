@@ -1,6 +1,9 @@
 package ru.bartex.jubelee_dialog;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,19 +17,23 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
+
 public class SeachActivity extends AppCompatActivity {
 
-    public static final String LIST_DATA_SEARCH = "ru.bartex.jubelee_dialog.list_data_search";
-    public static final String LIST_DATA_POSITION = "ru.bartex.jubelee_dialog.list_data_position";
+    public final String TAG = "33333";
     public static final String LIST_DATA_QUERY = "ru.bartex.jubelee_dialog.list_data_query";
 
     TextView tvSlovo;
     TextView tvPositions;
     ListView mListViewSearch;
-    ArrayAdapter ara;
-    ArrayList<String>  searchList;
 
-    public final String TAG = "33333";
+    PersonDbHelper mDbHelper;
+    Cursor mCursor;
+    SimpleCursorAdapter scAdapter;
+    String query;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,15 +50,20 @@ public class SeachActivity extends AppCompatActivity {
         tvSlovo = (TextView)findViewById(R.id.textViewSearchSlovo) ;
         tvPositions = (TextView)findViewById(R.id.textViewSearchPositions) ;
         mListViewSearch = (ListView)findViewById(R.id.listViewSearch);
-        //получаем из интента список совпадений
-        searchList = intent.getStringArrayListExtra(LIST_DATA_SEARCH);
-        //выводим список совпадений на экран
-        ArrayAdapter ara = new ArrayAdapter(this,android.R.layout.simple_list_item_1, searchList);
-        mListViewSearch.setAdapter(ara);
-        //получаем из интента поисковый запрос и показываем его на экране
-        if (searchList.size()>0){
-            tvSlovo.setText(intent.getStringExtra(LIST_DATA_QUERY));
-            tvPositions.setText(Integer.toString(searchList.size()));
+
+        //получаем из интента поисковый запрос
+        query = intent.getStringExtra(LIST_DATA_QUERY);
+
+        mDbHelper = new PersonDbHelper(this);
+        //получаем курсор с результатами поиска
+        mCursor = mDbHelper.searchInSQLite (query);
+        //Выводим список данных на экран с использованием SimpleCursorAdapter
+        showSQLitePersonList(mCursor);
+
+        // показываем на экране поисковый запрос
+        if (mListViewSearch.getCount()>0){
+            tvSlovo.setText(query);
+            tvPositions.setText(Integer.toString(mListViewSearch.getCount()));
         }else {
             tvSlovo.setText(intent.getStringExtra(LIST_DATA_QUERY));
             tvPositions.setText("0");
@@ -60,10 +72,9 @@ public class SeachActivity extends AppCompatActivity {
         mListViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String s = searchList.get(position);
-                Log.d(TAG, "Нажато в списке " + s);
+
                 Intent intentSearch = new Intent();
-                intentSearch.putExtra(BioritmActivity.STRING_DATA, s);
+                intentSearch.putExtra(BioritmActivity.ID_SQL, id);
                 setResult(RESULT_OK,intentSearch);
                 finish();
             }
@@ -95,4 +106,22 @@ public class SeachActivity extends AppCompatActivity {
         super.onResume();
         Log.d(TAG, "SeachActivity onResume");
     }
+
+    //Выводим список данных на экран с использованием SimpleCursorAdapter
+    private void showSQLitePersonList(Cursor mCursor) {
+
+        //поручаем активности присмотреть за курсором
+        startManagingCursor(mCursor);
+
+        // формируем столбцы сопоставления
+        String[] from = new String[] {PersonTable.COLUMN_NAME,
+                PersonTable.COLUMN_DR, PersonTable.COLUMN_PAST_DAYS };
+        int[] to = new int[] { R.id.name_list, R.id.was_born, R.id.past_Days };
+
+        // создааем адаптер и настраиваем список
+        scAdapter = new SimpleCursorAdapter(this,
+                R.layout.list_name_date, mCursor, from, to);
+        mListViewSearch.setAdapter(scAdapter);
+    }
+
 }

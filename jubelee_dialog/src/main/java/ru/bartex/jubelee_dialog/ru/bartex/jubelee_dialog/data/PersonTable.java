@@ -12,7 +12,6 @@ public class PersonTable {
         //пустой конструктор
     };
 
-
         public final static String TABLE_NAME = "persons";
 
         public final static String _ID = BaseColumns._ID;
