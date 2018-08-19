@@ -93,8 +93,8 @@ public class PersonsListActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-               //посылаем в интенте id строки с данными в базе данных
-                Log.d(TAG, "position = " +position +" id = " + id);
+                //посылаем в интенте id строки с данными в базе данных
+                Log.d(TAG, "position = " + position + " id = " + id);
                 Intent intent = new Intent(PersonsListActivity.this, BioritmActivity.class);
                 intent.putExtra(BioritmActivity.ID_SQL, id);
                 startActivity(intent);
@@ -106,8 +106,10 @@ public class PersonsListActivity extends AppCompatActivity {
         registerForContextMenu(mListView);
 
         //============== следующий код для отображения списка из базы данных===========//
-        //получаем данные в курсоре
-        mCursor = mPersonDbHelper.getAllData();
+        // Обновляем данные в столбце Количество прожитых дней
+        mPersonDbHelper.updatePastDays();
+
+        /*
         //показываем список на экране
         showSQLitePersonList(mCursor);
         //Загружаем сохранённую позицию списка
@@ -115,7 +117,7 @@ public class PersonsListActivity extends AppCompatActivity {
         //устанавливаем список в позицию
         mListView.setSelectionFromTop(pos, offset);
         Log.d(TAG, "PersonsListActivity onCreate   pos = " + pos + "  offset = " + offset);
-
+        */
     }
 
     //Если в манифесте установить для android:launchMode значение "singleTop" ,
@@ -168,7 +170,7 @@ public class PersonsListActivity extends AppCompatActivity {
         isSort = prefSetting.getBoolean("cbSort", false);
 
         //если была развёрнута строка поиска
-        if ((searchView!=null) && (searchView.getQuery().toString().length()>0)) {
+        if ((searchView != null) && (searchView.getQuery().toString().length() > 0)) {
             Log.d(TAG, "PersonsListActivity Query " + searchView.getQuery());
 
             //поиск в базе данных из строки поиска по поисковому запросу query
@@ -178,8 +180,8 @@ public class PersonsListActivity extends AppCompatActivity {
             showSQLitePersonList(mCursor);
 
             //если НЕ была развёрнута строка поиска и НЕ был сформирован список результатов поиска
-        } else{
-            Log.d(TAG, "PersonsListActivity Query = null" );
+        } else {
+            Log.d(TAG, "PersonsListActivity Query = null");
 
             if (isSort) {
                 switch (sort) {
@@ -222,6 +224,11 @@ public class PersonsListActivity extends AppCompatActivity {
 
             //Выводим список данных на экран с использованием SimpleCursorAdapter
             showSQLitePersonList(mCursor);
+            //Загружаем сохранённую позицию списка
+            loadPos();
+            //устанавливаем список в позицию
+            mListView.setSelectionFromTop(pos, offset);
+            Log.d(TAG, "PersonsListActivity onCreate   pos = " + pos + "  offset = " + offset);
         }
     }
 
@@ -259,6 +266,7 @@ public class PersonsListActivity extends AppCompatActivity {
         super.onDestroy();
         Log.d(TAG, "PersonsListActivity onDestroy");
         mCursor.close();
+        mPersonDbHelper.close();
     }
 
     @Override
@@ -308,12 +316,12 @@ public class PersonsListActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (!newText.equalsIgnoreCase("")){
+                if (!newText.equalsIgnoreCase("")) {
                     //получаем курсор с данными по совпадению в строке поиска с именем персоны
                     mCursor = mPersonDbHelper.searchInSQLite(newText);
                     //Выводим список на экран
                     showSQLitePersonList(mCursor);
-                }else {
+                } else {
                     onResume();
                 }
                 return true;
@@ -359,12 +367,12 @@ public class PersonsListActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             //если вернулось из NEW_ACTIVITY по нажатию здесь кнопки  Добавить
             if (requestCode == NEW_ACTIVITY_ADD_REQUEST) {
-                //здесь ничего
+                //здесь пока ничего
                 //если вернулось из NEW_ACTIVITY по выбору здесь из контексного меню строки Изменить
             } else if (requestCode == NEW_ACTIVITY_CHANGE_REQUEST) {
-               //здесь ничего
+                //здесь пока  ничего
             } else if (requestCode == SEARCH_ACTIVITY) {
-                long dataSearch = data.getLongExtra(BioritmActivity.ID_SQL,0);
+                long dataSearch = data.getLongExtra(BioritmActivity.ID_SQL, 0);
                 Intent intent = new Intent(PersonsListActivity.this, BioritmActivity.class);
                 intent.putExtra(BioritmActivity.ID_SQL, dataSearch);
                 startActivity(intent);
@@ -485,9 +493,9 @@ public class PersonsListActivity extends AppCompatActivity {
         startManagingCursor(mCursor);
 
         // формируем столбцы сопоставления
-        String[] from = new String[] {PersonTable.COLUMN_NAME,
-                PersonTable.COLUMN_DR, PersonTable.COLUMN_PAST_DAYS };
-        int[] to = new int[] { R.id.name_list, R.id.was_born, R.id.past_Days };
+        String[] from = new String[]{PersonTable.COLUMN_NAME,
+                PersonTable.COLUMN_DR, PersonTable.COLUMN_PAST_DAYS};
+        int[] to = new int[]{R.id.name_list, R.id.was_born, R.id.past_Days};
 
         // создааем адаптер и настраиваем список
         scAdapter = new SimpleCursorAdapter(this, R.layout.list_name_date, mCursor, from, to);

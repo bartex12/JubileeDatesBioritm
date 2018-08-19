@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.GregorianCalendar;
+
 /**
  * Created by Андрей on 11.08.2018.
  */
@@ -77,8 +79,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         // получаем базу данных для записи и пишем
         SQLiteDatabase sd = getWritableDatabase();
         //the row ID of the newly inserted row, or -1 if an error occurred
-        long result = sd.insert(PersonTable.TABLE_NAME, null, cv);
-        return result;
+        return  sd.insert(PersonTable.TABLE_NAME, null, cv);
     }
 
     /**
@@ -123,6 +124,52 @@ public class PersonDbHelper extends SQLiteOpenHelper{
             mCursor.moveToFirst();
         }
         return mCursor;
+    }
+
+    // Обновить данные в столбце Количество прожитых дней
+    public void updatePastDays() {
+        SQLiteDatabase sd = getWritableDatabase();
+        Cursor cursor =  getAllData();
+            // Узнаем индекс каждого столбца
+            int idColumnIndex = cursor.getColumnIndex(PersonTable._ID);
+            int dayColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_DAY);
+            int monthColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_MONTH);
+            int yearColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_YEAR);
+
+            // Проходим через все ряды
+            while (cursor.moveToNext()) {
+                // Используем индекс для получения строки или числа
+                int currentID = cursor.getInt(idColumnIndex);
+                String currentDay = cursor.getString(dayColumnIndex);
+                String currentMonth = cursor.getString(monthColumnIndex);
+                String currentYear = cursor.getString(yearColumnIndex);
+
+                //экземпляр календаря с данными из списка
+                GregorianCalendar firstCalendar = new GregorianCalendar(Integer.parseInt(currentYear),
+                        Integer.parseInt(currentMonth) - 1,Integer.parseInt(currentDay));
+                //получаем дату в милисекундах
+                long firstCalendarMillis = firstCalendar.getTimeInMillis();
+                long nowTimeMillis = System.currentTimeMillis();
+                //количество прошедших дней с даты рождения
+                long beenDays = (nowTimeMillis-firstCalendarMillis)/86400000;
+                //количество прожитых дней как строка
+                String past_days = Long.toString(beenDays);
+
+                ContentValues updatedValues = new ContentValues();
+                updatedValues.put(PersonTable.COLUMN_PAST_DAYS, past_days);
+
+                sd.update(PersonTable.TABLE_NAME,
+                        updatedValues,
+                        "_id = ?",
+                        new String[] {Integer.toString(currentID)});
+            }
+        /*
+        return sd.query(PersonTable.TABLE_NAME,
+                new String[]{PersonTable._ID,PersonTable.COLUMN_NAME,
+                        PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
+                        PersonTable.COLUMN_DR,PersonTable.COLUMN_PAST_DAYS},
+                null, null, null, null, null);
+        */
     }
 
     // получить курсор с данными из таблицы TABLE_NAME
@@ -246,7 +293,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
                 String currentDr = cursor.getString(drColumnIndex);
                 int currentPastDays = cursor.getInt(pastDaysColumnIndex);
 
-                // Выводим значения каждого столбца
+                // Выводим построчно значения каждого столбца
                 Log.d(TAG, "\n" + currentID + " - " +
                         currentName + " - " +
                         currentDr + " - " +

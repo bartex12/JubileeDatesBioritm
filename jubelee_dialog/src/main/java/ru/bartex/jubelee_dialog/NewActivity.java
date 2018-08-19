@@ -64,8 +64,8 @@ public class NewActivity extends AppCompatActivity  {
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
             requestCode = extras.getInt(REQUEST_CODE);
+            //если пришло из изменить запись
             if (requestCode == 111) {
-
                 id_sql = extras.getLong(ID_SQL);
                 //получаем экхземпляр PersonDbHelper
                 PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);
@@ -204,8 +204,7 @@ public class NewActivity extends AppCompatActivity  {
                              DatePickerDialog.OnDateSetListener{
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            DatePickerDialog dpd = new DatePickerDialog(getActivity(),this,1980,6,19);
-            return dpd;
+            return new DatePickerDialog(getActivity(),this,1980,6,19);
         }
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {

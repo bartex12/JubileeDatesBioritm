@@ -45,8 +45,8 @@ public class BioritmActivity extends AppCompatActivity {
      static int n = 30;
 
     //Добавка в днях на графике (сдвиг графика)
-    static int deltaPlus = 0;
-    static int deltaDays = 0;
+    static int deltaPlus;
+
     //день месяца, месяц и год  расчётной даты
     int dayNumberNext,mounthNumberNext, yearNumberNext;
 
@@ -152,6 +152,9 @@ public class BioritmActivity extends AppCompatActivity {
         mounthNumber  = Integer.parseInt(currentMonth);
         yearNumber   = Integer.parseInt(currentYear);
 
+        //обнуляем deltaPlus, чтобы при возврате из списка персон с другой персоной
+        //на кнопке отражалась текущая дата и биоритмы начинались с нее
+        deltaPlus = 0;
         Log.d(TAG, "deltaPlus = " + deltaPlus);
 
         //Пишем имя на кнопке
@@ -369,8 +372,7 @@ public class BioritmActivity extends AppCompatActivity {
             int myYear = cal.get(Calendar.YEAR);
             int myMonth = cal.get(Calendar.MONTH);
             int myDay = cal.get(Calendar.DAY_OF_MONTH);
-            DatePickerDialog dpd = new DatePickerDialog(getActivity(), this, myYear,myMonth, myDay);
-            return dpd;
+            return new DatePickerDialog(getActivity(), this, myYear,myMonth, myDay);
         }
 
         @Override
@@ -390,6 +392,7 @@ public class BioritmActivity extends AppCompatActivity {
                     0,n);
         }
     }
+
     //расчёт текущей даты графика для отображения на кнопке выбора даты
     private String showDateForCalculate(){
         //экземпляр календаря с данными  интента
@@ -413,9 +416,8 @@ public class BioritmActivity extends AppCompatActivity {
         //получаем год расчётной даты
         yearNumberNext = firstCalendar.get(Calendar.YEAR);
 
-        String namesDateShort = String.format("%s.%s.%s",
+        return  String.format("%s.%s.%s",
                 dayNumberNext, mounthNumberNext +1, yearNumberNext);
-        return namesDateShort;
     }
 
     //метод расчёта графика на текущую дату
