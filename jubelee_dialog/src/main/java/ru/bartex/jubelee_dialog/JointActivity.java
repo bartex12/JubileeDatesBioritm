@@ -33,7 +33,7 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
     public static final int REQUEST_JOINT_PERSON1 = 1; //риквест код от JointActivity для персоны 1
     public static final int REQUEST_JOINT_PERSON2 = 2; //риквест код от JointActivity для персоны 2
 
-    int dayNumber,mounthNumber, yearNumber;
+    //int dayNumber,mounthNumber, yearNumber;
     int daysNext; //количество совместно прожитых дней для расчёта
     long id_sql;  // id строки из базы данных
     long id_sql_second;  // id другой строки из базы данных
@@ -96,13 +96,14 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                      firstCalendar.add(Calendar.DAY_OF_YEAR, (int) deltaDays);
                     long date_next = firstCalendar.getTimeInMillis();
                     //получаем день месяца расчётной даты
-                    dayNumber = firstCalendar.get(Calendar.DAY_OF_MONTH);
+                    int dayNumber = firstCalendar.get(Calendar.DAY_OF_MONTH);
                     //получаем месяц расчётной даты
-                    mounthNumber = firstCalendar.get(Calendar.MONTH);
+                    int  mounthNumber = firstCalendar.get(Calendar.MONTH);
                     //получаем год расчётной даты
-                    yearNumber = firstCalendar.get(Calendar.YEAR);
+                    int  yearNumber = firstCalendar.get(Calendar.YEAR);
 
                     TextView txt = (TextView)findViewById(R.id.textView6);
+                    //текст в зависимости от соотношения расчётной даты и сейчас
                     if (date_next>date_now){
                         txt.setText("Это будет");
                     }else if (date_next<date_now){
@@ -264,6 +265,7 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
     }
     @Override
     public void afterTextChanged(Editable editable) {
+        //пишем прочерки в поле mWillBe
         mWillBe.setText(R.string.better_late);
         //Делаем доступной кнопку Рассчитать, если изменили данные в любом EditText
         mCount.setEnabled(true);
