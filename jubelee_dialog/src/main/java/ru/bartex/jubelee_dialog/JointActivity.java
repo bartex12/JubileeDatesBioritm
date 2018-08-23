@@ -51,14 +51,17 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
     EditText mDays;//задаём количество совместно прожитых дней
 
     PersonDbHelper mDbHelper = new PersonDbHelper(this);
+    private static final String KEY_ID_SQL = "ID_SQL";
+    private static final String KEY_ID_SQL_SECOND = "ID_SQL_SECOND";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_joint);
 
+        Log.d(TAG, "JointActivity onCreate");
         //только портретная ориентация
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         ActionBar act = getSupportActionBar();
         act.setDisplayHomeAsUpEnabled(true);
@@ -86,16 +89,28 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                     Log.d(TAG, "deltaDays " + deltaDays);
                     //получаем экземпляр календаря
                     Calendar firstCalendar = new GregorianCalendar();
+                    long date_now = System.currentTimeMillis();
                     //устанавливаем календарь в текущую дату, выраженную в милисекундах
                     firstCalendar.setTimeInMillis(System.currentTimeMillis());
                     //Добавляем к указанной на экране дате указанное количество дней
                      firstCalendar.add(Calendar.DAY_OF_YEAR, (int) deltaDays);
+                    long date_next = firstCalendar.getTimeInMillis();
                     //получаем день месяца расчётной даты
                     dayNumber = firstCalendar.get(Calendar.DAY_OF_MONTH);
                     //получаем месяц расчётной даты
                     mounthNumber = firstCalendar.get(Calendar.MONTH);
                     //получаем год расчётной даты
                     yearNumber = firstCalendar.get(Calendar.YEAR);
+
+                    TextView txt = (TextView)findViewById(R.id.textView6);
+                    if (date_next>date_now){
+                        txt.setText("Это будет");
+                    }else if (date_next<date_now){
+                        txt.setText("Это было");
+                    }else {
+                        txt.setText("Это сегодня ");
+                    }
+
                     Log.d(TAG, "Расчётная дата MainActivity onFindDateSimple= " + dayNumber + "." +
                             (mounthNumber + 1) + "." + yearNumber);
                     String s1 = String.format("%02d.%02d.%04d",
@@ -105,11 +120,18 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                 }
             }
         });
-        //Загружаем данные из интента
-        Intent intent = getIntent();
-        id_sql = intent.getLongExtra(ID_SQL,1);
-        id_sql_second = intent.getLongExtra(ID_SQL_second,id_sql);
-        Log.d(TAG,"id_sql = " + id_sql + "   id_sql_second = " + id_sql_second);
+        //если что то было сохранено
+        if (savedInstanceState != null) {
+            id_sql = savedInstanceState.getLong(KEY_ID_SQL);
+            id_sql_second = savedInstanceState.getLong(KEY_ID_SQL_SECOND);
+            Log.d(TAG,"savedInstanceState:  id_sql = " + id_sql + "   id_sql_second = " + id_sql_second);
+        }else {
+            //Загружаем данные из интента
+            Intent intent = getIntent();
+            id_sql = intent.getLongExtra(ID_SQL,1);
+            id_sql_second = intent.getLongExtra(ID_SQL_second,id_sql);
+            Log.d(TAG,"Intent :  id_sql = " + id_sql + "   id_sql_second = " + id_sql_second);
+        }
 
         //получаем данные в соответствии с id 1
         dataFromDB = mDbHelper.getPersonData(id_sql);
@@ -145,6 +167,14 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
         forTwo_Days.setText("На двоих прожито  " + millisForTwo/86400000 + "  дней" );
         //делаем кнопку Рассчитань недоступной
         mCount.setEnabled(false);
+    }
+
+    //сохраняем значения id на случай поворота экрана
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(KEY_ID_SQL, id_sql);
+        outState.putLong(KEY_ID_SQL_SECOND, id_sql_second);
     }
 
     @Override
