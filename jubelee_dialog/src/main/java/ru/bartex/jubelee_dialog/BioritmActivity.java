@@ -38,6 +38,7 @@ import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
 public class BioritmActivity extends AppCompatActivity {
 
     public static final String ID_SQL = "sqlBioritmActivity"; // id  строки даных
+    public static final String ID_SQL_PREF = "sql_pref_BioritmActivity"; // id  строки даных в Preferences
 
     private Calendar firstCalendar;
 
@@ -84,9 +85,11 @@ public class BioritmActivity extends AppCompatActivity {
     static int mounthNumber = 5;
     static int yearNumber = 1961;
 
-    private SharedPreferences prefSetting;
+    private SharedPreferences prefSetting;  //из файла настроек
+    private SharedPreferences second_ID;//настройки этой активности - предыдущее ID
 
     long id_sql;  //id строки с данными в базе данных
+    long id_sql_second;  //id строки при предыдущем вхождении
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,31 +129,24 @@ public class BioritmActivity extends AppCompatActivity {
         //получаем id строки с данными в базе
         id_sql = intent.getLongExtra(ID_SQL,0);
 
+        //получаем Preferences с id предыдущего вхождения в этот экран
+        second_ID = getPreferences(MODE_PRIVATE);
+        //получаем id предыдущего вхождения в этот экран - если их нет, приравниваем к текущему id
+        id_sql_second = second_ID.getLong(ID_SQL_PREF, id_sql);
+
+        //если на главном экране удалить строку с id_sql_second, будет крах
+        //if (id_sql_second == 33)id_sql_second = id_sql;
+
         //получаем экхземпляр PersonDbHelper
         PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);
-        //получаем курсор с данными строки с id
-        Cursor mCursor = mPersonDbHelper.getPerson(id_sql);
-
-        // Узнаем индекс каждого столбца
-        int nameColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_NAME);
-        int dayColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_DAY);
-        int monthColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_MONTH);
-        int yearColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_YEAR);
-
-        //получаем значения по индексу столбца
-        String currentName = mCursor.getString(nameColumnIndex);
-        String currentDay = mCursor.getString(dayColumnIndex);
-        String currentMonth = mCursor.getString(monthColumnIndex);
-        String currentYear = mCursor.getString(yearColumnIndex);
-
-        //закрываем курсор
-        mCursor.close();
+        //получаем массив строк с данными по персоне
+        String[] data = mPersonDbHelper.getPersonData(id_sql);
 
         //присваиваем переменным значения из массива
-        userName = currentName;
-        dayNumber = Integer.parseInt(currentDay);
-        mounthNumber  = Integer.parseInt(currentMonth);
-        yearNumber   = Integer.parseInt(currentYear);
+        userName = data[0];
+        dayNumber = Integer.parseInt(data[1]);
+        mounthNumber  = Integer.parseInt(data[2]);
+        yearNumber   = Integer.parseInt(data[3]);
 
         //обнуляем deltaPlus, чтобы при возврате из списка персон с другой персоной
         //на кнопке отражалась текущая дата и биоритмы начинались с нее
@@ -283,6 +279,10 @@ public class BioritmActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //сохраняем id  персоны последнего вхождения
+        SharedPreferences.Editor e = second_ID.edit();
+        e.putLong(ID_SQL_PREF, id_sql);
+        e.commit();
         Log.d(TAG, "BioritmActivity onDestroy");
     }
 
@@ -341,6 +341,14 @@ public class BioritmActivity extends AppCompatActivity {
                 Intent intent = new Intent(BioritmActivity.this,TableActivity.class);
                 intent.putExtra(TableActivity.ID_SQL,id_sql);
                 startActivity(intent);
+                return true;
+
+            case R.id.action_joint:
+                Log.d(TAG, "OptionsItem = action_joint");
+                Intent intentJoint = new Intent(this, JointActivity.class);
+                intentJoint.putExtra(JointActivity.ID_SQL, id_sql);
+                intentJoint.putExtra(JointActivity.ID_SQL_second, id_sql_second);
+                startActivity(intentJoint);
                 return true;
 
             case R.id.action_share:

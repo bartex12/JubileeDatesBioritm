@@ -2,26 +2,28 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="ru.bartex.jubelee_dialog">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".PersonsListActivity"
             android:label="Лучшие люди"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
+
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable"/>
@@ -32,24 +34,33 @@
         </activity>
         <activity
             android:name=".TimeActivity"
-            android:windowSoftInputMode="stateVisible"
-            android:label="Число прожитых дней">
+            android:label="Число прожитых дней"
+            android:windowSoftInputMode="stateVisible">
         </activity>
         <activity
             android:name=".NewActivity"
-            android:windowSoftInputMode="stateVisible"
-            android:label="Ввод персональных данных">
+            android:label="Ввод персональных данных"
+            android:windowSoftInputMode="stateVisible">
         </activity>
         <activity
             android:name=".BioritmActivity"
             android:label="Биоритмы"
-            android:parentActivityName=".PersonsListActivity" >
+            android:parentActivityName=".PersonsListActivity">
         </activity>
         <activity android:name=".PrefActivity">
         </activity>
-        <activity android:name=".SeachActivity"
-                  android:label="Результаты поиска"
-                  android:launchMode="singleTop">
+        <activity
+            android:name=".SeachActivity"
+            android:label="Результаты поиска"
+            android:launchMode="singleTop">
+        </activity>
+        <activity
+            android:name=".JointActivity"
+            android:label="Совместные даты">
+        </activity>
+        <activity android:name=".ListDialog"
+                  android:label="Выбор персоны"
+                  android:theme="@style/AppDialog">
         </activity>
     </application>
 

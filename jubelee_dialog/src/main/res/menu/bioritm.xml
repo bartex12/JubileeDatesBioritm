@@ -15,6 +15,12 @@
           android:orderInCategory="3"
           app:showAsAction="always" />
 
+    <item android:id="@+id/action_joint"
+          android:title="@string/action_create_joint"
+          android:icon="@drawable/ic_joint"
+          android:orderInCategory="10"
+          app:showAsAction="always" />
+
     <item android:id="@+id/action_settings"
           android:title="@string/action_settings"
           android:orderInCategory="100"

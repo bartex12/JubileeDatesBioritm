@@ -2,13 +2,11 @@ package ru.bartex.jubelee_dialog;
 
 import android.app.AlertDialog;
 import android.app.SearchManager;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
@@ -22,21 +20,6 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.SimpleAdapter;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
 
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
@@ -108,16 +91,7 @@ public class PersonsListActivity extends AppCompatActivity {
         //============== следующий код для отображения списка из базы данных===========//
         // Обновляем данные в столбце Количество прожитых дней
         mPersonDbHelper.updatePastDays();
-
-        /*
-        //показываем список на экране
-        showSQLitePersonList(mCursor);
-        //Загружаем сохранённую позицию списка
-        loadPos();
-        //устанавливаем список в позицию
-        mListView.setSelectionFromTop(pos, offset);
-        Log.d(TAG, "PersonsListActivity onCreate   pos = " + pos + "  offset = " + offset);
-        */
+        //  А в onResume() показываем список и устанавливаем его в сохранённую позицию
     }
 
     //Если в манифесте установить для android:launchMode значение "singleTop" ,
@@ -336,10 +310,16 @@ public class PersonsListActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_add:
                 Log.d(TAG, "OptionsItem = action_add");
-
-                Intent intent = new Intent(this, NewActivity.class);
-                startActivityForResult(intent, NEW_ACTIVITY_ADD_REQUEST);
+                Intent intentAdd = new Intent(this, NewActivity.class);
+                startActivityForResult(intentAdd, NEW_ACTIVITY_ADD_REQUEST);
                 return true;
+/*
+            case R.id.action_joint:
+                Log.d(TAG, "OptionsItem = action_joint");
+                Intent intentJoint = new Intent(this, JointActivity.class);
+                startActivity(intentJoint);
+                return true;
+            */
             case R.id.menu_search:
                 Log.d(TAG, "OptionsItem = menu_search");
                 //вызываем строку поиска - работает и без этого при щелчке на лупе в панели действий!!?

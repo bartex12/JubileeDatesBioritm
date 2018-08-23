@@ -3,9 +3,7 @@ package ru.bartex.jubelee_dialog;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.net.Uri;
@@ -13,7 +11,6 @@ import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.ShareActionProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -29,14 +26,12 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
-import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
 
 public class TimeActivity extends AppCompatActivity implements
         TextWatcher {
@@ -101,34 +96,18 @@ public class TimeActivity extends AppCompatActivity implements
 
         //получаем экхземпляр PersonDbHelper
         PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);
-        //получаем курсор с данными строки с id
-        Cursor mCursor = mPersonDbHelper.getPerson(id_sql);
-
-        // Узнаем индекс каждого столбца
-        int nameColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_NAME);
-        int drColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_DR);
-        int dayColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_DAY);
-        int monthColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_MONTH);
-        int yearColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_YEAR);
-
-        String currentName = mCursor.getString(nameColumnIndex);
-        String currentDr = mCursor.getString(drColumnIndex);
-        String currentDay = mCursor.getString(dayColumnIndex);
-        String currentMonth = mCursor.getString(monthColumnIndex);
-        String currentYear = mCursor.getString(yearColumnIndex);
-
-        //закрываем курсор
-        mCursor.close();
+        //получаем массив данных для строки с id
+        String[] data = mPersonDbHelper.getPersonData(id_sql);
 
         //рассчитываем дату рождения
-        dayNumber = Integer.parseInt(currentDay);
-        mounthNumber = Integer.parseInt(currentMonth);
-        yearNumber = Integer.parseInt(currentYear);
+        dayNumber = Integer.parseInt(data[1]);
+        mounthNumber = Integer.parseInt(data[2]);
+        yearNumber = Integer.parseInt(data[3]);
 
         //пишем имя
-        userName.setText(currentName);
+        userName.setText(data[0]);
         //пишем дату рождения
-        dataBorn.setText(currentDr);
+        dataBorn.setText(data[4]);
 
         days.setText("10000");
         //устанавливаем фокус в конце строки

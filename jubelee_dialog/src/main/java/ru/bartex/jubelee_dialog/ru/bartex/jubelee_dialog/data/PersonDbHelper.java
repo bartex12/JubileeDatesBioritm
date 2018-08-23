@@ -126,6 +126,43 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         return mCursor;
     }
 
+    /**
+     * Возвращает массив строк с данными по персоне (для простоты записи)
+     */
+    public String[] getPersonData(long rowId) throws SQLException {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor mCursor = db.query(true, PersonTable.TABLE_NAME,
+                new String[] { PersonTable._ID,PersonTable.COLUMN_NAME,
+                        PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
+                        PersonTable.COLUMN_DR,PersonTable.COLUMN_PAST_DAYS },
+                PersonTable._ID + "=" + rowId,
+                null, null, null, null, null);
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        //массив данных
+        String[] data = new String[6];
+        // Узнаем индекс каждого столбца
+        int nameColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_NAME);
+        int dayColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_DAY);
+        int monthColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_MONTH);
+        int yearColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_YEAR);
+        int drColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_DR);
+        int pastDaysColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_PAST_DAYS);
+
+        data[0] = mCursor.getString(nameColumnIndex);  //COLUMN_NAME
+        data[1] = mCursor.getString(dayColumnIndex);  //COLUMN_DAY
+        data[2] = mCursor.getString(monthColumnIndex);  //COLUMN_MONTH
+        data[3] = mCursor.getString(yearColumnIndex);  //COLUMN_YEAR
+        data[4] = mCursor.getString(drColumnIndex);  // COLUMN_DR
+        data[5] = mCursor.getString(pastDaysColumnIndex);  //COLUMN_PAST_DAYS
+
+        //закрываем курсор
+        mCursor.close();
+
+        return data;
+    }
+
     // Обновить данные в столбце Количество прожитых дней
     public void updatePastDays() {
         SQLiteDatabase sd = getWritableDatabase();
@@ -163,13 +200,6 @@ public class PersonDbHelper extends SQLiteOpenHelper{
                         "_id = ?",
                         new String[] {Integer.toString(currentID)});
             }
-        /*
-        return sd.query(PersonTable.TABLE_NAME,
-                new String[]{PersonTable._ID,PersonTable.COLUMN_NAME,
-                        PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
-                        PersonTable.COLUMN_DR,PersonTable.COLUMN_PAST_DAYS},
-                null, null, null, null, null);
-        */
     }
 
     // получить курсор с данными из таблицы TABLE_NAME
@@ -305,5 +335,44 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         }
     }
 
+    //расчёт количества совместно прожитых миллисекунд
+    public long getMillisForTwo(long id_first, long id_second){
+
+        String[] data_first = getPersonData(id_first);
+        String[] data_second = getPersonData(id_second);
+
+        //экземпляр календаря с данными персоны1
+        GregorianCalendar firstCalendar = new GregorianCalendar(Integer.parseInt(data_first[3]),
+                Integer.parseInt(data_first[2]) - 1,Integer.parseInt(data_first[1]));
+        //получаем дату в милисекундах
+        long firstCalendarMillis = firstCalendar.getTimeInMillis();
+
+        //экземпляр календаря с данными персоны2
+        GregorianCalendar secondCalendar = new GregorianCalendar(Integer.parseInt(data_second[3]),
+                Integer.parseInt(data_second[2]) - 1,Integer.parseInt(data_second[1]));
+        //получаем дату в милисекундах
+        long secondCalendarMillis = secondCalendar.getTimeInMillis();
+
+        //текущее время в миллисекундах
+        long nowTimeMillis = System.currentTimeMillis();
+
+        //количество совместно прожитых миллисекунд
+        long beenMillis = nowTimeMillis -firstCalendarMillis +
+                nowTimeMillis - secondCalendarMillis;
+
+        Log.d(TAG, "firstDays = " + (nowTimeMillis -firstCalendarMillis)/86400000  +
+                "  secondDays = " + (nowTimeMillis -secondCalendarMillis)/86400000 +
+                "  days = " + ((nowTimeMillis -firstCalendarMillis)/86400000 +
+                (nowTimeMillis -secondCalendarMillis)/86400000));
+
+        //data[0]  COLUMN_NAME
+        //data[1]  COLUMN_DAY
+        //data[2]  COLUMN_MONTH
+        //data[3]  COLUMN_YEAR
+        //data[4]  COLUMN_DR
+        //data[5]  COLUMN_PAST_DAYS
+
+        return beenMillis;
+    }
 
 }
