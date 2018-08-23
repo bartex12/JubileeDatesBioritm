@@ -39,6 +39,7 @@ public class BioritmActivity extends AppCompatActivity {
 
     public static final String ID_SQL = "sqlBioritmActivity"; // id  строки даных
     public static final String ID_SQL_PREF = "sql_pref_BioritmActivity"; // id  строки даных в Preferences
+    public static final String ID_SQL_PREF_NAME = "sql_pref_name_BioritmActivity";
 
     private Calendar firstCalendar;
 
@@ -130,12 +131,19 @@ public class BioritmActivity extends AppCompatActivity {
         id_sql = intent.getLongExtra(ID_SQL,0);
 
         //получаем Preferences с id предыдущего вхождения в этот экран
-        second_ID = getPreferences(MODE_PRIVATE);
+        second_ID = getSharedPreferences(ID_SQL_PREF_NAME, MODE_PRIVATE);
         //получаем id предыдущего вхождения в этот экран - если их нет, приравниваем к текущему id
         id_sql_second = second_ID.getLong(ID_SQL_PREF, id_sql);
 
-        //если на главном экране удалить строку с id_sql_second, будет крах
-        //if (id_sql_second == 33)id_sql_second = id_sql;
+        // проверяем, существует ли такая запись, так как
+        //если на главном экране была удалена строка с id_sql_second, будет крах
+        PersonDbHelper mDbHelper = new PersonDbHelper(this);
+        boolean isPersonExist = mDbHelper.isPersonExist(id_sql_second);
+        if (!isPersonExist){
+            //если такой записи уже нет, то
+            id_sql_second = id_sql;
+        }
+        Log.d(TAG, "mDbHelper.isPersonExist =  " + isPersonExist + "  id_sql_second = " + id_sql_second);
 
         //получаем экхземпляр PersonDbHelper
         PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);

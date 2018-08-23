@@ -109,6 +109,20 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         db.close();
     }
 
+    //проверка на существование записи с заданным id
+    public boolean isPersonExist(long rowId){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor mCursor = db.query(true, PersonTable.TABLE_NAME,
+                new String[] { PersonTable._ID},
+                PersonTable._ID + "=" + rowId,
+                null, null, null, null, null);
+        if (mCursor.getCount() == 0) {
+            Log.d(TAG, "PersonDbHelper  isPersonExist mCursor.getCount() = " + mCursor.getCount() );
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Возвращает курсор с указанной записи
      */
