@@ -10,6 +10,8 @@ import android.util.Log;
 
 import java.util.GregorianCalendar;
 
+import ru.bartex.jubelee_dialog.Person;
+
 /**
  * Created by Андрей on 11.08.2018.
  */
@@ -63,6 +65,45 @@ public class PersonDbHelper extends SQLiteOpenHelper{
 */
     }
 
+    // Если записей в базе нет, вносим две записи
+    public void createDefaultPersonIfNeed()  {
+        int count = this.getPersonsCount();
+        if(count ==0 ) {
+            Person person1 = new Person("Анжелина Джоли","4","06", "1975");
+            this.addPerson(person1);
+
+        }
+    }
+
+    public void addPerson(Person person) {
+        Log.d(TAG, "MyDatabaseHelper.addPerson ... " + Person.getPerson_name());
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(PersonTable.COLUMN_NAME, Person.getPerson_name());
+        cv.put(PersonTable.COLUMN_DAY, Person.getPerson_day());
+        cv.put(PersonTable.COLUMN_MONTH, Person.getPerson_month());
+        cv.put(PersonTable.COLUMN_YEAR, Person.getPerson_year());
+        cv.put(PersonTable.COLUMN_DR, Person.getPerson_dr());
+        cv.put(PersonTable.COLUMN_PAST_DAYS, Person.getPerson_past_days());
+        // вставляем строку
+        db.insert(PersonTable.TABLE_NAME, null, cv);
+        // закрываем соединение с базой
+        db.close();
+    }
+
+    //получаем количество записей в базе
+    public int getPersonsCount() {
+        Log.i(TAG, "MyDatabaseHelper.getPersonsCount ... " );
+        String countQuery = "SELECT  * FROM " + PersonTable.TABLE_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
+    }
+
     /**
     * Метод для добавления нового человека в список
     */
@@ -79,7 +120,10 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         // получаем базу данных для записи и пишем
         SQLiteDatabase sd = getWritableDatabase();
         //the row ID of the newly inserted row, or -1 if an error occurred
-        return  sd.insert(PersonTable.TABLE_NAME, null, cv);
+        long row_id = sd.insert(PersonTable.TABLE_NAME, null, cv);
+        // закрываем соединение с базой
+        sd.close();
+        return  row_id;
     }
 
     /**
@@ -97,6 +141,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         updatedValues.put(PersonTable.COLUMN_PAST_DAYS, pastDays);
 
         long result = db.update(PersonTable.TABLE_NAME, updatedValues, PersonTable._ID + "=" + rowId, null);
+        //db.close();
         return  result > 0;
     }
 
@@ -120,6 +165,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
             Log.d(TAG, "PersonDbHelper  isPersonExist mCursor.getCount() = " + mCursor.getCount() );
             return false;
         }
+        mCursor.close();
         return true;
     }
 
@@ -214,6 +260,8 @@ public class PersonDbHelper extends SQLiteOpenHelper{
                         "_id = ?",
                         new String[] {Integer.toString(currentID)});
             }
+        //закрываем курсор
+        cursor.close();
     }
 
     // получить курсор с данными из таблицы TABLE_NAME
@@ -285,7 +333,6 @@ public class PersonDbHelper extends SQLiteOpenHelper{
                 null,//фильтр для группировки
                 null, //фильтр для группировки, формирующий выражение HAVING
                 PersonTable.COLUMN_NAME ); //порядок сортировки
-
 
         if (cursor != null) {
             Log.d(TAG, "cursor1.getCount() = " + cursor.getCount() );

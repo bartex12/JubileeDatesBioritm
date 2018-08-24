@@ -24,11 +24,14 @@ public class ListDialog extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_persons_list);
+        setContentView(R.layout.activity_list_dialog);
 
         request = getIntent().getIntExtra(REQUEST_PERSON,0);
 
-        mListView = (ListView)findViewById(R.id.listView);
+        mListView = (ListView)findViewById(R.id.listViewDialog);
+        //находим View, которое выводит текст Список пуст
+        View empty = findViewById(R.id.emptyList);
+        mListView.setEmptyView(empty);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

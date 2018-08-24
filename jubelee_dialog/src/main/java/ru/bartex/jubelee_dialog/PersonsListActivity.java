@@ -89,6 +89,9 @@ public class PersonsListActivity extends AppCompatActivity {
         registerForContextMenu(mListView);
 
         //============== следующий код для отображения списка из базы данных===========//
+
+        //если в базе нет записей, добавляем одну с анжелиной джоли
+        mPersonDbHelper.createDefaultPersonIfNeed();
         // Обновляем данные в столбце Количество прожитых дней
         mPersonDbHelper.updatePastDays();
         //  А в onResume() показываем список и устанавливаем его в сохранённую позицию
@@ -131,7 +134,7 @@ public class PersonsListActivity extends AppCompatActivity {
         super.onStart();
         Log.d(TAG, "PersonsListActivity onStart");
         //вывод в лог базы данных по людям
-        mPersonDbHelper.displayDatabaseInfo();
+        //mPersonDbHelper.displayDatabaseInfo();
     }
 
 
@@ -313,13 +316,6 @@ public class PersonsListActivity extends AppCompatActivity {
                 Intent intentAdd = new Intent(this, NewActivity.class);
                 startActivityForResult(intentAdd, NEW_ACTIVITY_ADD_REQUEST);
                 return true;
-/*
-            case R.id.action_joint:
-                Log.d(TAG, "OptionsItem = action_joint");
-                Intent intentJoint = new Intent(this, JointActivity.class);
-                startActivity(intentJoint);
-                return true;
-            */
             case R.id.menu_search:
                 Log.d(TAG, "OptionsItem = menu_search");
                 //вызываем строку поиска - работает и без этого при щелчке на лупе в панели действий!!?
@@ -359,10 +355,11 @@ public class PersonsListActivity extends AppCompatActivity {
                 finish();
             }
             //============== следующий код для отображения списка из базы данных===========//
+           // Log.d(TAG, "onActivityResult mCursor  =  " + mCursor);
             //получаем данные в курсоре
-            mCursor = mPersonDbHelper.getAllData();
+            //mCursor = mPersonDbHelper.getAllData();
             //показываем список на экране
-            showSQLitePersonList(mCursor);
+            //showSQLitePersonList(mCursor);
         }
     }
 
@@ -398,14 +395,15 @@ public class PersonsListActivity extends AppCompatActivity {
                     mPersonDbHelper.deletePerson(acmi.id);
                     Log.d(TAG, "PersonsListActivity удалена позиция с ID " + acmi.id);
                     //получаем данные в курсоре
-                    mCursor = mPersonDbHelper.getAllData();
-                    //показываем список на экране
-                    showSQLitePersonList(mCursor);
+                    // mCursor = mPersonDbHelper.getAllData();
+                    //показываем список на экране - тогда не булет сортировки
+                    //showSQLitePersonList(mCursor);
+                    //чтобы сохранить сортировку, вызываем onResume
+                    onResume();
                     //выводим список в лог
-                    mPersonDbHelper.displayDatabaseInfo();
+                    //mPersonDbHelper.displayDatabaseInfo();
                 }
             });
-
             deleteDialog.show();
             return true;
 
@@ -469,8 +467,9 @@ public class PersonsListActivity extends AppCompatActivity {
     //Выводим список данных на экран с использованием SimpleCursorAdapter
     private void showSQLitePersonList(Cursor mCursor) {
 
-        //поручаем активности присмотреть за курсором
-        startManagingCursor(mCursor);
+        //поручаем активности присмотреть за курсором -вызывает крах если
+        // 1-удалить запись 2-добавить запись
+        //startManagingCursor(mCursor);
 
         // формируем столбцы сопоставления
         String[] from = new String[]{PersonTable.COLUMN_NAME,
