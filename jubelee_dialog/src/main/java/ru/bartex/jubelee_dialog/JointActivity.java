@@ -33,23 +33,21 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
     public static final int REQUEST_JOINT_PERSON1 = 1; //риквест код от JointActivity для персоны 1
     public static final int REQUEST_JOINT_PERSON2 = 2; //риквест код от JointActivity для персоны 2
 
-    //int dayNumber,mounthNumber, yearNumber;
     int daysNext; //количество совместно прожитых дней для расчёта
     long id_sql;  // id строки из базы данных
     long id_sql_second;  // id другой строки из базы данных
     long millisForTwo; // количество прожитых миллисекунд на двоих
     long daysPast; //Количество уже прожитых дней на двоих
 
-    String[] dataFromDB = new String[6];
-
-    Button mPerson1;
-    Button mPerson2;
+    Button mPersonButton1;
+    Button mPersonButton2;
     Button mCount;
 
     TextView mWillBe;//расчётное количество совместно прожитых дней
     TextView forTwo_Days; //уже прожито дней
     EditText mDays;//задаём количество совместно прожитых дней
 
+    Person mPerson;
     PersonDbHelper mDbHelper = new PersonDbHelper(this);
     private static final String KEY_ID_SQL = "ID_SQL";
     private static final String KEY_ID_SQL_SECOND = "ID_SQL_SECOND";
@@ -121,7 +119,7 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                 }
             }
         });
-        //если что то было сохранено
+        //если что то было сохранено, грузим отсюда
         if (savedInstanceState != null) {
             id_sql = savedInstanceState.getLong(KEY_ID_SQL);
             id_sql_second = savedInstanceState.getLong(KEY_ID_SQL_SECOND);
@@ -134,11 +132,11 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
             Log.d(TAG,"Intent :  id_sql = " + id_sql + "   id_sql_second = " + id_sql_second);
         }
 
-        //получаем данные в соответствии с id 1
-        dataFromDB = mDbHelper.getPersonData(id_sql);
-        mPerson1 = (Button) findViewById(R.id.buttonNamePerson1);
-        mPerson1.setText(dataFromDB[0] + "  /" + dataFromDB[5]+"/");
-        mPerson1.setOnClickListener(new View.OnClickListener() {
+        //получаем данные в соответствии с первым id
+        mPerson = mDbHelper.getPersonObjectData(id_sql);
+        mPersonButton1 = (Button) findViewById(R.id.buttonNamePerson1);
+        mPersonButton1.setText(mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
+        mPersonButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //запускаем интент и получаем обратно id персоны 1
@@ -148,11 +146,11 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
             }
         });
 
-        //получаем данные в соответствии с id 2
-        dataFromDB = mDbHelper.getPersonData(id_sql_second);
-        mPerson2 = (Button) findViewById(R.id.buttonNamePerson2);
-        mPerson2.setText(dataFromDB[0] + "  /" + dataFromDB[5]+"/");
-        mPerson2.setOnClickListener(new View.OnClickListener() {
+        //получаем данные в соответствии со вторым id
+        mPerson = mDbHelper.getPersonObjectData(id_sql_second);
+        mPersonButton2 = (Button) findViewById(R.id.buttonNamePerson2);
+        mPersonButton2.setText(mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
+        mPersonButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //запускаем интент и получаем обратно id персоны 2
@@ -163,7 +161,7 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
         });
 
         // количество прожитых миллисекунд на двоих
-        millisForTwo = mDbHelper.getMillisForTwo(id_sql,id_sql_second);
+        millisForTwo = mDbHelper.getMillisForTwo(id_sql, id_sql_second);
         // количество прожитых дней на двоих
         forTwo_Days.setText("На двоих прожито  " + millisForTwo/86400000 + "  дней" );
         //делаем кнопку Рассчитань недоступной
@@ -213,16 +211,16 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                 //получаем id выбранной персоны1
                 id_sql = data.getLongExtra(ID_SQL,id_sql);
                 //получаем данные персоны1 из базы данных
-                dataFromDB = mDbHelper.getPersonData(id_sql);
-                mPerson1.setText(dataFromDB[0] + "  /" + dataFromDB[5]+"/");
+                mPerson = mDbHelper.getPersonObjectData(id_sql);
+                mPersonButton1.setText(mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
 
             }else if (requestCode == REQUEST_JOINT_PERSON2){
                 Log.d(TAG, "JointActivity onActivityResult REQUEST_JOINT_PERSON 2");
                 //получаем id выбранной персоны2
                 id_sql_second = data.getLongExtra(ID_SQL_second, id_sql_second);
                 //получаем данные персоны2 из базы данных
-                dataFromDB = mDbHelper.getPersonData(id_sql_second);
-                mPerson2.setText(dataFromDB[0] + "  /" + dataFromDB[5]+"/");
+                mPerson = mDbHelper.getPersonObjectData(id_sql_second);
+                mPersonButton2.setText(mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
             }
 
             // количество прожитых миллисекунд на двоих

@@ -1,8 +1,10 @@
 package ru.bartex.jubelee_dialog;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +22,9 @@ public class ListDialog extends AppCompatActivity {
     public static final String REQUEST_PERSON = "request_person"; //риквест код
     ListView mListView;
     int request;
+    private SharedPreferences prefSetting;
+    int sort = 1;  //Сортировка: 1-поимени возр, 2- по имени убыв,3-по дате возр, 4 - по дате убыв
+    boolean isSort = false; //Список отсортирован?
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +32,11 @@ public class ListDialog extends AppCompatActivity {
         setContentView(R.layout.activity_list_dialog);
 
         request = getIntent().getIntExtra(REQUEST_PERSON,0);
+
+        //получаем файл с настройками для приложения
+        prefSetting = PreferenceManager.getDefaultSharedPreferences(this);
+        sort = Integer.parseInt(prefSetting.getString("ListSort", "1"));
+        isSort = prefSetting.getBoolean("cbSort", false);
 
         mListView = (ListView)findViewById(R.id.listViewDialog);
         //находим View, которое выводит текст Список пуст
@@ -52,18 +62,56 @@ public class ListDialog extends AppCompatActivity {
         });
 
         //получаем экземпляр PersonDbHelper для работы с базой данных
-        PersonDbHelper mHelper = new PersonDbHelper(this);
-        //получаем данные в курсоре
-        Cursor cursor = mHelper.getAllData();
-        //поручаем активности присмотреть за курсором
-        startManagingCursor(cursor);
+        PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);
+        Cursor mCursor;
+
+        //проводим сортировку списка
+        if (isSort) {
+            switch (sort) {
+                case 1:
+                    Log.d(TAG, "PersonsListActivity Сортировка по имени по возрастанию");
+                    //получаем данные в курсоре
+                    mCursor = mPersonDbHelper.getAllDataSortNameUp();
+                    break;
+
+                case 2:
+                    Log.d(TAG, "PersonsListActivity Сортировка по имени по убыванию");
+                    //получаем данные в курсоре
+                    mCursor = mPersonDbHelper.getAllDataSortNameDown();
+                    break;
+
+                case 3:
+                    Log.d(TAG, "PersonsListActivity Сортировка по дате по возрастанию ");
+                    //получаем данные в курсоре
+                    mCursor = mPersonDbHelper.getAllDataSortDateUp();
+                    break;
+
+                case 4:
+                    Log.d(TAG, "PersonsListActivity Сортировка по дате по убыванию ");
+                    //получаем данные в курсоре
+                    mCursor = mPersonDbHelper.getAllDataSortDateDown();
+                    break;
+
+                default:
+                    Log.d(TAG, "PersonsListActivity default: сортировка по имени вверх");
+                    //получаем данные в курсоре
+                    mCursor = mPersonDbHelper.getAllDataSortNameUp();
+                    break;
+            }
+
+        } else {
+            Log.d(TAG, "PersonsListActivity Без сортировки");
+            //получаем данные в курсоре
+            mCursor = mPersonDbHelper.getAllData();
+        }
+
         // формируем столбцы сопоставления
         String[] from = new String[]{PersonTable.COLUMN_NAME,
                 PersonTable.COLUMN_DR, PersonTable.COLUMN_PAST_DAYS};
         int[] to = new int[]{R.id.name_list, R.id.was_born, R.id.past_Days};
         // создааем адаптер и настраиваем список
         SimpleCursorAdapter scAdapter = new SimpleCursorAdapter(
-                this, R.layout.list_name_date, cursor, from, to);
+                this, R.layout.list_name_date, mCursor, from, to);
         mListView.setAdapter(scAdapter);
     }
 }

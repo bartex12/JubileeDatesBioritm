@@ -96,18 +96,18 @@ public class TimeActivity extends AppCompatActivity implements
 
         //получаем экхземпляр PersonDbHelper
         PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);
-        //получаем массив данных для строки с id
-        String[] data = mPersonDbHelper.getPersonData(id_sql);
+        //получаем  данные для строки с id
+        Person person = mPersonDbHelper.getPersonObjectData(id_sql);
 
         //рассчитываем дату рождения
-        dayNumber = Integer.parseInt(data[1]);
-        mounthNumber = Integer.parseInt(data[2]);
-        yearNumber = Integer.parseInt(data[3]);
+        dayNumber = Integer.parseInt(person.getPerson_day());
+        mounthNumber = Integer.parseInt(person.getPerson_month());
+        yearNumber = Integer.parseInt(person.getPerson_year());
 
         //пишем имя
-        userName.setText(data[0]);
+        userName.setText(person.getPerson_name());
         //пишем дату рождения
-        dataBorn.setText(data[4]);
+        dataBorn.setText(person.getPerson_dr());
 
         days.setText("10000");
         //устанавливаем фокус в конце строки

@@ -81,7 +81,7 @@ public class BioritmActivity extends AppCompatActivity {
 
     static GraphView graph;
 
-    String userName;
+    static String userName;
     static int dayNumber = 17;
     static int mounthNumber = 5;
     static int yearNumber = 1961;
@@ -147,14 +147,13 @@ public class BioritmActivity extends AppCompatActivity {
 
         //получаем экхземпляр PersonDbHelper
         PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);
-        //получаем массив строк с данными по персоне
-        String[] data = mPersonDbHelper.getPersonData(id_sql);
+        //получаем Объект класса Person с данными по персоне
+        Person person = mPersonDbHelper.getPersonObjectData(id_sql);
 
-        //присваиваем переменным значения из массива
-        userName = data[0];
-        dayNumber = Integer.parseInt(data[1]);
-        mounthNumber  = Integer.parseInt(data[2]);
-        yearNumber   = Integer.parseInt(data[3]);
+        userName = person.getPerson_name();
+        dayNumber = Integer.parseInt(person.getPerson_day());
+        mounthNumber = Integer.parseInt(person.getPerson_month());
+        yearNumber   = Integer.parseInt(person.getPerson_year());
 
         //обнуляем deltaPlus, чтобы при возврате из списка персон с другой персоной
         //на кнопке отражалась текущая дата и биоритмы начинались с нее

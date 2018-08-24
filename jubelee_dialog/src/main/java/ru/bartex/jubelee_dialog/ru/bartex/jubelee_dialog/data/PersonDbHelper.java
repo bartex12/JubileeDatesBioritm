@@ -76,17 +76,17 @@ public class PersonDbHelper extends SQLiteOpenHelper{
     }
 
     public void addPerson(Person person) {
-        Log.d(TAG, "MyDatabaseHelper.addPerson ... " + Person.getPerson_name());
+        Log.d(TAG, "MyDatabaseHelper.addPerson ... " + person.getPerson_name());
 
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues cv = new ContentValues();
-        cv.put(PersonTable.COLUMN_NAME, Person.getPerson_name());
-        cv.put(PersonTable.COLUMN_DAY, Person.getPerson_day());
-        cv.put(PersonTable.COLUMN_MONTH, Person.getPerson_month());
-        cv.put(PersonTable.COLUMN_YEAR, Person.getPerson_year());
-        cv.put(PersonTable.COLUMN_DR, Person.getPerson_dr());
-        cv.put(PersonTable.COLUMN_PAST_DAYS, Person.getPerson_past_days());
+        cv.put(PersonTable.COLUMN_NAME, person.getPerson_name());
+        cv.put(PersonTable.COLUMN_DAY, person.getPerson_day());
+        cv.put(PersonTable.COLUMN_MONTH, person.getPerson_month());
+        cv.put(PersonTable.COLUMN_YEAR, person.getPerson_year());
+        cv.put(PersonTable.COLUMN_DR, person.getPerson_dr());
+        cv.put(PersonTable.COLUMN_PAST_DAYS, person.getPerson_past_days());
         // вставляем строку
         db.insert(PersonTable.TABLE_NAME, null, cv);
         // закрываем соединение с базой
@@ -186,9 +186,9 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         return mCursor;
     }
 
-    /**
-     * Возвращает массив строк с данными по персоне (для простоты записи)
-     */
+    /*
+     //Возвращает массив строк с данными по персоне (для простоты записи)
+
     public String[] getPersonData(long rowId) throws SQLException {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor mCursor = db.query(true, PersonTable.TABLE_NAME,
@@ -219,9 +219,38 @@ public class PersonDbHelper extends SQLiteOpenHelper{
 
         //закрываем курсор
         mCursor.close();
-
         return data;
     }
+*/
+
+      //Возвращает объект Person с данными (для простоты записи)
+
+    public Person getPersonObjectData(long rowId) throws SQLException {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor mCursor = db.query(true, PersonTable.TABLE_NAME,
+                new String[] { PersonTable._ID,PersonTable.COLUMN_NAME,
+                        PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
+                        PersonTable.COLUMN_DR,PersonTable.COLUMN_PAST_DAYS },
+                PersonTable._ID + "=" + rowId,
+                null, null, null, null, null);
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        // Узнаем индекс каждого столбца
+        int nameColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_NAME);
+        int dayColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_DAY);
+        int monthColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_MONTH);
+        int yearColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_YEAR);
+
+        Person person = new Person(rowId, mCursor.getString(nameColumnIndex),
+                mCursor.getString(dayColumnIndex),
+                mCursor.getString(monthColumnIndex),
+                mCursor.getString(yearColumnIndex) );
+        //закрываем курсор
+        mCursor.close();
+        return person;
+    }
+
 
     // Обновить данные в столбце Количество прожитых дней
     public void updatePastDays() {
@@ -399,18 +428,32 @@ public class PersonDbHelper extends SQLiteOpenHelper{
     //расчёт количества совместно прожитых миллисекунд
     public long getMillisForTwo(long id_first, long id_second){
 
-        String[] data_first = getPersonData(id_first);
-        String[] data_second = getPersonData(id_second);
+        Person person;
+        person = getPersonObjectData(id_first);
+        Log.d(TAG, "person1 past_days = " + person.getPerson_past_days()+
+                "  person1 year" + person.getPerson_year()+
+                "  person1 month" + person.getPerson_month()+
+                "  person1 day" + person.getPerson_day());
 
         //экземпляр календаря с данными персоны1
-        GregorianCalendar firstCalendar = new GregorianCalendar(Integer.parseInt(data_first[3]),
-                Integer.parseInt(data_first[2]) - 1,Integer.parseInt(data_first[1]));
+        GregorianCalendar firstCalendar = new GregorianCalendar(
+                Integer.parseInt(person.getPerson_year()),
+                Integer.parseInt(person.getPerson_month()) - 1,
+                Integer.parseInt(person.getPerson_day()));
         //получаем дату в милисекундах
         long firstCalendarMillis = firstCalendar.getTimeInMillis();
 
+        person = getPersonObjectData(id_second);
+        Log.d(TAG, "person2 past_days = " + person.getPerson_past_days()+
+                "  person2 year" + person.getPerson_year()+
+                "  person2 month" + person.getPerson_month()+
+                "  person2 day" + person.getPerson_day());
+
         //экземпляр календаря с данными персоны2
-        GregorianCalendar secondCalendar = new GregorianCalendar(Integer.parseInt(data_second[3]),
-                Integer.parseInt(data_second[2]) - 1,Integer.parseInt(data_second[1]));
+        GregorianCalendar secondCalendar = new GregorianCalendar(
+                Integer.parseInt(person.getPerson_year()),
+                Integer.parseInt(person.getPerson_month()) - 1,
+                Integer.parseInt(person.getPerson_day()));
         //получаем дату в милисекундах
         long secondCalendarMillis = secondCalendar.getTimeInMillis();
 
@@ -425,14 +468,6 @@ public class PersonDbHelper extends SQLiteOpenHelper{
                 "  secondDays = " + (nowTimeMillis -secondCalendarMillis)/86400000 +
                 "  days = " + ((nowTimeMillis -firstCalendarMillis)/86400000 +
                 (nowTimeMillis -secondCalendarMillis)/86400000));
-
-        //data[0]  COLUMN_NAME
-        //data[1]  COLUMN_DAY
-        //data[2]  COLUMN_MONTH
-        //data[3]  COLUMN_YEAR
-        //data[4]  COLUMN_DR
-        //data[5]  COLUMN_PAST_DAYS
-
         return beenMillis;
     }
 

@@ -6,7 +6,7 @@ import java.util.GregorianCalendar;
 
 public class Person implements Serializable {
 
-    private int person_id;
+    private long person_id;
     private static String person_name;
     private static String person_day;
     private static String person_month;
@@ -28,7 +28,7 @@ public class Person implements Serializable {
     }
 
     //конструктор, задающий id
-    public Person(int id, String name, String day, String month,String year){
+    public Person(long id, String name, String day, String month,String year){
         person_id = id;
         person_name = name;
         person_day = day;
@@ -60,7 +60,7 @@ public class Person implements Serializable {
         return past_days;
     }
 
-    public int getPerson_id() {
+    public long getPerson_id() {
         return person_id;
     }
 
@@ -68,7 +68,7 @@ public class Person implements Serializable {
         this.person_id = person_id;
     }
 
-    public static String getPerson_name() {
+    public  String getPerson_name() {
         return person_name;
     }
 
@@ -76,7 +76,7 @@ public class Person implements Serializable {
         this.person_name = person_name;
     }
 
-    public static String getPerson_day() {
+    public  String getPerson_day() {
         return person_day;
     }
 
@@ -84,7 +84,7 @@ public class Person implements Serializable {
         this.person_day = person_day;
     }
 
-    public static String getPerson_month() {
+    public  String getPerson_month() {
         return person_month;
     }
 
@@ -92,7 +92,7 @@ public class Person implements Serializable {
         this.person_month = person_month;
     }
 
-    public static String getPerson_year() {
+    public  String getPerson_year() {
         return person_year;
     }
 
@@ -100,7 +100,7 @@ public class Person implements Serializable {
         this.person_year = person_year;
     }
 
-    public static String getPerson_dr() {
+    public  String getPerson_dr() {
         return person_dr;
     }
 
@@ -108,7 +108,7 @@ public class Person implements Serializable {
         this.person_dr = person_dr;
     }
 
-    public static String getPerson_past_days() {
+    public  String getPerson_past_days() {
         return person_past_days;
     }
 
