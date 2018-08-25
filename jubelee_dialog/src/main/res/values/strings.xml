@@ -3,6 +3,7 @@
     <string name="better_late">- - - - - - - - - -</string>
     <string name="a_little">Маловато будет</string>
     <string name="action_settings">Настройки</string>
+    <string name="action_find_dates">Найти совместные даты</string>
     <string name="action_create_add">Добавить</string>
     <string name="action_create_joint">Совместные даты</string>
     <string name="action_find">Поиск</string>

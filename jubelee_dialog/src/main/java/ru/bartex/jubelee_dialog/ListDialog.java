@@ -63,48 +63,8 @@ public class ListDialog extends AppCompatActivity {
 
         //получаем экземпляр PersonDbHelper для работы с базой данных
         PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);
-        Cursor mCursor;
-
-        //проводим сортировку списка
-        if (isSort) {
-            switch (sort) {
-                case 1:
-                    Log.d(TAG, "PersonsListActivity Сортировка по имени по возрастанию");
-                    //получаем данные в курсоре
-                    mCursor = mPersonDbHelper.getAllDataSortNameUp();
-                    break;
-
-                case 2:
-                    Log.d(TAG, "PersonsListActivity Сортировка по имени по убыванию");
-                    //получаем данные в курсоре
-                    mCursor = mPersonDbHelper.getAllDataSortNameDown();
-                    break;
-
-                case 3:
-                    Log.d(TAG, "PersonsListActivity Сортировка по дате по возрастанию ");
-                    //получаем данные в курсоре
-                    mCursor = mPersonDbHelper.getAllDataSortDateUp();
-                    break;
-
-                case 4:
-                    Log.d(TAG, "PersonsListActivity Сортировка по дате по убыванию ");
-                    //получаем данные в курсоре
-                    mCursor = mPersonDbHelper.getAllDataSortDateDown();
-                    break;
-
-                default:
-                    Log.d(TAG, "PersonsListActivity default: сортировка по имени вверх");
-                    //получаем данные в курсоре
-                    mCursor = mPersonDbHelper.getAllDataSortNameUp();
-                    break;
-            }
-
-        } else {
-            Log.d(TAG, "PersonsListActivity Без сортировки");
-            //получаем данные в курсоре
-            mCursor = mPersonDbHelper.getAllData();
-        }
-
+        //получаем курсор с отсортированными в соответствии с настройками данными
+        Cursor mCursor = mPersonDbHelper.getCursorWithSort(isSort,sort);
         // формируем столбцы сопоставления
         String[] from = new String[]{PersonTable.COLUMN_NAME,
                 PersonTable.COLUMN_DR, PersonTable.COLUMN_PAST_DAYS};

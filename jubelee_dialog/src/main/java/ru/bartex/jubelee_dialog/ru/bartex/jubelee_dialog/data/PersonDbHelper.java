@@ -21,16 +21,12 @@ public class PersonDbHelper extends SQLiteOpenHelper{
 
     //Имя файла базы данных
     private static final String DATABASE_NAME = "bioritmDataBase2.db";
-
      // Версия базы данных. При изменении схемы увеличить на единицу
     private static final int DATABASE_VERSION = 1;
-
-
      //Конструктор
     public PersonDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
-
     /**
      * Вызывается при создании базы данных
      */
@@ -186,43 +182,6 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         return mCursor;
     }
 
-    /*
-     //Возвращает массив строк с данными по персоне (для простоты записи)
-
-    public String[] getPersonData(long rowId) throws SQLException {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor mCursor = db.query(true, PersonTable.TABLE_NAME,
-                new String[] { PersonTable._ID,PersonTable.COLUMN_NAME,
-                        PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
-                        PersonTable.COLUMN_DR,PersonTable.COLUMN_PAST_DAYS },
-                PersonTable._ID + "=" + rowId,
-                null, null, null, null, null);
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        //массив данных
-        String[] data = new String[6];
-        // Узнаем индекс каждого столбца
-        int nameColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_NAME);
-        int dayColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_DAY);
-        int monthColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_MONTH);
-        int yearColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_YEAR);
-        int drColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_DR);
-        int pastDaysColumnIndex = mCursor.getColumnIndex(PersonTable.COLUMN_PAST_DAYS);
-
-        data[0] = mCursor.getString(nameColumnIndex);  //COLUMN_NAME
-        data[1] = mCursor.getString(dayColumnIndex);  //COLUMN_DAY
-        data[2] = mCursor.getString(monthColumnIndex);  //COLUMN_MONTH
-        data[3] = mCursor.getString(yearColumnIndex);  //COLUMN_YEAR
-        data[4] = mCursor.getString(drColumnIndex);  // COLUMN_DR
-        data[5] = mCursor.getString(pastDaysColumnIndex);  //COLUMN_PAST_DAYS
-
-        //закрываем курсор
-        mCursor.close();
-        return data;
-    }
-*/
-
       //Возвращает объект Person с данными (для простоты записи)
 
     public Person getPersonObjectData(long rowId) throws SQLException {
@@ -254,7 +213,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
 
     // Обновить данные в столбце Количество прожитых дней
     public void updatePastDays() {
-        SQLiteDatabase sd = getWritableDatabase();
+        SQLiteDatabase sd = this.getWritableDatabase();
         Cursor cursor =  getAllData();
             // Узнаем индекс каждого столбца
             int idColumnIndex = cursor.getColumnIndex(PersonTable._ID);
@@ -295,7 +254,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
 
     // получить курсор с данными из таблицы TABLE_NAME
     public Cursor getAllData() {
-        SQLiteDatabase sd = getReadableDatabase();
+        SQLiteDatabase sd = this.getReadableDatabase();
         return sd.query(PersonTable.TABLE_NAME,
                 new String[]{PersonTable._ID,PersonTable.COLUMN_NAME,
                         PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
@@ -305,7 +264,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
 
     // получить курсор с данными из таблицы TABLE_NAME
     public Cursor getAllDataSortNameUp() {
-        SQLiteDatabase sd = getReadableDatabase();
+        SQLiteDatabase sd = this.getReadableDatabase();
         return sd.query(PersonTable.TABLE_NAME,
                 new String[]{PersonTable._ID,PersonTable.COLUMN_NAME,
                         PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
@@ -315,7 +274,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
 
     // получить курсор с данными из таблицы TABLE_NAME
     public Cursor getAllDataSortNameDown() {
-        SQLiteDatabase sd = getReadableDatabase();
+        SQLiteDatabase sd = this.getReadableDatabase();
         return sd.query(PersonTable.TABLE_NAME,
                 new String[]{PersonTable._ID,PersonTable.COLUMN_NAME,
                         PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
@@ -325,7 +284,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
 
     // получить курсор с данными из таблицы TABLE_NAME
     public Cursor getAllDataSortDateUp() {
-        SQLiteDatabase sd = getReadableDatabase();
+        SQLiteDatabase sd = this.getReadableDatabase();
         return sd.query(PersonTable.TABLE_NAME,
                 new String[]{PersonTable._ID,PersonTable.COLUMN_NAME,
                         PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
@@ -335,7 +294,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
 
     // получить курсор с данными из таблицы TABLE_NAME
     public Cursor getAllDataSortDateDown() {
-        SQLiteDatabase sd = getReadableDatabase();
+        SQLiteDatabase sd = this.getReadableDatabase();
         return sd.query(PersonTable.TABLE_NAME,
                 new String[]{PersonTable._ID,PersonTable.COLUMN_NAME,
                         PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
@@ -348,7 +307,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
 
         query = query.toLowerCase();
 
-        SQLiteDatabase db = getReadableDatabase();
+        SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(
                 PersonTable.TABLE_NAME,  //имя таблицы, к которой передается запрос
@@ -377,7 +336,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
     //вывод в лог всех строк базы
     public void displayDatabaseInfo() {
         // Создадим и откроем для чтения базу данных
-        SQLiteDatabase db = getReadableDatabase();
+        SQLiteDatabase db = this.getReadableDatabase();
 
         // Зададим условие для выборки - список столбцов
         String[] projection = {
@@ -429,7 +388,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
     public long getMillisForTwo(long id_first, long id_second){
 
         Person person;
-        person = getPersonObjectData(id_first);
+        person = this.getPersonObjectData(id_first);
         Log.d(TAG, "person1 past_days = " + person.getPerson_past_days()+
                 "  person1 year" + person.getPerson_year()+
                 "  person1 month" + person.getPerson_month()+
@@ -443,7 +402,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         //получаем дату в милисекундах
         long firstCalendarMillis = firstCalendar.getTimeInMillis();
 
-        person = getPersonObjectData(id_second);
+        person = this.getPersonObjectData(id_second);
         Log.d(TAG, "person2 past_days = " + person.getPerson_past_days()+
                 "  person2 year" + person.getPerson_year()+
                 "  person2 month" + person.getPerson_month()+
@@ -470,5 +429,47 @@ public class PersonDbHelper extends SQLiteOpenHelper{
                 (nowTimeMillis -secondCalendarMillis)/86400000));
         return beenMillis;
     }
+
+    //получить курсор с отсортированными в соответствии с настройками данными
+    public Cursor getCursorWithSort(boolean isSort, int sort){
+
+        Cursor mCursor;
+        //проводим сортировку списка
+        if (isSort) {
+            switch (sort) {
+                case 1:
+                    Log.d(TAG, "PersonsListActivity Сортировка по имени по возрастанию");
+                    //получаем данные в курсоре
+                    mCursor = this.getAllDataSortNameUp();
+                    break;
+                case 2:
+                    Log.d(TAG, "PersonsListActivity Сортировка по имени по убыванию");
+                    //получаем данные в курсоре
+                    mCursor = this.getAllDataSortNameDown();
+                    break;
+                case 3:
+                    Log.d(TAG, "PersonsListActivity Сортировка по дате по возрастанию ");
+                    //получаем данные в курсоре
+                    mCursor = this.getAllDataSortDateUp();
+                    break;
+                case 4:
+                    Log.d(TAG, "PersonsListActivity Сортировка по дате по убыванию ");
+                    //получаем данные в курсоре
+                    mCursor = this.getAllDataSortDateDown();
+                    break;
+                default:
+                    Log.d(TAG, "PersonsListActivity default: сортировка по имени вверх");
+                    //получаем данные в курсоре
+                    mCursor = this.getAllDataSortNameUp();
+                    break;
+            }
+        } else {
+            Log.d(TAG, "PersonsListActivity Без сортировки");
+            //получаем данные в курсоре
+            mCursor = this.getAllData();
+        }
+        return mCursor;
+    }
+
 
 }

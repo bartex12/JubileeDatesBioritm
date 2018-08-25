@@ -147,8 +147,15 @@ public class BioritmActivity extends AppCompatActivity {
 
         //получаем экхземпляр PersonDbHelper
         PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);
-        //получаем Объект класса Person с данными по персоне
+        //получаем массив строк с данными по персоне
+        //String[] data = mPersonDbHelper.getPersonData(id_sql);
         Person person = mPersonDbHelper.getPersonObjectData(id_sql);
+
+        //присваиваем переменным значения из массива
+        //userName = data[0];
+        //dayNumber = Integer.parseInt(data[1]);
+       // mounthNumber  = Integer.parseInt(data[2]);
+        //yearNumber   = Integer.parseInt(data[3]);
 
         userName = person.getPerson_name();
         dayNumber = Integer.parseInt(person.getPerson_day());

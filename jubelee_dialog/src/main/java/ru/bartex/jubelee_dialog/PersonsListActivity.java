@@ -154,51 +154,14 @@ public class PersonsListActivity extends AppCompatActivity {
             mCursor = mPersonDbHelper.searchInSQLite(searchView.getQuery().toString());
 
             //Выводим список данных на экран с использованием SimpleCursorAdapter
-            showSQLitePersonList(mCursor);
+            //showSQLitePersonList(mCursor);
 
             //если НЕ была развёрнута строка поиска и НЕ был сформирован список результатов поиска
         } else {
             Log.d(TAG, "PersonsListActivity Query = null");
 
-            if (isSort) {
-                switch (sort) {
-                    case 1:
-                        Log.d(TAG, "PersonsListActivity Сортировка по имени по возрастанию");
-                        //получаем данные в курсоре
-                        mCursor = mPersonDbHelper.getAllDataSortNameUp();
-                        break;
-
-                    case 2:
-                        Log.d(TAG, "PersonsListActivity Сортировка по имени по убыванию");
-                        //получаем данные в курсоре
-                        mCursor = mPersonDbHelper.getAllDataSortNameDown();
-                        break;
-
-                    case 3:
-                        Log.d(TAG, "PersonsListActivity Сортировка по дате по возрастанию ");
-                        //получаем данные в курсоре
-                        mCursor = mPersonDbHelper.getAllDataSortDateUp();
-                        break;
-
-                    case 4:
-                        Log.d(TAG, "PersonsListActivity Сортировка по дате по убыванию ");
-                        //получаем данные в курсоре
-                        mCursor = mPersonDbHelper.getAllDataSortDateDown();
-                        break;
-
-                    default:
-                        Log.d(TAG, "PersonsListActivity default: сортировка по имени вверх");
-                        //получаем данные в курсоре
-                        mCursor = mPersonDbHelper.getAllDataSortNameUp();
-                        break;
-                }
-
-            } else {
-                Log.d(TAG, "PersonsListActivity Без сортировки");
-                //получаем данные в курсоре
-                mCursor = mPersonDbHelper.getAllData();
-            }
-
+            //получить курсор с отсортированными в соответствии с настройками данными
+            mCursor = mPersonDbHelper.getCursorWithSort(isSort,sort);
             //Выводим список данных на экран с использованием SimpleCursorAdapter
             showSQLitePersonList(mCursor);
             //Загружаем сохранённую позицию списка

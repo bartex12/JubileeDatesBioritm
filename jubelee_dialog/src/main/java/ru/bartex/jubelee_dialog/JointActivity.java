@@ -245,6 +245,12 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                 onBackPressed();
                 return true;
 
+            case R.id.action_find_dates:
+                Log.d(TAG, "OptionsItem = action_find_dates");
+                Intent intentFindDates = new Intent(this, FindDatesActivity.class);
+                startActivity(intentFindDates);
+                return true;
+
             case R.id.action_settings:
                 Log.d(TAG, "OptionsItem = action_settings");
                 Intent intentSettings = new Intent(this, PrefActivity.class);
