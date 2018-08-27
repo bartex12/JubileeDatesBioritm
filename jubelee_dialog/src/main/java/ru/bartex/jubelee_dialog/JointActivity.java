@@ -32,6 +32,7 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
     public static final String ID_SQL_second = "sql_second_JointActivity";
     public static final int REQUEST_JOINT_PERSON1 = 1; //риквест код от JointActivity для персоны 1
     public static final int REQUEST_JOINT_PERSON2 = 2; //риквест код от JointActivity для персоны 2
+    public static final int REQUEST_JOINT_FIND = 3; //риквест код от JointActivity для поиска совместных дат
 
     int daysNext; //количество совместно прожитых дней для расчёта
     long id_sql;  // id строки из базы данных
@@ -221,6 +222,14 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                 //получаем данные персоны2 из базы данных
                 mPerson = mDbHelper.getPersonObjectData(id_sql_second);
                 mPersonButton2.setText(mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
+
+            }else if (requestCode == REQUEST_JOINT_FIND){
+                Log.d(TAG, "JointActivity onActivityResult REQUEST_JOINT_FIND");
+                //получаем id выбранной в результате поиска совместных дат персоны 2
+                id_sql_second = data.getLongExtra(ID_SQL_second, id_sql_second);
+                //получаем данные персоны 2 из базы данных
+                mPerson = mDbHelper.getPersonObjectData(id_sql_second);
+                mPersonButton2.setText(mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
             }
 
             // количество прожитых миллисекунд на двоих
@@ -248,7 +257,10 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
             case R.id.action_find_dates:
                 Log.d(TAG, "OptionsItem = action_find_dates");
                 Intent intentFindDates = new Intent(this, FindDatesActivity.class);
-                startActivity(intentFindDates);
+                intentFindDates.putExtra(FindDatesActivity.ID_SQL,id_sql);
+                intentFindDates.putExtra(FindDatesActivity.ID_SQL_SECOND,id_sql_second);
+                intentFindDates.putExtra(FindDatesActivity.REQUEST_FIND, REQUEST_JOINT_FIND);
+                startActivityForResult(intentFindDates,REQUEST_JOINT_FIND);
                 return true;
 
             case R.id.action_settings:

@@ -27,7 +27,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
-            android:text="Имя"/>
+            android:text="Имя"
+            android:textColor="?attr/colorPrimary"/>
     </LinearLayout>
 
     <LinearLayout

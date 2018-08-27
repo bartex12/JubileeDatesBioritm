@@ -64,7 +64,7 @@
             android:theme="@style/AppDialog">
         </activity>
         <activity android:name=".FindDatesActivity"
-                  android:label="Совместные даты "
+                  android:label="Прожито на двоих "
                   android:parentActivityName=".PersonsListActivity">
         </activity>
     </application>

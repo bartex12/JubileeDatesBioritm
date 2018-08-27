@@ -183,7 +183,6 @@ public class PersonDbHelper extends SQLiteOpenHelper{
     }
 
       //Возвращает объект Person с данными (для простоты записи)
-
     public Person getPersonObjectData(long rowId) throws SQLException {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor mCursor = db.query(true, PersonTable.TABLE_NAME,
@@ -471,5 +470,32 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         return mCursor;
     }
 
+    //получаем ID по имени
+    public long getIdFromName(String name){
+        long currentID;
+        // Создадим и откроем для чтения базу данных
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(
+                PersonTable.TABLE_NAME,   // таблица
+                new String[] { PersonTable._ID},            // столбцы
+                PersonTable.COLUMN_NAME + "=?" ,                  // столбцы для условия WHERE
+                new String[] {name},                  // значения для условия WHERE
+                null,                  // Don't group the rows
+                null,                  // Don't filter by row groups
+                null);                   // порядок сортировки
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+            // Узнаем индекс каждого столбца
+            int idColumnIndex = cursor.getColumnIndex(PersonTable._ID);
+            // Используем индекс для получения строки или числа
+            currentID = cursor.getLong(idColumnIndex);
+        }else {
+            currentID = -1;
+        }
+        Log.d(TAG, "getIdFromName currentID = " + currentID);
+        cursor.close();
+        return currentID;
+    }
 
 }
