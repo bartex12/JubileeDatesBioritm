@@ -8,9 +8,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import ru.bartex.jubelee_dialog.Person;
+import ru.bartex.jubelee_dialog.PersonFind;
 
 /**
  * Created by Андрей on 11.08.2018.
@@ -58,10 +61,25 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF IT EXISTS " + PersonContract.PersonEntry.TABLE_NAME);
         // Создаём новую таблицу
         onCreate(db);
+
+        @Override
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    String upgradeQuery = "ALTER TABLE mytable ADD COLUMN mycolumn TEXT;"
+    if (oldVersion == 1 && newVersion == 2)
+         db.execSQL(upgradeQuery);
+}
 */
+
+        String upgradeQuery = "ALTER TABLE persons ADD COLUMN choose INTEGER;";
+        if (oldVersion == 1 && newVersion == 2){
+            db.execSQL(upgradeQuery);
+        }
+         String   upgradeChoose = "UPDATE persons SET choose = 0;";
+
+
     }
 
-    // Если записей в базе нет, вносим две записи
+    // Если записей в базе нет, вносим запись
     public void createDefaultPersonIfNeed()  {
         int count = this.getPersonsCount();
         if(count ==0 ) {
@@ -71,6 +89,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         }
     }
 
+    //Метод для добавления нового человека в список
     public void addPerson(Person person) {
         Log.d(TAG, "MyDatabaseHelper.addPerson ... " + person.getPerson_name());
 
@@ -207,6 +226,56 @@ public class PersonDbHelper extends SQLiteOpenHelper{
         //закрываем курсор
         mCursor.close();
         return person;
+    }
+
+    //получаем список персон с пустыми галками для отображения на экране в классе ListDialog_CheckBox
+    public List<PersonFind> getAllPersonsWithCheckbox(boolean isSort, int sort) {
+        Log.i(TAG, "MyDatabaseHelper.getAllPersons ... " );
+
+        List<PersonFind> personsList = new ArrayList<PersonFind>();
+
+        // запрос выбрать всё с сортировкой по имени вверх
+        Cursor cursor = this.getCursorWithSort(isSort, sort);
+
+        // Узнаем индекс каждого столбца
+
+        int idColumnIndex = cursor.getColumnIndex(PersonTable._ID);
+        int nameColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_NAME);
+        int dayColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_DAY);
+        int monthColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_MONTH);
+        int yearColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_YEAR);
+
+        // смотрим в цикле все строки курсора и пишем в ArrayList
+        //cursor.moveToFirst();
+        while (cursor.moveToNext()){
+
+                // Используем индекс для получения строки или числа
+                long _id = cursor.getLong(idColumnIndex);
+                String name = cursor.getString(nameColumnIndex);
+                String currentDay = cursor.getString(dayColumnIndex);
+                String currentMonth = cursor.getString(monthColumnIndex);
+                String currentYear = cursor.getString(yearColumnIndex);
+
+                //получаем заполненный экземпляр PersonFind
+                PersonFind personFind = new PersonFind(_id,name,currentDay,currentMonth,currentYear, false);
+                // добавляем заполненный экземпляр PersonFind в список personsList
+                personsList.add(personFind);
+
+            }
+
+             Log.i(TAG, "MyDatabaseHelper.getAllPersons");
+            for (int i = 0; i< personsList.size(); i++){
+                Log.i(TAG, "name = " + personsList.get(i).getPerson_name() +
+                        "  dr = " + personsList.get(i).getPerson_dr() +
+                        " past_days = " + personsList.get(i).getPerson_past_days()+
+                        " checkBox = " + personsList.get(i).isSelect_find() +
+                "  id = " + personsList.get(i).getPerson_id());
+            }
+
+        Log.i(TAG, "MyDatabaseHelper.getAllPersons ... размер списка = " + personsList.size());
+        cursor.close();
+        // возвращаем список персон  personsList с пустыми галками
+        return personsList;
     }
 
 

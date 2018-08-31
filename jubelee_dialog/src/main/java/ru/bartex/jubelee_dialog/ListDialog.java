@@ -74,4 +74,9 @@ public class ListDialog extends AppCompatActivity {
                 this, R.layout.list_name_date, mCursor, from, to);
         mListView.setAdapter(scAdapter);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }

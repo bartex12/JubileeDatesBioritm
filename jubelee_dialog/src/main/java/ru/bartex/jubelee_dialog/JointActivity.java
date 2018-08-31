@@ -256,11 +256,15 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
 
             case R.id.action_find_dates:
                 Log.d(TAG, "OptionsItem = action_find_dates");
+                /*
                 Intent intentFindDates = new Intent(this, FindDatesActivity.class);
                 intentFindDates.putExtra(FindDatesActivity.ID_SQL,id_sql);
                 intentFindDates.putExtra(FindDatesActivity.ID_SQL_SECOND,id_sql_second);
                 intentFindDates.putExtra(FindDatesActivity.REQUEST_FIND, REQUEST_JOINT_FIND);
                 startActivityForResult(intentFindDates,REQUEST_JOINT_FIND);
+                */
+                Intent intentFindDates = new Intent(this, ListDialog_CheckBox.class);
+                startActivity(intentFindDates);
                 return true;
 
             case R.id.action_settings:

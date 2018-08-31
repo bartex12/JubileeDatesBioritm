@@ -39,14 +39,14 @@ public class Person implements Serializable {
     }
 
     //получение даты рождения в определнном формате
-    private String get_dr (String day, String month,String year){
+    public String get_dr (String day, String month,String year){
         //формируем строку даты в формате %s.%s.%s
         String dr = String.format("%s.%s.%s",day,month,year);
         return dr;
     }
 
     //получение числа прожитых дней  по дате рождения
-    private String get_past_days(String day, String month,String year){
+    public String get_past_days(String day, String month,String year){
         //экземпляр календаря с данными из списка
         Calendar firstCalendar = new GregorianCalendar(Integer.parseInt(year),
                 Integer.parseInt(month) - 1,Integer.parseInt(day));

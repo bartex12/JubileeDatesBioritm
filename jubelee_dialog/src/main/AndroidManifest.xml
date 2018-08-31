@@ -63,9 +63,12 @@
             android:label="Выбор персоны"
             android:theme="@style/AppDialog">
         </activity>
-        <activity android:name=".FindDatesActivity"
-                  android:label="Прожито на двоих "
-                  android:parentActivityName=".PersonsListActivity">
+        <activity
+            android:name=".FindDatesActivity"
+            android:label="Прожито на двоих "
+            android:parentActivityName=".PersonsListActivity">
+        </activity>
+        <activity android:name=".ListDialog_CheckBox">
         </activity>
     </application>
 
