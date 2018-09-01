@@ -75,13 +75,16 @@ public class ListDialog_CheckBox extends AppCompatActivity {
         //получаем список всех персон с пустыми галками через запрос к базе данных и
         //использовании этих данных для формирования  ArrayList mPersonArrayList
         PersonDbHelper personDbHelper = new PersonDbHelper(this);
-        List<PersonFind> personFinds= personDbHelper.getAllPersonsWithCheckbox(isSort, sort);
+        List<PersonFind> personFinds= personDbHelper.getAllPersonsWithCheckbox();
         this.mPersonArrayList.addAll(personFinds);
 
         for (int i = 0; i < mPersonArrayList.size(); i++) {
-            Log.d(TAG, " name1 = " + mPersonArrayList.get(i).getPerson_name() +
-                            " id = " + mPersonArrayList.get(i).getPerson_id() +
-                    " i = " + i);
+            Log.i(TAG, "name = " + mPersonArrayList.get(i).getPerson_name() +
+                    "  dr = " + mPersonArrayList.get(i).getPerson_dr() +
+                    " past_days = " + mPersonArrayList.get(i).getPerson_past_days()+
+                    " checkBox = " + mPersonArrayList.get(i).isSelect_find() +
+                    "  id = " + mPersonArrayList.get(i).getPerson_id() +
+                    " i = " +i);
         }
 /*
         for (int i = 0; i<20; i++){

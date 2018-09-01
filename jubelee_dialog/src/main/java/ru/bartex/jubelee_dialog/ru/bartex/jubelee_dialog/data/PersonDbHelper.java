@@ -229,38 +229,58 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
     //получаем список персон с пустыми галками для отображения на экране в классе ListDialog_CheckBox
-    public List<PersonFind> getAllPersonsWithCheckbox(boolean isSort, int sort) {
+    public List<PersonFind> getAllPersonsWithCheckbox() {
         Log.i(TAG, "MyDatabaseHelper.getAllPersons ... " );
 
         List<PersonFind> personsList = new ArrayList<PersonFind>();
-
-        // запрос выбрать всё с сортировкой по имени вверх
-        Cursor cursor = this.getCursorWithSort(isSort, sort);
-
+        List <String[]> arrayList =  new ArrayList<>();
+        String[] data = new String[5];
+        // запрос выбрать всё
+        Cursor cursor = this.getAllData();
+/*
         // Узнаем индекс каждого столбца
-
         int idColumnIndex = cursor.getColumnIndex(PersonTable._ID);
         int nameColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_NAME);
         int dayColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_DAY);
         int monthColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_MONTH);
         int yearColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_YEAR);
-
+*/
         // смотрим в цикле все строки курсора и пишем в ArrayList
         //cursor.moveToFirst();
         while (cursor.moveToNext()){
-
                 // Используем индекс для получения строки или числа
-                long _id = cursor.getLong(idColumnIndex);
-                String name = cursor.getString(nameColumnIndex);
-                String currentDay = cursor.getString(dayColumnIndex);
-                String currentMonth = cursor.getString(monthColumnIndex);
-                String currentYear = cursor.getString(yearColumnIndex);
+                long _id = cursor.getLong(0);
+                String name = cursor.getString(1);
+                String currentDay = cursor.getString(2);
+                String currentMonth = cursor.getString(3);
+                String currentYear = cursor.getString(4);
 
                 //получаем заполненный экземпляр PersonFind
-                PersonFind personFind = new PersonFind(_id,name,currentDay,currentMonth,currentYear, false);
-                // добавляем заполненный экземпляр PersonFind в список personsList
-                personsList.add(personFind);
+                PersonFind personFind = new PersonFind(
+                        _id, name, currentDay, currentMonth, currentYear, false);
+            // добавляем заполненный экземпляр PersonFind в список personsList
+            personsList.add(personFind);
+            Log.i(TAG, "name = " + personFind.getPerson_name() +
+                    "  dr = " + personFind.getPerson_dr() +
+                    " past_days = " + personFind.getPerson_past_days()+
+                    " checkBox = " + personFind.isSelect_find() +
+                    "  id = " + personFind.getPerson_id()+
+            "  lastIndexOf = " + personsList.lastIndexOf(personFind));
+/*
+                data[0] = personFind.getPerson_name();
+                data[1] = personFind.getPerson_dr();
+                data[2] = personFind.getPerson_past_days();
+                data[3] = String.valueOf(personFind.isSelect_find());
+                data[4] = String.valueOf(personFind.getPerson_id());
 
+            arrayList.add(data);
+
+            Log.i(TAG, "name = " + arrayList.get(arrayList.lastIndexOf(data))[0] +
+                    " dr = " + arrayList.get(arrayList.lastIndexOf(data))[1] +
+                    " past_days = " + arrayList.get(arrayList.lastIndexOf(data))[2] +
+                    " checkBox = " + arrayList.get(arrayList.lastIndexOf(data))[3] +
+                    " id = " + arrayList.get(arrayList.lastIndexOf(data))[4]);
+*/
             }
 
              Log.i(TAG, "MyDatabaseHelper.getAllPersons");
@@ -269,10 +289,22 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
                         "  dr = " + personsList.get(i).getPerson_dr() +
                         " past_days = " + personsList.get(i).getPerson_past_days()+
                         " checkBox = " + personsList.get(i).isSelect_find() +
-                "  id = " + personsList.get(i).getPerson_id());
+                "  id = " + personsList.get(i).getPerson_id()+
+                " i = " +i);
             }
 
-        Log.i(TAG, "MyDatabaseHelper.getAllPersons ... размер списка = " + personsList.size());
+/*
+        Log.i(TAG, "MyDatabaseHelper.getAllPersons");
+        for (int i = 0; i< arrayList.size(); i++) {
+            Log.i(TAG, "name = " + arrayList.get(i)[0] +
+                    " dr = " + arrayList.get(i)[1] +
+                    " past_days = " + arrayList.get(i)[2] +
+                    " checkBox = " + arrayList.get(i)[3] +
+                    " id = " + arrayList.get(i)[4]);
+            */
+
+
+        Log.d(TAG, "MyDatabaseHelper.getAllPersons ... размер списка = " + personsList.size());
         cursor.close();
         // возвращаем список персон  personsList с пустыми галками
         return personsList;

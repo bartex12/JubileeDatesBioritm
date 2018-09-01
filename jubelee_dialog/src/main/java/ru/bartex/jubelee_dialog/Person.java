@@ -64,7 +64,7 @@ public class Person implements Serializable {
         return person_id;
     }
 
-    public void setPerson_id(int person_id) {
+    public void setPerson_id(long person_id) {
         this.person_id = person_id;
     }
 
