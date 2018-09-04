@@ -34,6 +34,9 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
     public static final int REQUEST_JOINT_PERSON2 = 2; //риквест код от JointActivity для персоны 2
     public static final int REQUEST_JOINT_FIND = 3; //риквест код от JointActivity для поиска совместных дат
 
+    final static String ATTR_ID1 ="id1";
+    final static String ATTR_ID2 ="id2";
+
     int daysNext; //количество совместно прожитых дней для расчёта
     long id_sql;  // id строки из базы данных
     long id_sql_second;  // id другой строки из базы данных
@@ -225,11 +228,21 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
 
             }else if (requestCode == REQUEST_JOINT_FIND){
                 Log.d(TAG, "JointActivity onActivityResult REQUEST_JOINT_FIND");
+
+                //получаем id выбранной в результате поиска совместных дат персоны 1
+                id_sql = data.getLongExtra(ATTR_ID1, 1);
+                Log.d(TAG, "id1 = " + id_sql);
+                //получаем данные персоны 1 из базы данных
+                mPerson = mDbHelper.getPersonObjectData(id_sql);
+                mPersonButton1.setText(mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
+
                 //получаем id выбранной в результате поиска совместных дат персоны 2
-                id_sql_second = data.getLongExtra(ID_SQL_second, id_sql_second);
+                id_sql_second = data.getLongExtra(ATTR_ID2, id_sql);
+                Log.d(TAG, "id2 = " +id_sql_second );
                 //получаем данные персоны 2 из базы данных
                 mPerson = mDbHelper.getPersonObjectData(id_sql_second);
                 mPersonButton2.setText(mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
+
             }
 
             // количество прожитых миллисекунд на двоих
@@ -264,7 +277,9 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                 startActivityForResult(intentFindDates,REQUEST_JOINT_FIND);
                 */
                 Intent intentFindDates = new Intent(this, ListDialog_CheckBox.class);
-                startActivity(intentFindDates);
+                //посылаем код, что это интент от JointActivity
+                //intentFindDates.putExtra(FindDatesActivity.REQUEST_FIND, REQUEST_JOINT_FIND);
+                startActivityForResult(intentFindDates, REQUEST_JOINT_FIND);
                 return true;
 
             case R.id.action_settings:

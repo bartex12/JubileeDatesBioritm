@@ -21,5 +21,6 @@ public class PersonTable {
         public final static String COLUMN_YEAR = "year";
         public final static String COLUMN_DR = "dr";
         public final static String COLUMN_PAST_DAYS = "past_days";
+        public final static String COLUMN_CHOOSE = "choose";
 
 }

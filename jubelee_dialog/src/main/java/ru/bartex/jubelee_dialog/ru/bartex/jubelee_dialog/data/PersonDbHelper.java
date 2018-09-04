@@ -13,7 +13,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import ru.bartex.jubelee_dialog.Person;
-import ru.bartex.jubelee_dialog.PersonFind;
+
+import static ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable.TABLE_NAME;
 
 /**
  * Created by Андрей on 11.08.2018.
@@ -36,7 +37,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Строка для создания таблицы
-        String SQL_CREATE_PERSONS_TABLE = "CREATE TABLE " + PersonTable.TABLE_NAME + " ("
+        String SQL_CREATE_PERSONS_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
                 + PersonTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + PersonTable.COLUMN_NAME + " TEXT NOT NULL, "
                 + PersonTable.COLUMN_DAY + " TEXT NOT NULL, "
@@ -85,7 +86,6 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if(count ==0 ) {
             Person person1 = new Person("Анжелина Джоли","4","06", "1975");
             this.addPerson(person1);
-
         }
     }
 
@@ -103,7 +103,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         cv.put(PersonTable.COLUMN_DR, person.getPerson_dr());
         cv.put(PersonTable.COLUMN_PAST_DAYS, person.getPerson_past_days());
         // вставляем строку
-        db.insert(PersonTable.TABLE_NAME, null, cv);
+        db.insert(TABLE_NAME, null, cv);
         // закрываем соединение с базой
         db.close();
     }
@@ -111,7 +111,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     //получаем количество записей в базе
     public int getPersonsCount() {
         Log.i(TAG, "MyDatabaseHelper.getPersonsCount ... " );
-        String countQuery = "SELECT  * FROM " + PersonTable.TABLE_NAME;
+        String countQuery = "SELECT  * FROM " + TABLE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
         int count = cursor.getCount();
@@ -135,7 +135,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // получаем базу данных для записи и пишем
         SQLiteDatabase sd = getWritableDatabase();
         //the row ID of the newly inserted row, or -1 if an error occurred
-        long row_id = sd.insert(PersonTable.TABLE_NAME, null, cv);
+        long row_id = sd.insert(TABLE_NAME, null, cv);
         // закрываем соединение с базой
         sd.close();
         return  row_id;
@@ -155,7 +155,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         updatedValues.put(PersonTable.COLUMN_DR, dr);
         updatedValues.put(PersonTable.COLUMN_PAST_DAYS, pastDays);
 
-        long result = db.update(PersonTable.TABLE_NAME, updatedValues, PersonTable._ID + "=" + rowId, null);
+        long result = db.update(TABLE_NAME, updatedValues, PersonTable._ID + "=" + rowId, null);
         //db.close();
         return  result > 0;
     }
@@ -165,14 +165,14 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
      */
     public void deletePerson(long rowId) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(PersonTable.TABLE_NAME, PersonTable._ID + "=" + rowId, null);
+        db.delete(TABLE_NAME, PersonTable._ID + "=" + rowId, null);
         db.close();
     }
 
     //проверка на существование записи с заданным id
     public boolean isPersonExist(long rowId){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor mCursor = db.query(true, PersonTable.TABLE_NAME,
+        Cursor mCursor = db.query(true, TABLE_NAME,
                 new String[] { PersonTable._ID},
                 PersonTable._ID + "=" + rowId,
                 null, null, null, null, null);
@@ -189,7 +189,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
      */
     public Cursor getPerson(long rowId) throws SQLException {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor mCursor = db.query(true, PersonTable.TABLE_NAME,
+        Cursor mCursor = db.query(true, TABLE_NAME,
                 new String[] { PersonTable._ID,PersonTable.COLUMN_NAME,
                         PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
                         PersonTable.COLUMN_DR,PersonTable.COLUMN_PAST_DAYS },
@@ -204,7 +204,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
       //Возвращает объект Person с данными (для простоты записи)
     public Person getPersonObjectData(long rowId) throws SQLException {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor mCursor = db.query(true, PersonTable.TABLE_NAME,
+        Cursor mCursor = db.query(true, TABLE_NAME,
                 new String[] { PersonTable._ID,PersonTable.COLUMN_NAME,
                         PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
                         PersonTable.COLUMN_DR,PersonTable.COLUMN_PAST_DAYS },
@@ -228,88 +228,48 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         return person;
     }
 
-    //получаем список персон с пустыми галками для отображения на экране в классе ListDialog_CheckBox
-    public List<PersonFind> getAllPersonsWithCheckbox() {
-        Log.i(TAG, "MyDatabaseHelper.getAllPersons ... " );
 
-        List<PersonFind> personsList = new ArrayList<PersonFind>();
-        List <String[]> arrayList =  new ArrayList<>();
-        String[] data = new String[5];
-        // запрос выбрать всё
-        Cursor cursor = this.getAllData();
-/*
-        // Узнаем индекс каждого столбца
-        int idColumnIndex = cursor.getColumnIndex(PersonTable._ID);
-        int nameColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_NAME);
-        int dayColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_DAY);
-        int monthColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_MONTH);
-        int yearColumnIndex = cursor.getColumnIndex(PersonTable.COLUMN_YEAR);
-*/
-        // смотрим в цикле все строки курсора и пишем в ArrayList
-        //cursor.moveToFirst();
-        while (cursor.moveToNext()){
+    public ArrayList<Person> getAllContactsChoose() {
+        ArrayList<Person> contactList = new ArrayList<Person>();
+        String selectQuery = "SELECT  * FROM " + TABLE_NAME;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        Log.i(TAG, "MyDatabaseHelper.getAllPersons IN");
+
+        if (cursor.moveToFirst()) {
+            do {
+                Person contact = new Person();
                 // Используем индекс для получения строки или числа
-                long _id = cursor.getLong(0);
-                String name = cursor.getString(1);
-                String currentDay = cursor.getString(2);
-                String currentMonth = cursor.getString(3);
-                String currentYear = cursor.getString(4);
+                contact.setPerson_id(cursor.getLong(0));
+                contact.setPerson_name(cursor.getString(1));
+                contact.setPerson_day(cursor.getString(2));
+                contact.setPerson_month(cursor.getString(3));
+                contact.setPerson_year(cursor.getString(4));
+                contact.setPerson_dr(cursor.getString(5));
+                contact.setPerson_past_days(cursor.getString(6));
+                if (cursor.getInt(7) ==0 ){
+                    contact.setPerson_choose(false);
+                }else contact.setPerson_choose(true);
+                contactList.add(contact);
 
-                //получаем заполненный экземпляр PersonFind
-                PersonFind personFind = new PersonFind(
-                        _id, name, currentDay, currentMonth, currentYear, false);
-            // добавляем заполненный экземпляр PersonFind в список personsList
-            personsList.add(personFind);
-            Log.i(TAG, "name = " + personFind.getPerson_name() +
-                    "  dr = " + personFind.getPerson_dr() +
-                    " past_days = " + personFind.getPerson_past_days()+
-                    " checkBox = " + personFind.isSelect_find() +
-                    "  id = " + personFind.getPerson_id()+
-            "  lastIndexOf = " + personsList.lastIndexOf(personFind));
-/*
-                data[0] = personFind.getPerson_name();
-                data[1] = personFind.getPerson_dr();
-                data[2] = personFind.getPerson_past_days();
-                data[3] = String.valueOf(personFind.isSelect_find());
-                data[4] = String.valueOf(personFind.getPerson_id());
+                Log.i(TAG, "  id = " + contact.getPerson_id()+
+                        "  name = " + contact.getPerson_name() +
+                        "  choose  = " + contact.isPerson_choose());
 
-            arrayList.add(data);
+            } while (cursor.moveToNext());
+        }
+        Log.i(TAG, "MyDatabaseHelper.getAllPersons OUT");
+        for (int i = 0; i< contactList.size(); i++){
+            Log.i(TAG, "  id = " + contactList.get(i).getPerson_id()+
+                    "  name = " + contactList.get(i).getPerson_name() +
+                    "  choose  = " + contactList.get(i).isPerson_choose());
+        }
+        Log.d(TAG, "MyDatabaseHelper.getAllPersons ... размер списка = " + contactList.size());
 
-            Log.i(TAG, "name = " + arrayList.get(arrayList.lastIndexOf(data))[0] +
-                    " dr = " + arrayList.get(arrayList.lastIndexOf(data))[1] +
-                    " past_days = " + arrayList.get(arrayList.lastIndexOf(data))[2] +
-                    " checkBox = " + arrayList.get(arrayList.lastIndexOf(data))[3] +
-                    " id = " + arrayList.get(arrayList.lastIndexOf(data))[4]);
-*/
-            }
-
-             Log.i(TAG, "MyDatabaseHelper.getAllPersons");
-            for (int i = 0; i< personsList.size(); i++){
-                Log.i(TAG, "name = " + personsList.get(i).getPerson_name() +
-                        "  dr = " + personsList.get(i).getPerson_dr() +
-                        " past_days = " + personsList.get(i).getPerson_past_days()+
-                        " checkBox = " + personsList.get(i).isSelect_find() +
-                "  id = " + personsList.get(i).getPerson_id()+
-                " i = " +i);
-            }
-
-/*
-        Log.i(TAG, "MyDatabaseHelper.getAllPersons");
-        for (int i = 0; i< arrayList.size(); i++) {
-            Log.i(TAG, "name = " + arrayList.get(i)[0] +
-                    " dr = " + arrayList.get(i)[1] +
-                    " past_days = " + arrayList.get(i)[2] +
-                    " checkBox = " + arrayList.get(i)[3] +
-                    " id = " + arrayList.get(i)[4]);
-            */
-
-
-        Log.d(TAG, "MyDatabaseHelper.getAllPersons ... размер списка = " + personsList.size());
         cursor.close();
-        // возвращаем список персон  personsList с пустыми галками
-        return personsList;
+        return contactList;
     }
-
 
     // Обновить данные в столбце Количество прожитых дней
     public void updatePastDays() {
@@ -343,7 +303,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
                 ContentValues updatedValues = new ContentValues();
                 updatedValues.put(PersonTable.COLUMN_PAST_DAYS, past_days);
 
-                sd.update(PersonTable.TABLE_NAME,
+                sd.update(TABLE_NAME,
                         updatedValues,
                         "_id = ?",
                         new String[] {Integer.toString(currentID)});
@@ -355,7 +315,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     // получить курсор с данными из таблицы TABLE_NAME
     public Cursor getAllData() {
         SQLiteDatabase sd = this.getReadableDatabase();
-        return sd.query(PersonTable.TABLE_NAME,
+        return sd.query(TABLE_NAME,
                 new String[]{PersonTable._ID,PersonTable.COLUMN_NAME,
                         PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
                         PersonTable.COLUMN_DR,PersonTable.COLUMN_PAST_DAYS},
@@ -365,7 +325,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     // получить курсор с данными из таблицы TABLE_NAME
     public Cursor getAllDataSortNameUp() {
         SQLiteDatabase sd = this.getReadableDatabase();
-        return sd.query(PersonTable.TABLE_NAME,
+        return sd.query(TABLE_NAME,
                 new String[]{PersonTable._ID,PersonTable.COLUMN_NAME,
                         PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
                         PersonTable.COLUMN_DR,PersonTable.COLUMN_PAST_DAYS},
@@ -375,7 +335,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     // получить курсор с данными из таблицы TABLE_NAME
     public Cursor getAllDataSortNameDown() {
         SQLiteDatabase sd = this.getReadableDatabase();
-        return sd.query(PersonTable.TABLE_NAME,
+        return sd.query(TABLE_NAME,
                 new String[]{PersonTable._ID,PersonTable.COLUMN_NAME,
                         PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
                         PersonTable.COLUMN_DR,PersonTable.COLUMN_PAST_DAYS},
@@ -385,7 +345,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     // получить курсор с данными из таблицы TABLE_NAME
     public Cursor getAllDataSortDateUp() {
         SQLiteDatabase sd = this.getReadableDatabase();
-        return sd.query(PersonTable.TABLE_NAME,
+        return sd.query(TABLE_NAME,
                 new String[]{PersonTable._ID,PersonTable.COLUMN_NAME,
                         PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
                         PersonTable.COLUMN_DR,PersonTable.COLUMN_PAST_DAYS},
@@ -395,12 +355,13 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     // получить курсор с данными из таблицы TABLE_NAME
     public Cursor getAllDataSortDateDown() {
         SQLiteDatabase sd = this.getReadableDatabase();
-        return sd.query(PersonTable.TABLE_NAME,
+        return sd.query(TABLE_NAME,
                 new String[]{PersonTable._ID,PersonTable.COLUMN_NAME,
                         PersonTable.COLUMN_DAY,PersonTable.COLUMN_MONTH,PersonTable.COLUMN_YEAR,
                         PersonTable.COLUMN_DR,PersonTable.COLUMN_PAST_DAYS},
                 null, null, null, null, PersonTable.COLUMN_PAST_DAYS + " DESC");
     }
+
 
     //метод поиска в базе данных из строки поиска по поисковому запросу query
     public Cursor searchInSQLite (String query){
@@ -410,7 +371,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(
-                PersonTable.TABLE_NAME,  //имя таблицы, к которой передается запрос
+                TABLE_NAME,  //имя таблицы, к которой передается запрос
                 new String[] {          //список имен возвращаемых полей
                         PersonTable._ID,
                         PersonTable.COLUMN_NAME,
@@ -447,7 +408,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         // Делаем запрос
         Cursor cursor = db.query(
-                PersonTable.TABLE_NAME,   // таблица
+                TABLE_NAME,   // таблица
                 projection,            // столбцы
                 null,                  // столбцы для условия WHERE
                 null,                  // значения для условия WHERE
@@ -577,7 +538,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Создадим и откроем для чтения базу данных
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(
-                PersonTable.TABLE_NAME,   // таблица
+                TABLE_NAME,   // таблица
                 new String[] { PersonTable._ID},            // столбцы
                 PersonTable.COLUMN_NAME + "=?" ,                  // столбцы для условия WHERE
                 new String[] {name},                  // значения для условия WHERE

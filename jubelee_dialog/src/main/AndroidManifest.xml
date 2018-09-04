@@ -70,6 +70,8 @@
         </activity>
         <activity android:name=".ListDialog_CheckBox">
         </activity>
+        <activity android:name=".CheckedActivity">
+        </activity>
     </application>
 
 </manifest>

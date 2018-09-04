@@ -4,15 +4,16 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class Person implements Serializable {
+public class Person  implements Serializable {
 
     private long person_id;
-    private static String person_name;
-    private static String person_day;
-    private static String person_month;
-    private static String person_year;
-    private static String person_dr;
-    private static String person_past_days;
+    private  String person_name;
+    private  String person_day;
+    private  String person_month;
+    private  String person_year;
+    private  String person_dr;
+    private  String person_past_days;
+    private  boolean person_choose;
 
     //пустой конструктор
     public Person(){    }
@@ -25,6 +26,7 @@ public class Person implements Serializable {
         person_year = year;
         person_dr = get_dr(day, month, year);
         person_past_days = get_past_days(day, month, year);
+        person_choose = false;
     }
 
     //конструктор, задающий id
@@ -36,6 +38,7 @@ public class Person implements Serializable {
         person_year = year;
         person_dr = get_dr(day, month, year);
         person_past_days = get_past_days(day, month, year);
+        person_choose = false;
     }
 
     //получение даты рождения в определнном формате
@@ -114,6 +117,14 @@ public class Person implements Serializable {
 
     public void setPerson_past_days(String person_past_days) {
         this.person_past_days = person_past_days;
+    }
+
+    public  boolean isPerson_choose() {
+        return person_choose;
+    }
+
+    public  void setPerson_choose(boolean person_choose) {
+        this.person_choose = person_choose;
     }
 }
 

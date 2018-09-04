@@ -1,33 +1,33 @@
 package ru.bartex.jubelee_dialog;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
 
-public class FindAdapter extends BaseAdapter {
+//свой адаптер пришлось сделать для того, чтобы можно было отмечать чекбоксы выбора строк в списке,
+// поскольку слушатель чекбокса находится в адаптере
 
+public class FindAdapterPerson extends BaseAdapter {
     public static final String TAG = "33333";
     Context ctx;
     LayoutInflater mLayoutInflater;
-    ArrayList<PersonFind> mPersonList;
+    ArrayList<Person> mPersonList;
 
     TextView name;
     TextView dr;
     TextView past_days;
     CheckBox cb_Find;
 
-    public FindAdapter(Context context, ArrayList<PersonFind> personArrayList){
+    public FindAdapterPerson(Context context, ArrayList<Person> personArrayList){
+
         ctx = context;
         mPersonList = personArrayList;
         mLayoutInflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -45,43 +45,36 @@ public class FindAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return position;
+        //получаем id - он нужен при удалении из контекстного меню - идёт обращение к адаптеру
+        return mPersonList.get(position).getPerson_id();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        //Log.d(TAG, " name1 = " + mPersonList.get(0).getPerson_name() +
-          //      " name2 " + mPersonList.get(1).getPerson_name());
-
-        PersonFind p = getPerson(position);
+        Person p = getPerson(position);
 
         View v = convertView;
         if (v == null) {
-            v = mLayoutInflater.inflate(R.layout.list_name_date_checkbox, parent, false);
+            v = mLayoutInflater.inflate(R.layout.list_name_choose, parent, false);
         }
 
-        dr = (TextView) v.findViewById(R.id.was_born_find);
-        dr.setText(p.getPerson_dr());
+        name = (TextView)v.findViewById(R.id.name_list_test);
+        cb_Find = (CheckBox) v.findViewById(R.id.checkBox_test);
 
-        past_days = (TextView)v.findViewById(R.id.past_Days_find);
-        past_days.setText(p.getPerson_past_days());
-
-        name = (TextView)v.findViewById(R.id.name_list_find);
         name.setText(p.getPerson_name());
-
-        cb_Find = (CheckBox) v.findViewById(R.id.checkBox_find);
+        cb_Find.setText("");
         //записываем тэг для того, чтобы потом получить позицию списка в обработчике чекбокса
         cb_Find.setTag(position);
-        cb_Find.setChecked(p.isSelect_find());
+        //cb_Find.setChecked(false); //нельзя, иначе уход списка за экран снимает галку
         //присваиваем слушатель чекбоксу
         cb_Find.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //позицию списка получаем из тэга, преобразовав его в (Integer)
-                PersonFind p1 = (PersonFind)getItem((Integer) buttonView.getTag());
-                // здесь присваиваем PersonFind.select_find значение isChecked
-                p1.setSelect_find(isChecked);
+                Person p1 = (Person)getItem((Integer) buttonView.getTag());
+                // здесь присваиваем Person.person_choose значение isChecked
+                p1.setPerson_choose(isChecked);
             }
         });
         return v;
@@ -91,21 +84,22 @@ public class FindAdapter extends BaseAdapter {
     // и формирует из них коллекцию-список.
     //помещаем в ArrayList только те персоны, которые имеют установленную галку
     //галка выбора пперсоны устанавливается в методе обработки слушателя галки,
-    // который прописан в методе View getView()  адаптера FindAdapter
+    // который прописан в методе View getView()  адаптера FindAdapter в слушателе cb_Find
 
-    public  ArrayList<PersonFind> getCheckedPersonList() {
+    public  ArrayList<Person> getCheckedPersonList() {
 
-        ArrayList<PersonFind> checkedList = new ArrayList<PersonFind>();
+        ArrayList<Person> checkedList = new ArrayList<Person>();
 
-        for (PersonFind p : mPersonList) {
-            // если в корзине
-            if (p.isSelect_find())
+        for (Person p : mPersonList) {
+            // если отмечен
+            if (p.isPerson_choose())
                 checkedList.add(p);
         }
         return checkedList;
     }
 
-    private PersonFind getPerson(int position){
-        return ((PersonFind)getItem(position));
+    //метод-оболочка для получения объекта по его позиции в списке
+    private Person getPerson(int position){
+        return ((Person)getItem(position));
     }
 }

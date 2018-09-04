@@ -71,7 +71,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="right"
             android:paddingLeft="10dp"
-            />
+            android:text=" "/>
     </LinearLayout>
 
 </LinearLayout>

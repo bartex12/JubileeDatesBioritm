@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +24,9 @@ import android.widget.SearchView;
 
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
+
+import static ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable.COLUMN_CHOOSE;
+import static ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable.TABLE_NAME;
 
 public class PersonsListActivity extends AppCompatActivity {
 
@@ -133,10 +137,36 @@ public class PersonsListActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         Log.d(TAG, "PersonsListActivity onStart");
-        //вывод в лог базы данных по людям
-        //mPersonDbHelper.displayDatabaseInfo();
-    }
+/*
+                //пишем новый столбец COLUMN_ONE
+                SQLiteDatabase mDb = mPersonDbHelper.getWritableDatabase();
+                mDb.execSQL("ALTER TABLE " + TABLE_NAME +
+                        " ADD COLUMN " + COLUMN_CHOOSE + " INTEGER");
+                        */
 
+        //Пишем во все строки столбца COLUMN_CHOOSE значение 0
+        SQLiteDatabase mDb = mPersonDbHelper.getWritableDatabase();
+        mDb.execSQL("update " + TABLE_NAME +
+                " set " + COLUMN_CHOOSE + " =0");
+/*
+        //Выводим в лог данные нового столбца
+        Cursor mCursor = mDb.query(TABLE_NAME,
+                null, null, null, null, null, null);
+        int chooseColumnIndex = mCursor.getColumnIndex(COLUMN_CHOOSE);
+        try {
+            // Проходим через все ряды
+            while (mCursor.moveToNext()) {
+                // Используем индекс для получения строки или числа
+                String choose = mCursor.getString(chooseColumnIndex);
+                // Выводим построчно значения каждого столбца
+                Log.d(TAG, "\n" + choose );
+            }
+        } finally {
+            // Всегда закрываем курсор после чтения
+            mCursor.close();
+        }
+        */
+    }
 
     @Override
     protected void onResume() {
