@@ -138,7 +138,7 @@ public class PersonsListActivity extends AppCompatActivity {
         super.onStart();
         Log.d(TAG, "PersonsListActivity onStart");
 /*
-                //пишем новый столбец COLUMN_ONE
+                //пишем новый столбец COLUMN_CHOOSE
                 SQLiteDatabase mDb = mPersonDbHelper.getWritableDatabase();
                 mDb.execSQL("ALTER TABLE " + TABLE_NAME +
                         " ADD COLUMN " + COLUMN_CHOOSE + " INTEGER");
@@ -149,7 +149,7 @@ public class PersonsListActivity extends AppCompatActivity {
         mDb.execSQL("update " + TABLE_NAME +
                 " set " + COLUMN_CHOOSE + " =0");
 /*
-        //Выводим в лог данные нового столбца
+        //Выводим в лог данные нового столбца - пока оставить для памяти
         Cursor mCursor = mDb.query(TABLE_NAME,
                 null, null, null, null, null, null);
         int chooseColumnIndex = mCursor.getColumnIndex(COLUMN_CHOOSE);
@@ -347,12 +347,6 @@ public class PersonsListActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-            //============== следующий код для отображения списка из базы данных===========//
-           // Log.d(TAG, "onActivityResult mCursor  =  " + mCursor);
-            //получаем данные в курсоре
-            //mCursor = mPersonDbHelper.getAllData();
-            //показываем список на экране
-            //showSQLitePersonList(mCursor);
         }
     }
 

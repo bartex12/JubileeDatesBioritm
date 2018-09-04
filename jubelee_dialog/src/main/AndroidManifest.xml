@@ -68,9 +68,8 @@
             android:label="Прожито на двоих "
             android:parentActivityName=".PersonsListActivity">
         </activity>
-        <activity android:name=".ListDialog_CheckBox">
-        </activity>
-        <activity android:name=".CheckedActivity">
+        <activity android:name=".ListDialog_CheckBox"
+                  android:label="Выберите... ">
         </activity>
     </application>
 

@@ -29,17 +29,11 @@ public class FindDatesActivity extends AppCompatActivity {
     public final String TAG = "33333";
 
     final static String LINE_CHECKED = "line_checked";
-
-    public static final String ID_SQL = "sqlFindDatesActivity";
-    public static final String ID_SQL_SECOND = "sql_srcond_FindDatesActivity";
     public static final String REQUEST_FIND = "request_find"; //риквест код
-    long id_sql;
-    long id_sql_second;
+    public static final int REQUEST_CHOOSE = 4; //риквест код
     int request;
     ListView mListView;
-    private SharedPreferences prefSetting;
-    int sort = 1;  //Сортировка: 1-поимени возр, 2- по имени убыв,3-по дате возр, 4 - по дате убыв
-    boolean isSort = false; //Список отсортирован?
+
     ArrayList<Map<String, Object>> data = new ArrayList<>();
     Map mMap;
 
@@ -75,11 +69,12 @@ public class FindDatesActivity extends AppCompatActivity {
                 long id_from_name1 = mPersonDbHelper.getIdFromName(name1);
                 long id_from_name2 = mPersonDbHelper.getIdFromName(name2);
 
-                Intent intent1 = new Intent();
+                Intent intent1 = new Intent(FindDatesActivity.this,JointActivity.class);
                 //передаём id выбранной пары сначала в ListDialog_CheckBoxБ потом в JointActivity
-                intent1.putExtra( ListDialog_CheckBox.ATTR_NAME1,id_from_name1);
-                intent1.putExtra( ListDialog_CheckBox.ATTR_NAME2,id_from_name2);
-                setResult(RESULT_OK, intent1);
+                intent1.putExtra(JointActivity.ATTR_ID1, id_from_name1);
+                intent1.putExtra( JointActivity.ATTR_ID2, id_from_name2);
+                intent1.putExtra(JointActivity.REQUEST_JOINT_CHOOSE, REQUEST_CHOOSE );
+                startActivity(intent1);
                 Log.d(TAG, "onItemClick name1 = " +name1 +
                         "  onItemClick name2 = " + name2 +
                         "  onItemClick id_from_name1 = " + id_from_name1+
@@ -107,7 +102,6 @@ public class FindDatesActivity extends AppCompatActivity {
                         "  id_2 = " + id_2 +
                         "  name2 = " + name2 +
                         "  forTwo_Days = " + forTwo_Days_1);
-
                 if (!name1.equals(name2)) {
                     mMap = new HashMap();
                     mMap.put(NAME1, name1);
@@ -117,7 +111,6 @@ public class FindDatesActivity extends AppCompatActivity {
                 }
             }
         }
-
             // формируем столбцы сопоставления
             String[] from = new String[]{NAME1, PAST_DAYS, NAME2};
             int[] to = new int[]{R.id.name_list_one, R.id.past_Days_joint, R.id.name_list_two};

@@ -111,7 +111,7 @@ public class SeachActivity extends AppCompatActivity {
     private void showSQLitePersonList(Cursor mCursor) {
 
         //поручаем активности присмотреть за курсором
-        startManagingCursor(mCursor);
+       // startManagingCursor(mCursor);
 
         // формируем столбцы сопоставления
         String[] from = new String[] {PersonTable.COLUMN_NAME,

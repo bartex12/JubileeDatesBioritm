@@ -22,7 +22,6 @@ public class FindAdapterPerson extends BaseAdapter {
     ArrayList<Person> mPersonList;
 
     TextView name;
-    TextView dr;
     TextView past_days;
     CheckBox cb_Find;
 

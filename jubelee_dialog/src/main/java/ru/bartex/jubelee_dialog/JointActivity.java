@@ -33,6 +33,7 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
     public static final int REQUEST_JOINT_PERSON1 = 1; //риквест код от JointActivity для персоны 1
     public static final int REQUEST_JOINT_PERSON2 = 2; //риквест код от JointActivity для персоны 2
     public static final int REQUEST_JOINT_FIND = 3; //риквест код от JointActivity для поиска совместных дат
+    public static final String REQUEST_JOINT_CHOOSE = "choose_JointActivity";;
 
     final static String ATTR_ID1 ="id1";
     final static String ATTR_ID2 ="id2";
@@ -55,6 +56,7 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
     PersonDbHelper mDbHelper = new PersonDbHelper(this);
     private static final String KEY_ID_SQL = "ID_SQL";
     private static final String KEY_ID_SQL_SECOND = "ID_SQL_SECOND";
+    int request=-1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,9 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
         ActionBar act = getSupportActionBar();
         act.setDisplayHomeAsUpEnabled(true);
         act.setHomeButtonEnabled(true);
+
+        mPersonButton1 = (Button) findViewById(R.id.buttonNamePerson1);
+        mPersonButton2 = (Button) findViewById(R.id.buttonNamePerson2);
 
         mDays = (EditText) findViewById(R.id.jointDays);
         mDays.addTextChangedListener(this);
@@ -128,17 +133,52 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
             id_sql = savedInstanceState.getLong(KEY_ID_SQL);
             id_sql_second = savedInstanceState.getLong(KEY_ID_SQL_SECOND);
             Log.d(TAG,"savedInstanceState:  id_sql = " + id_sql + "   id_sql_second = " + id_sql_second);
-        }else {
+        }
             //Загружаем данные из интента
             Intent intent = getIntent();
-            id_sql = intent.getLongExtra(ID_SQL,1);
-            id_sql_second = intent.getLongExtra(ID_SQL_second,id_sql);
+            request = intent.getIntExtra(REQUEST_JOINT_CHOOSE, request);
+            if (request == FindDatesActivity.REQUEST_CHOOSE){
+                id_sql = intent.getLongExtra(ATTR_ID1,1);
+                id_sql_second = intent.getLongExtra(ATTR_ID2,id_sql);
+                Log.d(TAG, "JointActivity onCreate:  id1 = " + id_sql + "  id2 = " +id_sql_second);
+
+                //получаем данные персоны 1 из базы данных
+                mPerson = mDbHelper.getPersonObjectData(id_sql);
+                if (mPerson!=null){
+                    Log.d(TAG, "JointActivity onCreate:  mPersonButton1.setText = " +
+                            mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
+                }else  Log.d(TAG, "JointActivity onCreate mPerson1 = null");
+
+                mPersonButton1.setText(mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
+
+                //получаем данные персоны 2 из базы данных
+                mPerson = mDbHelper.getPersonObjectData(id_sql_second);
+                if (mPerson!=null){
+                    Log.d(TAG, "JointActivity onCreate:  mPersonButton2.setText = " +
+                            mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
+                }else  Log.d(TAG, "JointActivity onCreate mPerson2 = null");
+                mPersonButton2.setText(mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
+
+                // количество прожитых миллисекунд на двоих
+                millisForTwo = mDbHelper.getMillisForTwo(id_sql,id_sql_second);
+                if (millisForTwo>0){
+                    Log.d(TAG, "JointActivity onCreate:  forTwo_Days.setText = " +
+                            "На двоих прожито  " + millisForTwo/86400000 + "  дней");
+                }else {
+                    Log.d(TAG, "JointActivity onCreate:  forTwo_Days  millisForTwo>0)");
+                    forTwo_Days.setText("На двоих прожито  " + millisForTwo / 86400000 + "  дней");
+                }
+            }else {
+                id_sql = intent.getLongExtra(ID_SQL,1);
+                id_sql_second = intent.getLongExtra(ID_SQL_second,id_sql);
+            }
+
             Log.d(TAG,"Intent :  id_sql = " + id_sql + "   id_sql_second = " + id_sql_second);
-        }
+
 
         //получаем данные в соответствии с первым id
         mPerson = mDbHelper.getPersonObjectData(id_sql);
-        mPersonButton1 = (Button) findViewById(R.id.buttonNamePerson1);
+
         mPersonButton1.setText(mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
         mPersonButton1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,7 +192,7 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
 
         //получаем данные в соответствии со вторым id
         mPerson = mDbHelper.getPersonObjectData(id_sql_second);
-        mPersonButton2 = (Button) findViewById(R.id.buttonNamePerson2);
+
         mPersonButton2.setText(mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
         mPersonButton2.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,26 +268,7 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
 
             }else if (requestCode == REQUEST_JOINT_FIND){
                 Log.d(TAG, "JointActivity onActivityResult REQUEST_JOINT_FIND");
-
-                //получаем id выбранной в результате поиска совместных дат персоны 1
-                id_sql = data.getLongExtra(ATTR_ID1, 1);
-                Log.d(TAG, "id1 = " + id_sql);
-                //получаем данные персоны 1 из базы данных
-                mPerson = mDbHelper.getPersonObjectData(id_sql);
-                mPersonButton1.setText(mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
-
-                //получаем id выбранной в результате поиска совместных дат персоны 2
-                id_sql_second = data.getLongExtra(ATTR_ID2, id_sql);
-                Log.d(TAG, "id2 = " +id_sql_second );
-                //получаем данные персоны 2 из базы данных
-                mPerson = mDbHelper.getPersonObjectData(id_sql_second);
-                mPersonButton2.setText(mPerson.getPerson_name() + "  /" + mPerson.getPerson_past_days()+"/");
-
             }
-
-            // количество прожитых миллисекунд на двоих
-            millisForTwo = mDbHelper.getMillisForTwo(id_sql,id_sql_second);
-            forTwo_Days.setText("На двоих прожито  " + millisForTwo/86400000 + "  дней" );
         }
     }
 
@@ -269,17 +290,8 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
 
             case R.id.action_find_dates:
                 Log.d(TAG, "OptionsItem = action_find_dates");
-                /*
-                Intent intentFindDates = new Intent(this, FindDatesActivity.class);
-                intentFindDates.putExtra(FindDatesActivity.ID_SQL,id_sql);
-                intentFindDates.putExtra(FindDatesActivity.ID_SQL_SECOND,id_sql_second);
-                intentFindDates.putExtra(FindDatesActivity.REQUEST_FIND, REQUEST_JOINT_FIND);
-                startActivityForResult(intentFindDates,REQUEST_JOINT_FIND);
-                */
                 Intent intentFindDates = new Intent(this, ListDialog_CheckBox.class);
-                //посылаем код, что это интент от JointActivity
-                //intentFindDates.putExtra(FindDatesActivity.REQUEST_FIND, REQUEST_JOINT_FIND);
-                startActivityForResult(intentFindDates, REQUEST_JOINT_FIND);
+                startActivity(intentFindDates);
                 return true;
 
             case R.id.action_settings:

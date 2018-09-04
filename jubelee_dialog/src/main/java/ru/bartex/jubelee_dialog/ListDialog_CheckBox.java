@@ -30,30 +30,20 @@ public class ListDialog_CheckBox extends AppCompatActivity {
     int sort = 1;  //Сортировка: 1-поимени возр, 2- по имени убыв,3-по дате возр, 4 - по дате убыв
     boolean isSort = false; //Список отсортирован?
     Button createList;
-    public static final int REQUEST_LIST_DIALOG_FIND = 4; //риквест код
 
     ArrayList<Person> mPersonArrayList = new ArrayList<Person>();
     FindAdapterPerson findAdapter;
-    SimpleAdapter mSimpleAdapter;
     ArrayList<Map<String,Object>> data = new ArrayList<>();
-    Map<String,Object> m;
-
-
-    final static String ATTR_NAME1 ="text1";
-    final static String ATTR_NAME2 ="text2";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_dialog__check_box);
-
+        Log.d(TAG, "ListDialog_CheckBox onCreate");
         //получаем файл с настройками для приложения
         prefSetting = PreferenceManager.getDefaultSharedPreferences(this);
         sort = Integer.parseInt(prefSetting.getString("ListSort", "1"));
         isSort = prefSetting.getBoolean("cbSort", false);
-
-        Intent intent = getIntent();
-        final int request = intent.getIntExtra(FindDatesActivity.REQUEST_FIND,3);
 
         createList = (Button) findViewById(R.id.toggleButton_createList);
         createList.setOnClickListener(new View.OnClickListener() {
@@ -62,13 +52,11 @@ public class ListDialog_CheckBox extends AppCompatActivity {
 
                 // http://www.easyinfogeek.com/2014/01/android-tutorial-two-methods-of-passing.html
                 ArrayList<Person> pp = findAdapter.getCheckedPersonList();
-
                 Intent intent = new Intent(ListDialog_CheckBox.this, FindDatesActivity.class);
                 Bundle mChecked = new Bundle();
                 mChecked.putSerializable(FindDatesActivity.LINE_CHECKED, pp);
-                //intent.putExtra(FindDatesActivity.REQUEST_FIND, request);
                 intent.putExtras(mChecked);
-                startActivityForResult(intent,REQUEST_LIST_DIALOG_FIND);
+                startActivity(intent);
             }
         });
 
@@ -87,25 +75,4 @@ public class ListDialog_CheckBox extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        Log.d(TAG, "ListDialog_CheckBox onActivityResult");
-        if (resultCode == RESULT_OK){
-            if (requestCode == REQUEST_LIST_DIALOG_FIND){
-                //получаем и передаём дальше id выбранной пары
-                Long id1 =getIntent().getLongExtra(ATTR_NAME1,55);
-                Long id2 =getIntent().getLongExtra(ATTR_NAME2,55);
-                Log.d(TAG, "id1 = " + id1 + "  id2 = " +id2 );
-                // передаём
-                Intent intent1 = new Intent();
-                intent1.putExtra(JointActivity.ATTR_ID1,id1);
-                intent1.putExtra(JointActivity.ATTR_ID2,id2);
-                setResult(RESULT_OK, intent1);
-
-                finish();
-            }
-    }
-}
 }
