@@ -100,6 +100,18 @@
         <item>4</item>
     </string-array>
 
+    <string-array name="MenuMain">
+        <item>Личные даты</item>
+        <item>Совместные даты</item>
+        <item>Биоритмы</item>
+    </string-array>
+
+    <string-array name="MenuSubMain">
+        <item>Расчёт количества прожитых дней</item>
+        <item>Расчёт количества совместно прожитых дней</item>
+        <item>Расчёт биоритмов</item>
+    </string-array>
+
     <string name="pref_title_system_sync_settings">System sync settings</string>
 
     <!-- Example settings for Notifications -->
@@ -111,5 +123,12 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+    <string name="title_activity_main_drower">MainDrowerActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="title_activity_main">MainActivity</string>
 
 </resources>

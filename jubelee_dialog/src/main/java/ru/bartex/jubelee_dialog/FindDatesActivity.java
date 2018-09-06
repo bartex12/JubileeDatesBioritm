@@ -79,7 +79,7 @@ public class FindDatesActivity extends AppCompatActivity {
                         "  onItemClick name2 = " + name2 +
                         "  onItemClick id_from_name1 = " + id_from_name1+
                         "  onItemClick id_from_name2 = " + id_from_name2);
-                finish();
+                //finish();
             }
         });
 
@@ -89,12 +89,16 @@ public class FindDatesActivity extends AppCompatActivity {
         request = getIntent().getIntExtra(REQUEST_FIND,3);
 
         int size = mArrayListChecked.size();
-        for (int i = 0; i < size; i++) {
-            for (int k = i+1; k < size; k++) {
-                long id_1 = mArrayListChecked.get(i).getPerson_id();
-                String name1 = mArrayListChecked.get(i).getPerson_name();
-                long id_2 = mArrayListChecked.get(k).getPerson_id();
-                String name2 = mArrayListChecked.get(k).getPerson_name();
+
+        if (size == 1){
+            ArrayList<Person> mArrayListAll =  mPersonDbHelper.getAllContactsChoose();
+
+            long id_1 = mArrayListChecked.get(0).getPerson_id();
+            String name1 = mArrayListChecked.get(0).getPerson_name();
+
+            for (int k = 0; k < mArrayListAll.size(); k++) {
+                long id_2 = mArrayListAll.get(k).getPerson_id();
+                String name2 = mArrayListAll.get(k).getPerson_name();
                 long forTwo_Days_1 = (mPersonDbHelper.getMillisForTwo(id_1, id_2)) / 86400000;
                 Log.d(TAG, "FindDatesActivity  " +
                         "  id_1 = " + id_1 +
@@ -108,6 +112,29 @@ public class FindDatesActivity extends AppCompatActivity {
                     mMap.put(NAME2, name2);
                     mMap.put(PAST_DAYS, forTwo_Days_1);
                     data.add(mMap);
+                }
+        }
+        }else if (size > 1){
+            for (int i = 0; i < size; i++) {
+                for (int k = i+1; k < size; k++) {
+                    long id_1 = mArrayListChecked.get(i).getPerson_id();
+                    String name1 = mArrayListChecked.get(i).getPerson_name();
+                    long id_2 = mArrayListChecked.get(k).getPerson_id();
+                    String name2 = mArrayListChecked.get(k).getPerson_name();
+                    long forTwo_Days_1 = (mPersonDbHelper.getMillisForTwo(id_1, id_2)) / 86400000;
+                    Log.d(TAG, "FindDatesActivity  " +
+                            "  id_1 = " + id_1 +
+                            "  name1 = " + name1 +
+                            "  id_2 = " + id_2 +
+                            "  name2 = " + name2 +
+                            "  forTwo_Days = " + forTwo_Days_1);
+                    if (!name1.equals(name2)) {
+                        mMap = new HashMap();
+                        mMap.put(NAME1, name1);
+                        mMap.put(NAME2, name2);
+                        mMap.put(PAST_DAYS, forTwo_Days_1);
+                        data.add(mMap);
+                    }
                 }
             }
         }
@@ -131,8 +158,11 @@ public class FindDatesActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case android.R.id.home:
                     Log.d(TAG, "Домой");
-                    Intent intent = new Intent(this, PersonsListActivity.class);
+                    //onBackPressed();
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP );
                     startActivity(intent);
+                    finish();
                     return true;
 
                 case R.id.action_settings:

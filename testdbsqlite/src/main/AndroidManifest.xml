@@ -23,6 +23,10 @@
         </activity>
         <activity android:name=".CheckedActivity">
         </activity>
+        <activity
+            android:name=".BottonNavigateActivity"
+            android:label="@string/title_activity_botton_navigate">
+        </activity>
     </application>
 
 </manifest>

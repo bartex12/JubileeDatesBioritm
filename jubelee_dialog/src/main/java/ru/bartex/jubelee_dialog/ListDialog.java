@@ -73,6 +73,7 @@ public class ListDialog extends AppCompatActivity {
         SimpleCursorAdapter scAdapter = new SimpleCursorAdapter(
                 this, R.layout.list_name_date, mCursor, from, to);
         mListView.setAdapter(scAdapter);
+
     }
 
     @Override

@@ -27,8 +27,8 @@ public class CheckedActivity extends AppCompatActivity {
 
     final static String CHECKED = "checked";
     ListView mListView;
-    Button mButtonOne;
-    Button mButtonTwo;
+    Button mButtonLeft;
+    Button mButtonRight;
     long[] mChecked ;
     ArrayList<String> mList = new ArrayList<>();
     DBHelper mDBHelper = new DBHelper(this);
@@ -47,8 +47,8 @@ public class CheckedActivity extends AppCompatActivity {
         View empty = findViewById(R.id.emptyList_checked);
         mListView.setEmptyView(empty);
 
-        mButtonOne = (Button) findViewById(R.id.buttonOne);
-        mButtonOne.setOnClickListener(new View.OnClickListener() {
+        mButtonLeft = (Button) findViewById(R.id.buttonOne);
+        mButtonLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -79,11 +79,12 @@ public class CheckedActivity extends AppCompatActivity {
                     Log.w(TAG, log);
                 }
                 */
+         finish();
             }
         });
 
-        mButtonTwo = (Button) findViewById(R.id.buttonTwo);
-        mButtonTwo.setOnClickListener(new View.OnClickListener() {
+        mButtonRight = (Button) findViewById(R.id.buttonTwo);
+        mButtonRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 /*
@@ -92,6 +93,9 @@ public class CheckedActivity extends AppCompatActivity {
                 mDb.execSQL("ALTER TABLE " + TABLE_NAME +
                         " ADD COLUMN " + COLUMN_ONE + " text");
                 */
+
+                Intent intent = new Intent(CheckedActivity.this, BottonNavigateActivity.class);
+                startActivity(intent);
             }
         });
 

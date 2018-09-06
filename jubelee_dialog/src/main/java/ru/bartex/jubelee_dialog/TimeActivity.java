@@ -150,7 +150,7 @@ public class TimeActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main,menu);
+        getMenuInflater().inflate(R.menu.time,menu);
         /*
         //если делать через shareActionProvider, в 4.0.4 не работает,
         //придётся через меню case R.id.action_share: разница только в способе обработки

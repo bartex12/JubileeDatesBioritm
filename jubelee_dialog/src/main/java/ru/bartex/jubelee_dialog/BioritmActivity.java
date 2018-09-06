@@ -32,6 +32,7 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.P;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
 
@@ -173,7 +174,10 @@ public class BioritmActivity extends AppCompatActivity {
         buttonNameForBioritm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                //onBackPressed();  //так было, когда список был лаунчером
+                Intent intent = new Intent(BioritmActivity.this, PersonsListActivity.class);
+                intent.putExtra(P.FROM_MAIN, P.TO_BIORITM);
+                startActivity(intent);
             }
         });
 
@@ -306,8 +310,8 @@ public class BioritmActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Log.d(TAG, "BioritmActivity onBackPressed");
-        Intent intent = new Intent(BioritmActivity.this, PersonsListActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(BioritmActivity.this, PersonsListActivity.class);
+        //startActivity(intent);
         //finish();
         super.onBackPressed();
 
@@ -331,10 +335,13 @@ public class BioritmActivity extends AppCompatActivity {
 
         switch (item.getItemId()){
 
-            //чтобы работала стрелка Назад, а не происходил крах приложения
+            //чтобы работала стрелка Назад к экрану, указанному в манифесте
             case android.R.id.home:
                 Log.d(TAG, "Домой");
-                onBackPressed();
+                Intent intentHome = new Intent(this, MainActivity.class);
+                intentHome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP );
+                startActivity(intentHome);
+                finish();
                 return true;
 
             case R.id.action_settings:

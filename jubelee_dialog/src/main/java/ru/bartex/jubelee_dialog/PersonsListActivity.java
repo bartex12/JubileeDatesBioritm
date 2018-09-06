@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.P;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
 
@@ -59,12 +61,20 @@ public class PersonsListActivity extends AppCompatActivity {
     Cursor mCursor;
     SimpleCursorAdapter scAdapter;
 
+    int from_to;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_persons_list);
         Log.d(TAG, "PersonsListActivity onCreate");
+
+        ActionBar act = getSupportActionBar();
+        act.setDisplayHomeAsUpEnabled(true );
+        act.setHomeButtonEnabled(true);
+
+        from_to = getIntent().getIntExtra(P.FROM_MAIN, 0);
+
         //обработка интента, если он есть
         handleIntent(getIntent());
 
@@ -76,16 +86,28 @@ public class PersonsListActivity extends AppCompatActivity {
         View empty = findViewById(R.id.emptyList);
         mListView.setEmptyView(empty);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            String s;
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //посылаем в интенте id строки с данными в базе данных
-                Log.d(TAG, "position = " + position + " id = " + id);
-                Intent intent = new Intent(PersonsListActivity.this, BioritmActivity.class);
-                intent.putExtra(BioritmActivity.ID_SQL, id);
-                startActivity(intent);
-                finish();
+
+                if (from_to == P.TO_ONE_DATE){
+                    Log.d(TAG, "PersonsListActivity onItemClick TO_ONE_DATE from_to = " + from_to);
+                    Intent intent = new Intent(PersonsListActivity.this, TimeActivity.class);
+                    intent.putExtra(TimeActivity.ID_SQL, id);
+                    startActivity(intent);
+                }else if (from_to == P.TO_BIORITM){
+                    Log.d(TAG, "PersonsListActivity onItemClick TO_BIORITM from_to = " + from_to);
+                    //посылаем в интенте id строки с данными в базе данных
+                    Log.d(TAG, "position = " + position + " id = " + id);
+                    Intent intent = new Intent(PersonsListActivity.this, BioritmActivity.class);
+                    intent.putExtra(BioritmActivity.ID_SQL, id);
+                    //intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    startActivity(intent);
+
+                }else {
+                    Log.d(TAG, "PersonsListActivity onItemClick from_to = " + from_to);
+                }
+                //finish();
             }
         });
 
@@ -142,7 +164,7 @@ public class PersonsListActivity extends AppCompatActivity {
                 SQLiteDatabase mDb = mPersonDbHelper.getWritableDatabase();
                 mDb.execSQL("ALTER TABLE " + TABLE_NAME +
                         " ADD COLUMN " + COLUMN_CHOOSE + " INTEGER");
-                        */
+*/
 
         //Пишем во все строки столбца COLUMN_CHOOSE значение 0
         SQLiteDatabase mDb = mPersonDbHelper.getWritableDatabase();
@@ -226,9 +248,8 @@ public class PersonsListActivity extends AppCompatActivity {
     //вызов диалогового окна при нажатии на кнопку Назад
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
+        super.onBackPressed();
         Log.d(TAG, "PersonsListActivity onBackPressed");
-        openQuitDialog();
     }
 
     @Override
@@ -304,6 +325,12 @@ public class PersonsListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+            //чтобы работала стрелка Назад, а не происходил крах приложения
+            case android.R.id.home:
+                Log.d(TAG, "Домой");
+                onBackPressed();
+                finish();
+                return true;
             case R.id.action_add:
                 Log.d(TAG, "OptionsItem = action_add");
                 Intent intentAdd = new Intent(this, NewActivity.class);
@@ -424,31 +451,6 @@ public class PersonsListActivity extends AppCompatActivity {
         shp = getPreferences(MODE_PRIVATE);
         pos = shp.getInt(KEY_POS, 0);
         offset = shp.getInt(KEY_OFFSET, 0);
-    }
-
-    //Создать и открыть диалог выхода из программы
-    private void openQuitDialog() {
-        AlertDialog.Builder quitDialog = new AlertDialog.Builder(this);
-        quitDialog.setTitle("Выход: Вы уверены?");
-
-        quitDialog.setPositiveButton("Нет", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-
-        quitDialog.setNegativeButton("Да", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
-                //system.exit(0);
-                //finishAffinity();  // с API 16
-                //System.runFinalizersOnExit(true);
-                //System.exit(0);
-            }
-        });
-
-        quitDialog.show();
     }
 
     //Выводим список данных на экран с использованием SimpleCursorAdapter

@@ -186,6 +186,7 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                 //запускаем интент и получаем обратно id персоны 1
                 Intent intentPerson1  = new Intent(JointActivity.this, ListDialog.class);
                 intentPerson1.putExtra(ListDialog.REQUEST_PERSON, REQUEST_JOINT_PERSON1);
+                //intentPerson1.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivityForResult(intentPerson1,REQUEST_JOINT_PERSON1);
             }
         });
@@ -200,6 +201,7 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                 //запускаем интент и получаем обратно id персоны 2
                 Intent intentPerson2  = new Intent(JointActivity.this, ListDialog.class);
                 intentPerson2.putExtra(ListDialog.REQUEST_PERSON, REQUEST_JOINT_PERSON2);
+                //intentPerson2.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivityForResult(intentPerson2,REQUEST_JOINT_PERSON2);
             }
         });
@@ -285,7 +287,11 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
 
             case android.R.id.home:
                 Log.d(TAG, "Домой");
-                onBackPressed();
+                //onBackPressed();
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP );
+                startActivity(intent);
+                finish();
                 return true;
 
             case R.id.action_find_dates:

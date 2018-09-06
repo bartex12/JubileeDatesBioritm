@@ -16,11 +16,6 @@
             android:label="Лучшие люди"
             android:launchMode="singleTop">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-            <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
 
@@ -44,8 +39,7 @@
         </activity>
         <activity
             android:name=".BioritmActivity"
-            android:label="Биоритмы"
-            android:parentActivityName=".PersonsListActivity">
+            android:label="Биоритмы">
         </activity>
         <activity android:name=".PrefActivity">
         </activity>
@@ -60,16 +54,30 @@
         </activity>
         <activity
             android:name=".ListDialog"
-            android:label="Выбор персоны"
+            android:label="Выбор"
+            android:noHistory="true"
             android:theme="@style/AppDialog">
         </activity>
         <activity
             android:name=".FindDatesActivity"
             android:label="Прожито на двоих "
-            android:parentActivityName=".PersonsListActivity">
+            >
         </activity>
-        <activity android:name=".ListDialog_CheckBox"
-                  android:label="Выберите... ">
+        <activity
+            android:name=".ListDialog_CheckBox"
+            android:label="Выберите... "
+
+            android:theme="@style/AppDialog">
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
     </application>
 

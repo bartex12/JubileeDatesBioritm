@@ -8,6 +8,7 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -52,11 +53,16 @@ public class ListDialog_CheckBox extends AppCompatActivity {
 
                 // http://www.easyinfogeek.com/2014/01/android-tutorial-two-methods-of-passing.html
                 ArrayList<Person> pp = findAdapter.getCheckedPersonList();
-                Intent intent = new Intent(ListDialog_CheckBox.this, FindDatesActivity.class);
-                Bundle mChecked = new Bundle();
-                mChecked.putSerializable(FindDatesActivity.LINE_CHECKED, pp);
-                intent.putExtras(mChecked);
-                startActivity(intent);
+                //если длина списка = 0, тост, что ничего не выбрано
+                if (pp.size() == 0) {
+                    myToast("Ничего не выбрано");
+                }else {
+                    Intent intent = new Intent(ListDialog_CheckBox.this, FindDatesActivity.class);
+                    Bundle mChecked = new Bundle();
+                    mChecked.putSerializable(FindDatesActivity.LINE_CHECKED, pp);
+                    intent.putExtras(mChecked);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -73,6 +79,12 @@ public class ListDialog_CheckBox extends AppCompatActivity {
         findAdapter = new FindAdapterPerson(this,mPersonArrayList);
         mListView.setAdapter(findAdapter);
 
+    }
+
+    void myToast (String s){
+        Toast mToast = Toast.makeText(ListDialog_CheckBox.this,s, Toast.LENGTH_SHORT);
+        mToast.setGravity(Gravity.CENTER,0,0);
+        mToast.show();
     }
 
 }
