@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    public static final String TAG = "33333";
+    private static final String TAG = "33333";
 
     //Имя файла базы данных
     private static final String DATABASE_NAME = "testDB2.db";
@@ -52,11 +52,25 @@ public class DBHelper extends SQLiteOpenHelper {
     // Если записей в базе нет, вносим запись
     public void createDefaultPersonIfNeed()  {
         int count = this.getPersonsCount();
-        Log.i(TAG, "MyDatabaseHelper createDefaultPersonIfNeed() count =" + count );
+        Log.i(TAG, "MyDatabaseHelper createDefaultPersonIfNeed() count before =" + count );
         if(count ==0 ) {
             Person person1 = new Person("Анжелина Джоли",false);
             this.addPerson(person1);
+            count = this.getPersonsCount();
+            Log.i(TAG, "MyDatabaseHelper createDefaultPersonIfNeed() count after =" + count );
+        }
+    }
 
+    //проверка существования таблицы
+    public boolean existsTable(String table) {
+
+        try {
+            SQLiteDatabase db = this.getReadableDatabase();
+            String query = "SELECT * FROM " + table;
+            db.rawQuery(query, null);
+            return true;
+        } catch (SQLException e) {
+            return false;
         }
     }
 
@@ -163,7 +177,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public ArrayList<Person> getAllContacts() {
-        ArrayList<Person> contactList = new ArrayList<Person>();
+        ArrayList<Person> contactList = new ArrayList<>();
         String selectQuery = "SELECT  * FROM " + TABLE_NAME;
 
         SQLiteDatabase db = this.getWritableDatabase();

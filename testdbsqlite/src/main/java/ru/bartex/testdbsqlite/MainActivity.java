@@ -51,12 +51,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         Log.d(TAG, "MainActivity onCreate");
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab =  findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,12 +66,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mListView = (ListView) findViewById(R.id.listView_Test);
+        mListView = findViewById(R.id.listView_Test);
         //находим View, которое выводит текст Список пуст
         View empty = findViewById(R.id.emptyList);
         mListView.setEmptyView(empty);
 
-        ok = (Button)findViewById(R.id.toggleButton_test) ;
+        ok = findViewById(R.id.toggleButton_test) ;
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,16 +86,56 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //если таблицы с именем TABLE_NAME не существует, создаём её
+        if (!(mPersonDbHelper.existsTable(TABLE_NAME))){
+            mPersonDbHelper.onCreate(mPersonDbHelper.getWritableDatabase());
+            Log.d(TAG, "MainActivity existsTable = false");
+        }else {
+            Log.d(TAG, "MainActivity existsTable = true");
+
+        }
         //если в базе нет записей, добавляем одну с анжелиной джоли
         mPersonDbHelper.createDefaultPersonIfNeed();
-        //Пишем во все строки столбца COLUMN_ONE значение one
-        SQLiteDatabase mDb = mPersonDbHelper.getWritableDatabase();
-        mDb.execSQL("update " + TABLE_NAME +
-                " set " + COLUMN_ONE + " ='one'");
-        //update Tasks set Done=0
 
         registerForContextMenu(mListView);
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "MainActivity onStart");
+/*
+                //пишем новый столбец COLUMN_CHOOSE
+                SQLiteDatabase mDb = mPersonDbHelper.getWritableDatabase();
+                mDb.execSQL("ALTER TABLE " + TABLE_NAME +
+                        " ADD COLUMN " + COLUMN_ONE + " TEXT");
+
+*/
+
+        //Пишем во все строки столбца COLUMN_CHOOSE значение 0
+        SQLiteDatabase mDb = mPersonDbHelper.getWritableDatabase();
+        mDb.execSQL("update " + TABLE_NAME +
+                " set " + COLUMN_ONE + " ='one'");
+
+        //Выводим в лог данные нового столбца - пока оставить для памяти
+        Cursor mCursor = mDb.query(TABLE_NAME,
+                null, null, null, null, null, null);
+        int chooseColumnIndex = mCursor.getColumnIndex(COLUMN_ONE);
+        try {
+            // Проходим через все ряды
+            while (mCursor.moveToNext()) {
+                // Используем индекс для получения строки или числа
+                String choose = mCursor.getString(chooseColumnIndex);
+                // Выводим построчно значения  столбца
+                Log.d(TAG, "\n" + choose );
+            }
+        } finally {
+            // Всегда закрываем курсор после чтения
+            mCursor.close();
+        }
+
+    }
+
 
     @Override
     protected void onResume() {
@@ -110,7 +150,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "PersonsListActivity onDestroy");
+        Log.d(TAG, "MainActivity onDestroy");
+       // удаляем таблицу
+        //mPersonDbHelper.getWritableDatabase().execSQL("DROP TABLE " + TABLE_NAME);  //удаление таблицы
         mCursor.close();
         mPersonDbHelper.close();
     }
@@ -151,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                 (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         //если выбран пункт Удалить запись
         if (item.getItemId() == DELETE_ID) {
-            Log.d(TAG, "PersonsListActivity CM_DELETE_ID");
+            Log.d(TAG, "MainActivity CM_DELETE_ID");
 
             AlertDialog.Builder deleteDialog = new AlertDialog.Builder(MainActivity.this);
             deleteDialog.setTitle("Удалить: Вы уверены?");
@@ -166,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     //Удаление записи из базы данных
                     mPersonDbHelper.deletePerson(acmi.id);
-                    Log.d(TAG, "PersonsListActivity удалена позиция с ID " + acmi.id);
+                    Log.d(TAG, "MainActivity удалена позиция с ID " + acmi.id);
 
                     onResume();
 
@@ -177,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
 
             //если выбран пункт Изменить запись
         } else if (item.getItemId() == CHANGE_ID) {
-            Log.d(TAG, "PersonsListActivity CM_CHANGE_ID");
+            Log.d(TAG, "MainActivity CM_CHANGE_ID");
 /*
             Intent intent = new Intent(MainActivity.this, NewActivity.class);
             intent.putExtra(NewActivity.REQUEST_CODE, request_code);

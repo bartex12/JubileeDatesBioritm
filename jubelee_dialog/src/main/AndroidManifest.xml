@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".PersonsListActivity"
-            android:label="Лучшие люди"
+            android:label="Выбор"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
@@ -25,11 +25,11 @@
         </activity>
         <activity
             android:name=".TableActivity"
-            android:label="Таблица юбилейных дат">
+            android:label="Юбилейные даты...">
         </activity>
         <activity
             android:name=".TimeActivity"
-            android:label="Число прожитых дней"
+            android:label="Прожито дней..."
             android:windowSoftInputMode="stateVisible">
         </activity>
         <activity
@@ -54,30 +54,30 @@
         </activity>
         <activity
             android:name=".ListDialog"
-            android:label="Выбор"
+            android:label="Выберите..."
             android:noHistory="true"
             android:theme="@style/AppDialog">
         </activity>
         <activity
             android:name=".FindDatesActivity"
-            android:label="Прожито на двоих "
-            >
+            android:label="Прожито на двоих ">
         </activity>
         <activity
             android:name=".ListDialog_CheckBox"
-            android:label="Выберите... "
-
+            android:label="Выберите из списка..."
             android:theme="@style/AppDialog">
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main"
+            android:label="@string/main_menu"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".HelpMainActivity">
         </activity>
     </application>
 

@@ -81,7 +81,7 @@ public class PersonsListActivity extends AppCompatActivity {
         //получаем файл с настройками для приложения
         prefSetting = PreferenceManager.getDefaultSharedPreferences(this);
 
-        mListView = (ListView) findViewById(R.id.listView);
+        mListView = findViewById(R.id.listView);
         //находим View, которое выводит текст Список пуст
         View empty = findViewById(R.id.emptyList);
         mListView.setEmptyView(empty);
@@ -180,7 +180,7 @@ public class PersonsListActivity extends AppCompatActivity {
             while (mCursor.moveToNext()) {
                 // Используем индекс для получения строки или числа
                 String choose = mCursor.getString(chooseColumnIndex);
-                // Выводим построчно значения каждого столбца
+                // Выводим построчно значения  столбца
                 Log.d(TAG, "\n" + choose );
             }
         } finally {
@@ -283,20 +283,23 @@ public class PersonsListActivity extends AppCompatActivity {
         searchView.setQueryHint("Поиск");
         //устанавливаем в панели действий кнопку ( > )для отправки поискового запроса
         searchView.setSubmitButtonEnabled(true);
+
         //иконка закрытия поиска
         int searchCloseId = searchView.getContext().getResources().
                 getIdentifier("android:id/search_close_btn", null, null);
-        ImageView searchClose = (ImageView) searchView.findViewById(searchCloseId);
+        ImageView searchClose =  searchView.findViewById(searchCloseId);
         searchClose.setImageResource(R.drawable.ic_clear_white_24dp);
+
         //иконка  поиска
         int searchIconId = searchView.getContext().getResources().
                 getIdentifier("android:id/search_button", null, null);
-        ImageView searchIcon = (ImageView) searchView.findViewById(searchIconId);
+        ImageView searchIcon =  searchView.findViewById(searchIconId);
         searchIcon.setImageResource(R.drawable.ic_search_white_36dp);
+
         //иконка голосового ввода поиска
         int searchMicId = searchView.getContext().getResources().
                 getIdentifier("android:id/search_voice_btn", null, null);
-        ImageView searchMic = (ImageView) searchView.findViewById(searchMicId);
+        ImageView searchMic =  searchView.findViewById(searchMicId);
         searchMic.setImageResource(R.drawable.ic_mic_white_36dp);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -361,13 +364,7 @@ public class PersonsListActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-            //если вернулось из NEW_ACTIVITY по нажатию здесь кнопки  Добавить
-            if (requestCode == NEW_ACTIVITY_ADD_REQUEST) {
-                //здесь пока ничего
-                //если вернулось из NEW_ACTIVITY по выбору здесь из контексного меню строки Изменить
-            } else if (requestCode == NEW_ACTIVITY_CHANGE_REQUEST) {
-                //здесь пока  ничего
-            } else if (requestCode == SEARCH_ACTIVITY) {
+            if (requestCode == SEARCH_ACTIVITY) {
                 long dataSearch = data.getLongExtra(BioritmActivity.ID_SQL, 0);
                 Intent intent = new Intent(PersonsListActivity.this, BioritmActivity.class);
                 intent.putExtra(BioritmActivity.ID_SQL, dataSearch);
