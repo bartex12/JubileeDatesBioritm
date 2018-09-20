@@ -22,7 +22,6 @@ public class HelpMainActivity extends AppCompatActivity {
 
     private static final String TAG = "33333";
     TextView tvHelp;
-    TextView tvTittle;
     ImageView left;
     ImageView right;
 

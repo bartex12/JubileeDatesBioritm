@@ -5,19 +5,19 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import"/>
+            android:id="@+id/nav_oneDate"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="Личные даты"/>
 
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery"/>
+            android:id="@+id/nav_twoDate"
+            android:icon="@drawable/ic_group_black_24dp"
+            android:title="Совместные даты"/>
 
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow"/>
+            android:id="@+id/nav_bio"
+            android:icon="@drawable/ic_timeline_black_24dp"
+            android:title="Биоритмы"/>
 
         <item
             android:id="@+id/nav_manage"

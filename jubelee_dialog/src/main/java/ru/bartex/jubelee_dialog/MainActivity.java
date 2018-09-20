@@ -184,12 +184,18 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
+        if (id == R.id.nav_oneDate) {
+            Intent intent = new Intent(MainActivity.this, PersonsListActivity.class);
+            intent.putExtra(P.FROM_MAIN, P.TO_ONE_DATE);
+            startActivity(intent);
+        } else if (id == R.id.nav_twoDate) {
+            Intent intent = new Intent(MainActivity.this, ListDialog_CheckBox.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_bio) {
+            Log.d(TAG, "MainActivity onCreate onItemClick P.TO_BIORITM = " + P.TO_BIORITM);
+            Intent intent = new Intent(MainActivity.this, PersonsListActivity.class);
+            intent.putExtra(P.FROM_MAIN, P.TO_BIORITM);
+            startActivity(intent);
         } else if (id == R.id.nav_manage) {
             Intent intentSettings = new Intent(this, PrefActivity.class);
             startActivity(intentSettings);

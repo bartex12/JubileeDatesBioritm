@@ -87,4 +87,33 @@ public class DBHelper extends SQLiteOpenHelper {
         int result = db.update(TABLE_NAME, values, _ID + " = " + person_id, null);
         return result>0;
     }
+
+    //метод поиска в базе данных из строки поиска по поисковому запросу query
+    public Cursor searchInSQLite (String query){
+
+        query = query.toLowerCase();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(
+                TABLE_NAME,  //имя таблицы, к которой передается запрос
+                new String[] {          //список имен возвращаемых полей
+                        _ID, COLUMN_NAME, COLUMN_CITY},
+                COLUMN_CITY + " LIKE" + "'%" + query + "%'", // условие выбора
+                null,  //значения аргументов фильтра
+                null,//фильтр для группировки
+                null, //фильтр для группировки, формирующий выражение HAVING
+                null ); //порядок сортировки
+
+        if (cursor != null) {
+            Log.d(TAG, "cursor1.getCount() = " + cursor.getCount() );
+            while (cursor.moveToNext()) {
+                String s = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+                Log.d(TAG, "Найдена строка " + s);
+            }
+        }else Log.d(TAG, "cursor1 = " + "null");
+
+        return cursor;
+    }
+
 }
