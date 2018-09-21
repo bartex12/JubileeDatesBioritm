@@ -99,6 +99,8 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                  //       .setAction("Action", null).show();
+
+                //создаём новую запись
                 Intent intentAdd = new Intent(MainActivity.this, NewActivity.class);
                 intentAdd.putExtra(NewActivity.REQUEST_CODE, request_code);
                 startActivity(intentAdd);
