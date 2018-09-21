@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity
     final String ATTR_BASE_TEXT = "BASE_TEXT";
     final String ATTR_SUB_TEXT = "SUB_TEXT";
 
+    static final int request_code = 11;// для newActivity от плавающей кнопки
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,11 +97,14 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                 //       .setAction("Action", null).show();
+                Intent intentAdd = new Intent(MainActivity.this, NewActivity.class);
+                intentAdd.putExtra(NewActivity.REQUEST_CODE, request_code);
+                startActivity(intentAdd);
             }
         });
-        fab.hide();
+        //fab.hide();
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

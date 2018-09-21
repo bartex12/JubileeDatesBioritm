@@ -164,6 +164,27 @@ public class NewActivity extends AppCompatActivity  {
                         } else {
                             Log.d(TAG, "Отредактирована персона  под номером: "  + id_sql);
                         }
+                        Intent intent = new Intent();
+                        intent.putExtra("id_sql", id_sql);
+                        setResult(RESULT_OK, intent);
+                        finish();
+
+                        //если создать запись из главного меню по плавающей кнопке
+                    }else if (requestCode ==11){
+                        //пишем в таблицу базы новую строку
+                        newRowId = mDbHelper.addPerson(name,day,mounth,year,dr,past_days);
+                        // Выводим сообщение в успешном случае или при ошибке
+                        if (newRowId == -1) {
+                            // Если ID  -1, значит произошла ошибка
+                            Log.d(TAG, "Ошибка при заведении новой персоны ");
+                        } else {
+                            Log.d(TAG, "Персона заведена под номером: "  + newRowId );
+                        }
+                        Intent intent = new Intent(NewActivity.this, PersonsListActivity.class);
+                        startActivity(intent);
+                        finish();
+
+                        //если создать из PersonsListActivity по плюсику в тулбаре
                     }else {
                         //пишем в таблицу базы новую строку
                         newRowId = mDbHelper.addPerson(name,day,mounth,year,dr,past_days);
@@ -174,12 +195,11 @@ public class NewActivity extends AppCompatActivity  {
                         } else {
                             Log.d(TAG, "Персона заведена под номером: "  + newRowId );
                         }
+                        Intent intent = new Intent();
+                        intent.putExtra("id_sql", id_sql);
+                        setResult(RESULT_OK, intent);
+                        finish();
                     }
-
-                    Intent intent = new Intent();
-                    intent.putExtra("id_sql", id_sql);
-                    setResult(RESULT_OK, intent);
-                    finish();
                 }
             }
         });

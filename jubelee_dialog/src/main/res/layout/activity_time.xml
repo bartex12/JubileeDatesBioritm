@@ -143,13 +143,13 @@
         android:layout_marginTop="10dp">
 
         <TextView
+            android:id="@+id/textViewPrefix"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Это будет"
-            android:id="@+id/textView6"
-            android:textSize="20dp"
+            android:layout_gravity="bottom"
             android:layout_marginTop="10dp"
-            android:layout_gravity="bottom"/>
+            android:text="Это будет"
+            android:textSize="20dp"/>
 
         <TextView
             android:layout_width="wrap_content"

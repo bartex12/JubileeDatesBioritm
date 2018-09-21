@@ -5,6 +5,7 @@ android {
     buildToolsVersion '27.0.3'
 
     defaultConfig {
+        android.defaultConfig.vectorDrawables.useSupportLibrary = true
         applicationId "ru.bartex.jubelee_dialog"
         minSdkVersion 15
         targetSdkVersion 26

@@ -3,6 +3,7 @@ package ru.bartex.jubelee_dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -129,15 +130,19 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                 }
             }
         });
+
+        //получаем интент
+        Intent intent = getIntent();
         //если что то было сохранено, грузим отсюда
         if (savedInstanceState != null) {
             id_sql = savedInstanceState.getLong(KEY_ID_SQL);
             id_sql_second = savedInstanceState.getLong(KEY_ID_SQL_SECOND);
             Log.d(TAG,"savedInstanceState:  id_sql = " + id_sql + "   id_sql_second = " + id_sql_second);
-        }
+
+        }else {
             //Загружаем данные из интента
-            Intent intent = getIntent();
             request = intent.getIntExtra(REQUEST_JOINT_CHOOSE, request);
+            //если данные
             if (request == FindDatesActivity.REQUEST_CHOOSE){
                 id_sql = intent.getLongExtra(ATTR_ID1,1);
                 id_sql_second = intent.getLongExtra(ATTR_ID2,id_sql);
@@ -169,13 +174,13 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                     Log.d(TAG, "JointActivity onCreate:  forTwo_Days  millisForTwo>0)");
                     forTwo_Days.setText("На двоих прожито  " + millisForTwo / 86400000 + "  дней");
                 }
+
             }else {
                 id_sql = intent.getLongExtra(ID_SQL,1);
                 id_sql_second = intent.getLongExtra(ID_SQL_second,id_sql);
             }
-
+        }
             Log.d(TAG,"Intent :  id_sql = " + id_sql + "   id_sql_second = " + id_sql_second);
-
 
         //получаем данные в соответствии с первым id
         mPerson = mDbHelper.getPersonObjectData(id_sql);
@@ -209,8 +214,15 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
 
         // количество прожитых миллисекунд на двоих
         millisForTwo = mDbHelper.getMillisForTwo(id_sql, id_sql_second);
-        // количество прожитых дней на двоих
-        forTwo_Days.setText("На двоих прожито  " + millisForTwo/86400000 + "  дней" );
+        if (id_sql ==id_sql_second){
+            // количество прожитых дней на двоих
+            forTwo_Days.setText("Замените хотя бы одну личность" );
+            forTwo_Days.setTextColor(Color.RED);
+        }else {
+            // количество прожитых дней на двоих
+            forTwo_Days.setText("На двоих прожито  " + millisForTwo/86400000 + "  дней" );
+            forTwo_Days.setTextColor(Color.BLUE);
+        }
         //делаем кнопку Рассчитань недоступной
         mCount.setEnabled(false);
     }
@@ -272,6 +284,19 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
             }else if (requestCode == REQUEST_JOINT_FIND){
                 Log.d(TAG, "JointActivity onActivityResult REQUEST_JOINT_FIND");
             }
+            // количество прожитых миллисекунд на двоих
+            millisForTwo = mDbHelper.getMillisForTwo(id_sql, id_sql_second);
+            if (id_sql ==id_sql_second){
+                // количество прожитых дней на двоих
+                forTwo_Days.setText("Замените хотя бы одну личность" );
+                forTwo_Days.setTextColor(Color.RED);
+            }else {
+                // количество прожитых дней на двоих
+                forTwo_Days.setText("На двоих прожито  " + millisForTwo/86400000 + "  дней" );
+                forTwo_Days.setTextColor(Color.BLUE);
+            }
+            //делаем кнопку Рассчитань недоступной
+            mCount.setEnabled(false);
         }
     }
 

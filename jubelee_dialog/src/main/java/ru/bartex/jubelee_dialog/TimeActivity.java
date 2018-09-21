@@ -40,7 +40,7 @@ public class TimeActivity extends AppCompatActivity implements
     public final String TAG = "33333";
     public static final String ID_SQL = "sqlTimeActivity";
 
-    TextView willBe, lastDays, userName, dataBorn;
+    TextView willBe, lastDays, userName, dataBorn, prefix;
     EditText  days;
     Button findDate;//кнопка Рассчитать
 
@@ -90,6 +90,7 @@ public class TimeActivity extends AppCompatActivity implements
         lastDays = findViewById(R.id.textViewLastDays);
         userName   = findViewById(R.id.textViewUserName);
         dataBorn = findViewById(R.id.textViewDataBorn);
+        prefix = findViewById(R.id.textViewPrefix);
 
         days = findViewById(R.id.editTextDays);
         days.addTextChangedListener(this);
@@ -354,9 +355,21 @@ public class TimeActivity extends AppCompatActivity implements
                     //показываем результаты в пользовательском потоке каждые 100мс
                     String s = String.format("%d.%06d",beenDays,beenDays1);
                     lastDays.setText(s);
-                    String s1 = String.format("%02d.%02d.%04d",
-                            dayNumberNext, mounthNumberNext + 1, yearNumberNext);
+                    String s1;
+                    String s2;
+                    //если текущая дата в милисекундах больше расчётной, то расчётная уже была
+                    if ((nowTimeMillis-firstCalendar.getTimeInMillis())>0){
+                        s1 = String.format("%02d.%02d.%04d",
+                                dayNumberNext, mounthNumberNext + 1, yearNumberNext);
+                        s2 = "Это было  ";
+                        //если текущая дата в милисекундах меньше расчётной, то расчётная будет
+                    }else {
+                        s1 = String.format("%02d.%02d.%04d",
+                                dayNumberNext, mounthNumberNext + 1, yearNumberNext);
+                        s2 = "Это будет  ";
+                    }
                     willBe.setText(s1);
+                    prefix.setText(s2);
                 }
             });
         }
