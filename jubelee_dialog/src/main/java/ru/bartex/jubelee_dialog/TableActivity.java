@@ -29,6 +29,7 @@ import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.P;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
 
@@ -72,18 +73,18 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
         act.setDisplayHomeAsUpEnabled(true );
         act.setHomeButtonEnabled(true);
 
-        mTextViewNameTwoAct = (TextView)findViewById(R.id.textViewNameTwoAct);
-        mListView = (ListView)findViewById(R.id.listViewTwo);
+        mTextViewNameTwoAct = findViewById(R.id.textViewNameTwoAct);
+        mListView = findViewById(R.id.listViewTwo);
 
-        mCheckBox100 = (CheckBox) findViewById(R.id.checkBox100);
+        mCheckBox100 =  findViewById(R.id.checkBox100);
         mCheckBox100.setChecked(false);
         mCheckBox100.setOnClickListener(this);
 
-        mCheckBox1000 = (CheckBox) findViewById(R.id.checkBox1000);
+        mCheckBox1000 =  findViewById(R.id.checkBox1000);
         mCheckBox1000.setChecked(false);
         mCheckBox1000.setOnClickListener(this);
 
-        mCheckBox5000 = (CheckBox) findViewById(R.id.checkBox5000);
+        mCheckBox5000 =  findViewById(R.id.checkBox5000);
         mCheckBox5000.setChecked(true);
         mCheckBox5000.setEnabled(false);
 
@@ -168,7 +169,7 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
                 Intent intentSettings = new Intent(this, PrefActivity.class);
                 startActivity(intentSettings);
                 return true;
-
+/*
             case R.id.action_share:
                 Log.d(TAG, "action_share");
                 Bitmap bm = screenShot(this);
@@ -183,6 +184,13 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
                 shareIntent.setType("image/*");
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivity(Intent.createChooser(shareIntent, "share via"));
+                return true;
+*/
+            case R.id.action_help_table:
+                Log.d(TAG, "OptionsItem = action_help_table");
+                Intent intentTable = new Intent(this, HelpActivity.class);
+                intentTable.putExtra(P.HELP_FROM, P.HELP_FROM_TABLE);
+                startActivity(intentTable);
                 return true;
 
         }
@@ -240,7 +248,7 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
         yearNumberNext2 = secondCalendar.get(Calendar.YEAR);
         long temp = secondCalendar.getTimeInMillis() - System.currentTimeMillis();
         long result = temp / 86400000;
-        String s3 = "";
+        String s3;
 
         if ((day == dayNumberNext2) && (month == mounthNumberNext2 + 1) && (year == yearNumberNext2)) {
             s3 = String.format("Д.р. - %02d.%02d.%04d",

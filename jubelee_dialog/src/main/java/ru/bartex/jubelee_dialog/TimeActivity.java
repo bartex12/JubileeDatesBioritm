@@ -31,6 +31,7 @@ import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.P;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
 
 public class TimeActivity extends AppCompatActivity implements
@@ -40,7 +41,7 @@ public class TimeActivity extends AppCompatActivity implements
     public static final String ID_SQL = "sqlTimeActivity";
 
     TextView willBe, lastDays, userName, dataBorn;
-    static EditText  days;
+    EditText  days;
     Button findDate;//кнопка Рассчитать
 
     int dayNumber,mounthNumber, yearNumber, daysNumber;
@@ -69,10 +70,13 @@ public class TimeActivity extends AppCompatActivity implements
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         ActionBar act = getSupportActionBar();
-        act.setDisplayHomeAsUpEnabled(true );
-        act.setHomeButtonEnabled(true);
+        if (act!=null){
+            act.setDisplayHomeAsUpEnabled(true );
+            act.setHomeButtonEnabled(true);
+        }
 
-        findDate = (Button)findViewById(R.id.buttonFind);
+
+        findDate = findViewById(R.id.buttonFind);
         findDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,12 +86,12 @@ public class TimeActivity extends AppCompatActivity implements
             }
         });
 
-        willBe = (TextView)findViewById(R.id.textViewWillBe);
-        lastDays = (TextView)findViewById(R.id.textViewLastDays);
-        userName   = (TextView)findViewById(R.id.textViewUserName);
-        dataBorn = (TextView)findViewById(R.id.textViewDataBorn);
+        willBe = findViewById(R.id.textViewWillBe);
+        lastDays = findViewById(R.id.textViewLastDays);
+        userName   = findViewById(R.id.textViewUserName);
+        dataBorn = findViewById(R.id.textViewDataBorn);
 
-        days = (EditText)findViewById(R.id.editTextDays);
+        days = findViewById(R.id.editTextDays);
         days.addTextChangedListener(this);
 
         //Загружаем данные из интента
@@ -184,7 +188,7 @@ public class TimeActivity extends AppCompatActivity implements
                 intent.putExtra(TableActivity.ID_SQL,id_sql);
                 startActivity(intent);
                 return true;
-
+/*
             case R.id.action_share:
                 Log.d(TAG, "action_share");
                 Bitmap bm = screenShot(this);
@@ -199,6 +203,13 @@ public class TimeActivity extends AppCompatActivity implements
                 shareIntent.setType("image/*");
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivity(Intent.createChooser(shareIntent, "share via"));
+                return true;
+*/
+            case R.id.action_help_time:
+                Log.d(TAG, "OptionsItem = action_help_time");
+                Intent intentTime = new Intent(this, HelpActivity.class);
+                intentTime.putExtra(P.HELP_FROM, P.HELP_FROM_TIME);
+                startActivity(intentTime);
                 return true;
         }
         return super.onOptionsItemSelected(item);

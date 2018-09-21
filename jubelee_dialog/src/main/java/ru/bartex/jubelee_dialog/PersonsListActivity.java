@@ -352,6 +352,13 @@ public class PersonsListActivity extends AppCompatActivity {
                 Intent intentSettings = new Intent(this, PrefActivity.class);
                 startActivity(intentSettings);
                 return true;
+
+            case R.id.action_help_list_persons:
+                Log.d(TAG, "OptionsItem = action_settings");
+                Intent intentHelp = new Intent(this, HelpActivity.class);
+                intentHelp.putExtra(P.HELP_FROM, P.HELP_FROM_LIST_PERSONS);
+                startActivity(intentHelp);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

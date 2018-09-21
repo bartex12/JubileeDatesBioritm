@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.P;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
 
@@ -169,6 +170,13 @@ public class FindDatesActivity extends AppCompatActivity {
                     Log.d(TAG, "OptionsItem = action_settings");
                     Intent intentSettings = new Intent(this, PrefActivity.class);
                     startActivity(intentSettings);
+                    return true;
+
+                case R.id.action_help_find_date:
+                    Log.d(TAG, "OptionsItem = action_help_time");
+                    Intent intentTime = new Intent(this, HelpActivity.class);
+                    intentTime.putExtra(P.HELP_FROM, P.HELP_FROM_FIND_DATE);
+                    startActivity(intentTime);
                     return true;
             }
             return super.onOptionsItemSelected(item);

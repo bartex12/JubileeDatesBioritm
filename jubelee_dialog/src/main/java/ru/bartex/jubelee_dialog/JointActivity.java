@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Timer;
 
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.P;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
 
 public class JointActivity extends AppCompatActivity implements TextWatcher{
@@ -33,7 +34,7 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
     public static final int REQUEST_JOINT_PERSON1 = 1; //риквест код от JointActivity для персоны 1
     public static final int REQUEST_JOINT_PERSON2 = 2; //риквест код от JointActivity для персоны 2
     public static final int REQUEST_JOINT_FIND = 3; //риквест код от JointActivity для поиска совместных дат
-    public static final String REQUEST_JOINT_CHOOSE = "choose_JointActivity";;
+    public static final String REQUEST_JOINT_CHOOSE = "choose_JointActivity";
 
     final static String ATTR_ID1 ="id1";
     final static String ATTR_ID2 ="id2";
@@ -71,16 +72,16 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
         act.setDisplayHomeAsUpEnabled(true);
         act.setHomeButtonEnabled(true);
 
-        mPersonButton1 = (Button) findViewById(R.id.buttonNamePerson1);
-        mPersonButton2 = (Button) findViewById(R.id.buttonNamePerson2);
+        mPersonButton1 =  findViewById(R.id.buttonNamePerson1);
+        mPersonButton2 =  findViewById(R.id.buttonNamePerson2);
 
-        mDays = (EditText) findViewById(R.id.jointDays);
+        mDays =  findViewById(R.id.jointDays);
         mDays.addTextChangedListener(this);
 
-        forTwo_Days = (TextView) findViewById(R.id.forTwo_Days);
-        mWillBe = (TextView)findViewById(R.id.jointWillBe);
+        forTwo_Days =  findViewById(R.id.forTwo_Days);
+        mWillBe = findViewById(R.id.jointWillBe);
 
-        mCount = (Button) findViewById(R.id.jointFind);
+        mCount =  findViewById(R.id.jointFind);
         mCount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -304,6 +305,13 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                 Log.d(TAG, "OptionsItem = action_settings");
                 Intent intentSettings = new Intent(this, PrefActivity.class);
                 startActivity(intentSettings);
+                return true;
+
+            case R.id.action_help_joint:
+                Log.d(TAG, "OptionsItem = action_help_time");
+                Intent intentTime = new Intent(this, HelpActivity.class);
+                intentTime.putExtra(P.HELP_FROM, P.HELP_FROM_JOINT);
+                startActivity(intentTime);
                 return true;
         }
 

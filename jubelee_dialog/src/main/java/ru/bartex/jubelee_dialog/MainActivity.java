@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.action_help_main:
                 Log.d(TAG, "OptionsItem = action_help_main");
-                Intent intentHelpMain = new Intent(this, HelpMainActivity.class);
+                Intent intentHelpMain = new Intent(this, HelpActivity.class);
                 startActivity(intentHelpMain);
                 return true;
         }
@@ -204,7 +204,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_send) {
 
         }else if (id == R.id.nav_help){
-            Intent intentHelp = new Intent(this, HelpMainActivity.class);
+            Intent intentHelp = new Intent(this, HelpActivity.class);
+            intentHelp.putExtra(P.HELP_FROM, P.HELP_FROM_MAIN);
             startActivity(intentHelp);
         }
 

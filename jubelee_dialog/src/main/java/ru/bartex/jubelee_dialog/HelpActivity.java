@@ -1,6 +1,7 @@
 package ru.bartex.jubelee_dialog;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,19 +18,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class HelpMainActivity extends AppCompatActivity {
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.P;
+
+public class HelpActivity extends AppCompatActivity {
 
 
     private static final String TAG = "33333";
     TextView tvHelp;
-    TextView tvTittle;
     ImageView left;
     ImageView right;
+
+    int from;  //откуда пришел запрос на справку
+    int resurs;  //ресурс справки
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help_main);
+
+        Intent intent = getIntent();
+        from = intent.getIntExtra(P.HELP_FROM, P.HELP_FROM_MAIN);
 
         ActionBar acBar = getSupportActionBar();
         acBar.setTitle("");
@@ -39,7 +47,36 @@ public class HelpMainActivity extends AppCompatActivity {
 
         tvHelp = findViewById(R.id.textViewHelpMain);
 
-        InputStream iFile = getResources().openRawResource(R.raw.help_trener_plus);
+        //получаем ссылку на файл справки в зависимости от того, откуда пришёл запрос
+        switch (from){
+            case P.HELP_FROM_MAIN:
+                resurs = R.raw.help_main_activity;
+               break;
+            case P.HELP_FROM_LIST_PERSONS:
+                resurs = R.raw.help_personal_list_activity;
+                break;
+            case P.HELP_FROM_BIORITM:
+                resurs = R.raw.help_bioritm_activity;
+                break;
+            case P.HELP_FROM_TIME:
+                resurs = R.raw.help_time_activity;
+                break;
+            case P.HELP_FROM_TABLE:
+                resurs = R.raw.help_table_activity;
+                break;
+            case P.HELP_FROM_JOINT:
+                resurs = R.raw.help_joint_activity;
+                break;
+            case P.HELP_FROM_FIND_DATE:
+                resurs = R.raw.help_find_date_activity;
+                break;
+            case P.HELP_FROM_NEW_PERSON:
+                resurs = R.raw.help_new_person_activity;
+                break;
+        }
+
+        //используем файл справки для вывода на экран
+        InputStream iFile = getResources().openRawResource(resurs);
         StringBuilder strFile = inputStreamToString(iFile);
         tvHelp.setText(strFile);
 
@@ -82,7 +119,10 @@ public class HelpMainActivity extends AppCompatActivity {
         //toast.show();
         //включаем звук
         AudioManager audioManager =(AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+        if (audioManager!=null){
+            audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
+        }
+
 
         super.onUserLeaveHint();
     }

@@ -14,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -27,6 +29,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.P;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable;
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
 
@@ -59,10 +62,10 @@ public class NewActivity extends AppCompatActivity  {
         //только портретная ориентация
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        etName = (EditText) findViewById(R.id.etName);
-        etDay = (EditText) findViewById(R.id.etDay);
-        etMounth = (EditText) findViewById(R.id.etMonth);
-        etYear = (EditText) findViewById(R.id.etYear);
+        etName =  findViewById(R.id.etName);
+        etDay =  findViewById(R.id.etDay);
+        etMounth =  findViewById(R.id.etMonth);
+        etYear =  findViewById(R.id.etYear);
 
 
         Bundle extras = getIntent().getExtras();
@@ -98,7 +101,7 @@ public class NewActivity extends AppCompatActivity  {
             }
         }
 
-        buttonClear  = (Button) findViewById(R.id.buttonClear);
+        buttonClear  =  findViewById(R.id.buttonClear);
         buttonClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,7 +118,7 @@ public class NewActivity extends AppCompatActivity  {
 
             }
         });
-        btnOK = (Button) findViewById(R.id.btnOK);
+        btnOK =  findViewById(R.id.btnOK);
         //Слушатель на кнопку ОК
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,7 +184,7 @@ public class NewActivity extends AppCompatActivity  {
             }
         });
 
-        buttonCancel = (Button) findViewById(R.id.buttonCancel);
+        buttonCancel =  findViewById(R.id.buttonCancel);
         //Слушатель на кнопку Cancel
         buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,7 +194,7 @@ public class NewActivity extends AppCompatActivity  {
         });
 
 
-        btnDateDialog = (ImageButton) findViewById(R.id.buttonDateDialog1);
+        btnDateDialog =  findViewById(R.id.buttonDateDialog1);
         //Слушатель на кнопку ввода диалога DatePickerFragment
         btnDateDialog.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -203,6 +206,28 @@ public class NewActivity extends AppCompatActivity  {
             }
         });
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.new_person,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+
+            case R.id.action_help_new_person:
+                Log.d(TAG, "OptionsItem = action_help_time");
+                Intent intentNew = new Intent(this, HelpActivity.class);
+                intentNew.putExtra(P.HELP_FROM, P.HELP_FROM_NEW_PERSON);
+                startActivity(intentNew);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     public static class DatePickerFragment extends DialogFragment implements
                              DatePickerDialog.OnDateSetListener{

@@ -116,15 +116,15 @@ public class BioritmActivity extends AppCompatActivity {
         act.setDisplayHomeAsUpEnabled(true );
         act.setHomeButtonEnabled(true);
         //act.setLogo(R.drawable.my_logo);
-        graph = (GraphView) findViewById(R.id.graph);
+        graph =  findViewById(R.id.graph);
 
         Log.d(TAG, "imageView isHardwareAccelerated= " + graph.isHardwareAccelerated());
         //аппаратное ускорение отключено для отдельного представления(в соотв с реком Гугл надо вкл)
         //graph.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
-        mTextViewFiz = (TextView) findViewById(R.id.textViewFiz);
-        mTextViewAmo = (TextView) findViewById(R.id.textViewAmo);
-        mTextViewInt = (TextView) findViewById(R.id.textViewInt);
+        mTextViewFiz = findViewById(R.id.textViewFiz);
+        mTextViewAmo =  findViewById(R.id.textViewAmo);
+        mTextViewInt =  findViewById(R.id.textViewInt);
 
         //получаем интент
         Intent intent = getIntent();
@@ -194,7 +194,7 @@ public class BioritmActivity extends AppCompatActivity {
             }
         });
 
-        mButtonPlus10 = (Button) findViewById(R.id.buttonPlus10);
+        mButtonPlus10 =  findViewById(R.id.buttonPlus10);
         mButtonPlus10.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -206,7 +206,7 @@ public class BioritmActivity extends AppCompatActivity {
             }
         });
 
-        mButtonPlus1 = (Button) findViewById(R.id.buttonPlus1);
+        mButtonPlus1 =  findViewById(R.id.buttonPlus1);
         mButtonPlus1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -218,7 +218,7 @@ public class BioritmActivity extends AppCompatActivity {
             }
         });
 
-        mButtonMinus10 = (Button) findViewById(R.id.buttonMinus10);
+        mButtonMinus10 =  findViewById(R.id.buttonMinus10);
         mButtonMinus10.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -230,7 +230,7 @@ public class BioritmActivity extends AppCompatActivity {
             }
         });
 
-        mButtonMinus1 = (Button) findViewById(R.id.buttonMinus1);
+        mButtonMinus1 =  findViewById(R.id.buttonMinus1);
         mButtonMinus1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -242,7 +242,7 @@ public class BioritmActivity extends AppCompatActivity {
             }
         });
 
-        mImageButtonRevert =  (ImageButton) findViewById(R.id.imageButtonRevert);
+        mImageButtonRevert =   findViewById(R.id.imageButtonRevert);
         mImageButtonRevert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -371,10 +371,17 @@ public class BioritmActivity extends AppCompatActivity {
                 intentJoint.putExtra(JointActivity.ID_SQL_second, id_sql_second);
                 startActivity(intentJoint);
                 return true;
-
+/*
             case R.id.action_share:
                 Log.d(TAG, "action_share");
                 setNewIntent("This is example text");
+                return true;
+*/
+            case R.id.action_help_bioritm:
+                Log.d(TAG, "OptionsItem = action_action_bioritm");
+                Intent intentbioritm = new Intent(this, HelpActivity.class);
+                intentbioritm.putExtra(P.HELP_FROM, P.HELP_FROM_BIORITM);
+                startActivity(intentbioritm);
                 return true;
         }
         return super.onOptionsItemSelected(item);
