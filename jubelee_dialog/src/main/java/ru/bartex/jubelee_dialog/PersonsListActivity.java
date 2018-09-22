@@ -110,11 +110,8 @@ public class PersonsListActivity extends AppCompatActivity {
                 //finish();
             }
         });
-
         //объявляем о регистрации контекстного меню
         registerForContextMenu(mListView);
-
-
     }
 
     //Если в манифесте установить для android:launchMode значение "singleTop" ,
