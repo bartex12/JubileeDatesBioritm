@@ -114,13 +114,7 @@ public class PersonsListActivity extends AppCompatActivity {
         //объявляем о регистрации контекстного меню
         registerForContextMenu(mListView);
 
-        //============== следующий код для отображения списка из базы данных===========//
 
-        //если в базе нет записей, добавляем одну с анжелиной джоли
-        mPersonDbHelper.createDefaultPersonIfNeed();
-        // Обновляем данные в столбце Количество прожитых дней
-        mPersonDbHelper.updatePastDays();
-        //  А в onResume() показываем список и устанавливаем его в сохранённую позицию
     }
 
     //Если в манифесте установить для android:launchMode значение "singleTop" ,

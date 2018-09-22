@@ -27,6 +27,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
     private static final String DATABASE_NAME = "bioritmDataBase2.db";
      // Версия базы данных. При изменении схемы увеличить на единицу
     private static final int DATABASE_VERSION = 1;
+
      //Конструктор
     public PersonDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -44,10 +45,12 @@ public class PersonDbHelper extends SQLiteOpenHelper{
                 + PersonTable.COLUMN_MONTH + " TEXT NOT NULL, "
                 + PersonTable.COLUMN_YEAR + " TEXT NOT NULL, "
                 + PersonTable.COLUMN_DR + " TEXT NOT NULL, "
-                + PersonTable.COLUMN_PAST_DAYS + " TEXT NOT NULL);";
+                + PersonTable.COLUMN_PAST_DAYS + " TEXT NOT NULL, "
+                + PersonTable.COLUMN_CHOOSE + " TEXT NOT NULL DEFAULT 0);";
 
         // Запускаем создание таблицы
         db.execSQL(SQL_CREATE_PERSONS_TABLE);
+        Log.d(TAG, "Создана база данных  " + DATABASE_NAME);
     }
 
     /**
@@ -56,7 +59,7 @@ public class PersonDbHelper extends SQLiteOpenHelper{
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Запишем в журнал
-        Log.w("SQLite", "Обновляемся с версии " + oldVersion + " на версию " + newVersion);
+        Log.d(TAG, "Обновляемся с версии " + oldVersion + " на версию " + newVersion);
 /*
         // Удаляем старую таблицу и создаём новую
         db.execSQL("DROP TABLE IF IT EXISTS " + PersonContract.PersonEntry.TABLE_NAME);
@@ -86,6 +89,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if(count ==0 ) {
             Person person1 = new Person("Анжелина Джоли","4","06", "1975");
             this.addPerson(person1);
+            Log.d(TAG, "MyDatabaseHelper.createDefaultPersonIfNeed ... count = " + this.getPersonsCount());
         }
     }
 

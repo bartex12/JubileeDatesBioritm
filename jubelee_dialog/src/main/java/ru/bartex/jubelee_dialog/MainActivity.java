@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.P;
+import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -47,6 +48,9 @@ public class MainActivity extends AppCompatActivity
 
     static final int request_code = 11;// для newActivity от плавающей кнопки
 
+    //создаём базу данных, если ее не было
+    PersonDbHelper mDbHelper = new PersonDbHelper(this);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,11 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         Log.d(TAG, "MainActivity onCreate");
+
+        //если в базе нет записей, добавляем одну с анжелиной джоли
+        mDbHelper.createDefaultPersonIfNeed();
+        // Обновляем данные в столбце Количество прожитых дней
+        mDbHelper.updatePastDays();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
