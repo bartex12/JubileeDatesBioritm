@@ -73,6 +73,9 @@ public class HelpActivity extends AppCompatActivity {
             case P.HELP_FROM_NEW_PERSON:
                 resurs = R.raw.help_new_person_activity;
                 break;
+            case P.HELP_ALL:
+                resurs = R.raw.help_main_all;
+                break;
         }
 
         //используем файл справки для вывода на экран

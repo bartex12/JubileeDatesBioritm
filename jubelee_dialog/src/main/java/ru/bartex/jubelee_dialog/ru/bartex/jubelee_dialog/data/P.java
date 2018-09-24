@@ -18,5 +18,6 @@ public class P {
     public final static int HELP_FROM_NEW_PERSON = 6;
     public final static int HELP_FROM_JOINT = 7;
     public final static int HELP_FROM_FIND_DATE = 8;
+    public final static int HELP_ALL = 9;
 
 }

@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity
 
         }else if (id == R.id.nav_help){
             Intent intentHelp = new Intent(this, HelpActivity.class);
-            intentHelp.putExtra(P.HELP_FROM, P.HELP_FROM_MAIN);
+            intentHelp.putExtra(P.HELP_FROM, P.HELP_ALL);
             startActivity(intentHelp);
         }
 

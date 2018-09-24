@@ -8,7 +8,8 @@
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_help_main"
-        android:orderInCategory="200"
+        android:orderInCategory="50"
         android:title="@string/Help"
-        app:showAsAction="never"/>
+        android:icon="@drawable/ic_help"
+        app:showAsAction="ifRoom"/>
 </menu>
