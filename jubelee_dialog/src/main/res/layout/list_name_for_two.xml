@@ -19,8 +19,16 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
+            android:gravity="right"
             android:text="Имя"
             android:textColor="@color/colorPrimary"/>
+
+        <TextView
+            android:id="@+id/textView14"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:text="   / "/>
 
         <TextView
             android:id="@+id/name_list_two"
@@ -28,6 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
+            android:gravity="left"
             android:text="Имя"
             android:textColor="?attr/colorPrimary"/>
     </LinearLayout>
@@ -43,6 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="right"
             android:text="На двоих  "/>
 
         <TextView
@@ -50,6 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="100000"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold"/>
@@ -59,7 +70,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="  дней"/>
+            android:gravity="left"
+            android:text="дней"/>
+
     </LinearLayout>
 
 </LinearLayout>

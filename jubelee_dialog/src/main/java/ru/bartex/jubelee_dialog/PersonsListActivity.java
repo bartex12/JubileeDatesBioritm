@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -30,7 +31,7 @@ import ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonDbHelper;
 import static ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable.COLUMN_CHOOSE;
 import static ru.bartex.jubelee_dialog.ru.bartex.jubelee_dialog.data.PersonTable.TABLE_NAME;
 
-public class PersonsListActivity extends AppCompatActivity {
+public class PersonsListActivity extends AppCompatActivity implements DialogSelectAction.SelectAction {
 
     private static final int DELETE_ID = 1;
     private static final int CHANGE_ID = 2;
@@ -40,6 +41,7 @@ public class PersonsListActivity extends AppCompatActivity {
     final int NEW_ACTIVITY_ADD_REQUEST = 1;
     final int NEW_ACTIVITY_CHANGE_REQUEST = 2;
     static final int request_code = 111;
+    static final int request_code_add = 333;
     static final int SEARCH_ACTIVITY = 2222;
 
     ListView mListView;
@@ -64,6 +66,31 @@ public class PersonsListActivity extends AppCompatActivity {
     int from_to;
 
     @Override
+    public void NumberOfAction(int i, long id) {
+        Log.d(TAG, "PersonsListActivity NumberOfAction");
+        // 0-Личные  даты
+        // 1- Совместные даты
+        // 2 - Биоритмы
+        // 3 - совместимость биоритмов (резерв)
+        if (i == 0) {
+            Log.d(TAG, "PersonsListActivity NumberOfAction = 1");
+            Intent intent = new Intent(PersonsListActivity.this, TimeActivity.class);
+            intent.putExtra(TimeActivity.ID_SQL, id);
+            startActivity(intent);
+        }else if(i == 1){
+            Log.d(TAG, "PersonsListActivity NumberOfAction = 2");
+            Intent intent = new Intent(PersonsListActivity.this, ListDialog_CheckBox.class);
+            startActivity(intent);
+        }else if(i == 2){
+            Log.d(TAG, "PersonsListActivity NumberOfAction = 3");
+            Intent intent = new Intent(PersonsListActivity.this, BioritmActivity.class);
+            intent.putExtra(BioritmActivity.ID_SQL, id);
+            startActivity(intent);
+        }
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_persons_list);
@@ -75,7 +102,7 @@ public class PersonsListActivity extends AppCompatActivity {
 
         from_to = getIntent().getIntExtra(P.FROM_MAIN, 0);
 
-        //обработка интента, если он есть
+        //обработка интента для поиска, посылаемого системой -  если он есть
         handleIntent(getIntent());
 
         //получаем файл с настройками для приложения
@@ -103,6 +130,12 @@ public class PersonsListActivity extends AppCompatActivity {
                     intent.putExtra(BioritmActivity.ID_SQL, id);
                     //intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(intent);
+                }else if(from_to == P.TO_DIALOG){
+                    //здесь будет код вызова диалога дальнейших дейтвий
+                    Log.d(TAG, "PersonsListActivity onItemClick from_to = " + from_to);
+
+                    DialogFragment dialogSelectAction = DialogSelectAction.newInstance(id);
+                    dialogSelectAction.show(getSupportFragmentManager(), "dialogSelectAction");
 
                 }else {
                     Log.d(TAG, "PersonsListActivity onItemClick from_to = " + from_to);
@@ -328,7 +361,8 @@ public class PersonsListActivity extends AppCompatActivity {
             case R.id.action_add:
                 Log.d(TAG, "OptionsItem = action_add");
                 Intent intentAdd = new Intent(this, NewActivity.class);
-                startActivityForResult(intentAdd, NEW_ACTIVITY_ADD_REQUEST);
+                intentAdd.putExtra(NewActivity.REQUEST_CODE, request_code_add);
+                startActivity(intentAdd);
                 return true;
             case R.id.menu_search:
                 Log.d(TAG, "OptionsItem = menu_search");
@@ -464,5 +498,6 @@ public class PersonsListActivity extends AppCompatActivity {
         scAdapter = new SimpleCursorAdapter(this, R.layout.list_name_date, mCursor, from, to);
         mListView.setAdapter(scAdapter);
     }
+
 
 }

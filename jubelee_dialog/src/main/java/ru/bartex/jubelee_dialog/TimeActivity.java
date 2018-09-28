@@ -27,6 +27,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,6 +40,7 @@ public class TimeActivity extends AppCompatActivity implements
 
     public final String TAG = "33333";
     public static final String ID_SQL = "sqlTimeActivity";
+    final String FILENAME_SD = "savedBitmap.png";
 
     TextView willBe, lastDays, userName, dataBorn, prefix;
     EditText  days;
@@ -61,6 +63,9 @@ public class TimeActivity extends AppCompatActivity implements
     long beenDays1;
     private long mKvant = 100;//время в мс между срабатываниями TimerTask
 
+    File fileScreenShot;
+    View main;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +80,8 @@ public class TimeActivity extends AppCompatActivity implements
             act.setHomeButtonEnabled(true);
         }
 
+        main = findViewById(R.id.time_main);
+
 
         findDate = findViewById(R.id.buttonFind);
         findDate.setOnClickListener(new View.OnClickListener() {
@@ -82,7 +89,7 @@ public class TimeActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 Log.d(TAG, "findDate.setOnClickListener ");
                 onFindDateSimple();
-                onFindDateКеу();
+                onFindDateKey();
             }
         });
 
@@ -189,23 +196,33 @@ public class TimeActivity extends AppCompatActivity implements
                 intent.putExtra(TableActivity.ID_SQL,id_sql);
                 startActivity(intent);
                 return true;
-/*
+
             case R.id.action_share:
-                Log.d(TAG, "action_share");
-                Bitmap bm = screenShot(this);
-                File file = saveBitmap(bm, "screen_image.png");
-                Log.d(TAG, "AbsolutePath: " + file.getAbsolutePath());
-                Uri uri = Uri.fromFile(new File(file.getAbsolutePath()));
+                //так работает размер 37К
+                Bitmap bitmap = takeScreenshot(main);
+                Log.d(TAG, "OptionsItem = action_share getByteCount = " + bitmap.getByteCount());
+                //так тоже работает размер 42К
+                //Bitmap bm = screenShot(this);
+                //file = saveBitmap(bm, "image1.png");
+
+                //для 4-0-0 вроде бы без краха, но в файле ничего нет
+                //file = takeScreenshot159For400(bitmap, FILENAME_SD);
+
+                fileScreenShot = takeScreenshot159(bitmap, FILENAME_SD);
+                Log.d(TAG, "AbsolutePath: " + fileScreenShot.getAbsolutePath());
+
+                Uri uri = Uri.fromFile(new File(fileScreenShot.getAbsolutePath()));
                 Log.d(TAG, "uri: " + uri);
+
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out my app.");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "Посмотрите ка на это!");
                 shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
                 shareIntent.setType("image/*");
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(Intent.createChooser(shareIntent, "share via"));
+                startActivity(Intent.createChooser(shareIntent, "Отправить с помощью"));
                 return true;
-*/
+
             case R.id.action_help_time:
                 Log.d(TAG, "OptionsItem = action_help_time");
                 Intent intentTime = new Intent(this, HelpActivity.class);
@@ -216,48 +233,125 @@ public class TimeActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-
     //=================================Функции====================================//
 
-    //Сделать Bitmap по Activity
+    private File takeScreenshot159(Bitmap bitmap,String fileName ) {
+
+        //андроид 4 - крах
+        //File path = android.os.Environment.getExternalStorageDirectory();
+        //андроид 4 - крах
+        //String pathString = Environment.getExternalStorageDirectory() + "/Screenshots";
+       // File path =new File(pathString);
+
+        //так работает для андроид 7 но не для андроид 4 - крах
+        File pathDir = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if(!pathDir.exists()) {
+            pathDir.mkdirs();
+        }
+
+        File fileScr = new File(pathDir, fileName);
+        // Make sure the Pictures directory exists.
+        if (fileScr.isFile()){
+            Log.d(TAG, "takeScreenshot159 SD-карта путь к файлу: " + fileScr.getAbsolutePath());
+        }else {
+            Log.d(TAG, "takeScreenshot159 SD-карта путь к файлу: ФАЙЛ НЕ СУЩЕСТВУЕТ");
+        }
+
+        try {
+            FileOutputStream fos = null;
+            Log.d(TAG, " До File file = " + fileScr.length() + " isFile: " + fileScr.isFile());
+            try {
+                fos = new FileOutputStream(fileScr);
+                Log.d(TAG, "FileOutputStream fos  = " + fos);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                Log.d(TAG, " После File file = " + fileScr.length() +
+                        "  isFile: " + fileScr.isFile());
+                return fileScr;
+            } finally {
+                if (fos != null) fos.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "Ошибка try");
+        }
+        Log.d(TAG, "return null");
+        return null;
+    }
+
+    private File takeScreenshot159For400(Bitmap bitmap,String fileName ) {
+
+        try {
+            FileOutputStream fos = null;
+
+            try {
+                fos = openFileOutput(fileName, MODE_PRIVATE);
+                Log.d(TAG, "FileOutputStream fos  = " + fos);
+
+                File fileScr = getFilesDir();
+                Log.d(TAG, " До  File file = " + fileScr.length() +
+                        "  isDirectory: " + fileScr.isDirectory() + "  isFile: " + fileScr.isFile());
+
+                fileScr =new File(getFilesDir().getAbsolutePath() + "/" + fileName);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+                Log.d(TAG, " После File file = " + fileScr.length() +
+                        "  isDirectory: " + fileScr.isDirectory() + "  isFile: " + fileScr.isFile());
+                Log.d(TAG, "AbsolutePath: " + fileScr.getAbsolutePath());
+                return fileScr;
+            } finally {
+                if (fos != null) fos.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "Ошибка try");
+        }
+        Log.d(TAG, "return null");
+        return null;
+    }
+
+    public Bitmap takeScreenshot(View v){
+        v = v.getRootView();
+        v.setDrawingCacheEnabled(true);
+        v.buildDrawingCache(true);
+        Bitmap bitmap = Bitmap.createBitmap(v.getDrawingCache());
+        v.setDrawingCacheEnabled(false);
+        return bitmap;
+    }
+
     private Bitmap screenShot(Activity activity) {
         View view = activity.getWindow().getDecorView();
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         view.draw(canvas);
         return bitmap;
     }
 
-    //сохранить на SD картинку - скриншот экрана
     private  File saveBitmap(Bitmap bm, String fileName){
 
-        if (!Environment.getExternalStorageState().equals(
-                Environment.MEDIA_MOUNTED)) {
-            Log.d(TAG, "SD-карта не доступна: " + Environment.getExternalStorageState());
-            return null;
-        }
         final String path = Environment.getExternalStorageDirectory() + "/Screenshots";
+
         Log.d(TAG, "isExternalStorageEmulated = " + Environment.isExternalStorageEmulated() +
                 "    getExternalStorageState = " + Environment.getExternalStorageState());
         Log.d(TAG, "path: " + path);
 
         File dir = new File(path);
-        if(!dir.exists())
+        if(!dir.exists()) {
             dir.mkdirs();
+        }
+        // запись в файл по пути : /storage/emulated/0/Screenshots/image1.png
         File file = new File(dir, fileName);
-        //file.setReadable(true);
-        //File file = new File(this.getFilesDir(), fileName);
-        //File file = new File(this.getCacheDir(), fileName);
+        Log.d(TAG, "До file.length: " + file.length() + "  getFreeSpace: "+ file.getFreeSpace());
+        Log.d(TAG, "getAbsolutePath: " + file.getAbsolutePath());
+
         try {
             FileOutputStream fOut = new FileOutputStream(file);
-            //FileOutputStream fOut = openFileOutput(fileName, Context.MODE_PRIVATE);
             bm.compress(Bitmap.CompressFormat.PNG, 90, fOut);
             fOut.flush();
             fOut.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "file.length: " + file.length() + "  getFreeSpace: "+ file.getFreeSpace());
+        Log.d(TAG, "После file.length: " + file.length() + "  getFreeSpace: "+ file.getFreeSpace());
         return file;
     }
 
@@ -314,7 +408,7 @@ public class TimeActivity extends AppCompatActivity implements
         }
     }
 
-    public void onFindDateКеу(){
+    public void onFindDateKey(){
         //Прячем экранную клавиатуру
         InputMethodManager imm = (InputMethodManager) getSystemService(
                 Context.INPUT_METHOD_SERVICE);

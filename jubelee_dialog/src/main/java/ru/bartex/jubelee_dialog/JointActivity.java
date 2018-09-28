@@ -3,7 +3,10 @@ package ru.bartex.jubelee_dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +23,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Timer;
@@ -60,6 +65,10 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
     private static final String KEY_ID_SQL_SECOND = "ID_SQL_SECOND";
     int request=-1;
 
+    File fileScreenShot;
+    final String FILENAME_SD = "savedBitmap.png";
+    View main;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +81,8 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
         ActionBar act = getSupportActionBar();
         act.setDisplayHomeAsUpEnabled(true);
         act.setHomeButtonEnabled(true);
+
+        main = findViewById(R.id.joint_main);
 
         mPersonButton1 =  findViewById(R.id.buttonNamePerson1);
         mPersonButton2 =  findViewById(R.id.buttonNamePerson2);
@@ -326,6 +337,32 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                 startActivity(intentFindDates);
                 return true;
 
+            case R.id.action_share:
+                //так работает размер 37К
+                Bitmap bitmap = takeScreenshot(main);
+                Log.d(TAG, "OptionsItem = action_share getByteCount = " + bitmap.getByteCount());
+                //так тоже работает размер 42К
+                //Bitmap bm = screenShot(this);
+                //file = saveBitmap(bm, "image1.png");
+
+                //для 4-0-0 вроде бы без краха, но в файле ничего нет
+                //file = takeScreenshot159For400(bitmap, FILENAME_SD);
+
+                fileScreenShot = takeScreenshot159(bitmap, FILENAME_SD);
+                Log.d(TAG, "AbsolutePath: " + fileScreenShot.getAbsolutePath());
+
+                Uri uri = Uri.fromFile(new File(fileScreenShot.getAbsolutePath()));
+                Log.d(TAG, "uri: " + uri);
+
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "Посмотрите ка на это!");
+                shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                shareIntent.setType("image/*");
+                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(Intent.createChooser(shareIntent, "Отправить с помощью"));
+                return true;
+
             case R.id.action_settings:
                 Log.d(TAG, "OptionsItem = action_settings");
                 Intent intentSettings = new Intent(this, PrefActivity.class);
@@ -339,7 +376,6 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
                 startActivity(intentTime);
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -381,5 +417,89 @@ public class JointActivity extends AppCompatActivity implements TextWatcher{
         mToast.setGravity(Gravity.CENTER,0,0);
         mToast.show();
     }
+
+    private File takeScreenshot159(Bitmap bitmap,String fileName ) {
+
+        //андроид 4 - крах
+        //File path = android.os.Environment.getExternalStorageDirectory();
+        //андроид 4 - крах
+        //String pathString = Environment.getExternalStorageDirectory() + "/Screenshots";
+        // File path =new File(pathString);
+
+        //так работает для андроид 7 но не для андроид 4 - крах
+        File pathDir = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if(!pathDir.exists()) {
+            pathDir.mkdirs();
+        }
+
+        File fileScr = new File(pathDir, fileName);
+        // Make sure the Pictures directory exists.
+        if (fileScr.isFile()){
+            Log.d(TAG, "takeScreenshot159 SD-карта путь к файлу: " + fileScr.getAbsolutePath());
+        }else {
+            Log.d(TAG, "takeScreenshot159 SD-карта путь к файлу: ФАЙЛ НЕ СУЩЕСТВУЕТ");
+        }
+
+        try {
+            FileOutputStream fos = null;
+            Log.d(TAG, " До File file = " + fileScr.length() + " isFile: " + fileScr.isFile());
+            try {
+                fos = new FileOutputStream(fileScr);
+                Log.d(TAG, "FileOutputStream fos  = " + fos);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                Log.d(TAG, " После File file = " + fileScr.length() +
+                        "  isFile: " + fileScr.isFile());
+                return fileScr;
+            } finally {
+                if (fos != null) fos.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "Ошибка try");
+        }
+        Log.d(TAG, "return null");
+        return null;
+    }
+
+    private File takeScreenshot159For400(Bitmap bitmap,String fileName ) {
+
+        try {
+            FileOutputStream fos = null;
+
+            try {
+                fos = openFileOutput(fileName, MODE_PRIVATE);
+                Log.d(TAG, "FileOutputStream fos  = " + fos);
+
+                File fileScr = getFilesDir();
+                Log.d(TAG, " До  File file = " + fileScr.length() +
+                        "  isDirectory: " + fileScr.isDirectory() + "  isFile: " + fileScr.isFile());
+
+                fileScr =new File(getFilesDir().getAbsolutePath() + "/" + fileName);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+                Log.d(TAG, " После File file = " + fileScr.length() +
+                        "  isDirectory: " + fileScr.isDirectory() + "  isFile: " + fileScr.isFile());
+                Log.d(TAG, "AbsolutePath: " + fileScr.getAbsolutePath());
+                return fileScr;
+            } finally {
+                if (fos != null) fos.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "Ошибка try");
+        }
+        Log.d(TAG, "return null");
+        return null;
+    }
+
+    public Bitmap takeScreenshot(View v){
+        v = v.getRootView();
+        v.setDrawingCacheEnabled(true);
+        v.buildDrawingCache(true);
+        Bitmap bitmap = Bitmap.createBitmap(v.getDrawingCache());
+        v.setDrawingCacheEnabled(false);
+        return bitmap;
+    }
+
 
 }

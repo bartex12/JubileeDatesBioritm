@@ -4,35 +4,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/table_main"
     android:background="@drawable/rect">
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp">
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/textViewName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Имя"
-            android:id="@+id/textViewName"
             android:layout_marginLeft="20dp"
+            android:text="Имя"
             android:textSize="20dp"
             />
 
         <TextView
+            android:id="@+id/textViewNameTwoAct"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Large Text"
-            android:id="@+id/textViewNameTwoAct"
             android:layout_marginLeft="20dp"
-            android:textSize="24dp"
+            android:text="Large Text"
+            android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/colorPrimary"
+            android:textSize="24dp"
             />
     </LinearLayout>
 
@@ -75,14 +76,14 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/textViewTable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="5dp"
         android:text="Таблица юбилейных дат"
-        android:id="@+id/textViewTable"
-        android:textSize="24dp"
         android:textColor="@color/colorPrimary"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="20dp"/>
+        android:textSize="24dp"/>
 
     <ListView
         android:layout_width="wrap_content"

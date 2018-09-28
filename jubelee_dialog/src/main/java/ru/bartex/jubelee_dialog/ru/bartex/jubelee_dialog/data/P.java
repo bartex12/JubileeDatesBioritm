@@ -7,6 +7,8 @@ public class P {
     public final static int TO_ONE_DATE = 1111;
     //идёт к расчёту биоритмов
     public final static int TO_BIORITM = 2222;
+    //идёт новой персоне и затем диплоговое окно
+    public final static int TO_DIALOG = 3333;
     //откуда идёт запрос на справку
     public final static String HELP_FROM = "ru.bartex.jubelee_dialog.ru.HELP_FROM";
     //варианты запросов на справку

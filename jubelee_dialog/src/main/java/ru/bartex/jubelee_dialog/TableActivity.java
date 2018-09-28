@@ -63,6 +63,9 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
 
     long id_sql; //id строки с данными из базы данных
 
+    File file;
+    View main;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +75,8 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
         ActionBar act = getSupportActionBar();
         act.setDisplayHomeAsUpEnabled(true );
         act.setHomeButtonEnabled(true);
+
+        main = findViewById(R.id.table_main);
 
         mTextViewNameTwoAct = findViewById(R.id.textViewNameTwoAct);
         mListView = findViewById(R.id.listViewTwo);
@@ -169,23 +174,30 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
                 Intent intentSettings = new Intent(this, PrefActivity.class);
                 startActivity(intentSettings);
                 return true;
-/*
+
             case R.id.action_share:
-                Log.d(TAG, "action_share");
-                Bitmap bm = screenShot(this);
-                File file = saveBitmap(bm, "screen_image.png");
+                //так работает размер 37К
+                Bitmap bitmap = takeScreenshot(main);
+                Log.d(TAG, "OptionsItem = action_share getByteCount = " + bitmap.getByteCount());
+                //так тоже работает размер 42К
+                //Bitmap bm = screenShot(this);
+                //file = saveBitmap(bm, "image1.png");
+
+                file = takeScreenshot159(bitmap, "savedBitmap.png");
                 Log.d(TAG, "AbsolutePath: " + file.getAbsolutePath());
+
                 Uri uri = Uri.fromFile(new File(file.getAbsolutePath()));
                 Log.d(TAG, "uri: " + uri);
+
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out my app.");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "Посмотрите ка на это!");
                 shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
                 shareIntent.setType("image/*");
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(Intent.createChooser(shareIntent, "share via"));
+                startActivity(Intent.createChooser(shareIntent, "Отправить с помощью"));
                 return true;
-*/
+
             case R.id.action_help_table:
                 Log.d(TAG, "OptionsItem = action_help_table");
                 Intent intentTable = new Intent(this, HelpActivity.class);
@@ -199,6 +211,48 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
     }
 
     //=================================Функции====================================//
+
+    private File takeScreenshot159(Bitmap bitmap,String fileName ) {
+
+        //так работает для андроид 7 но не для андроид 4 - крах
+        File path = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        if(!path.exists()) {
+            path.mkdirs();
+        }
+
+        File file = new File(path, fileName);
+        try {
+            FileOutputStream fos = null;
+            // Make sure the Pictures directory exists.
+
+            Log.d(TAG, " До File file = " + file.length() + " isFile: " + file.isFile());
+            try {
+                fos = new FileOutputStream(file);
+                Log.d(TAG, "FileOutputStream fos  = " + fos);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                Log.d(TAG, " После File file = " + file.length() +
+                        "  isFile: " + file.isFile());
+                return file;
+            } finally {
+                if (fos != null) fos.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "Ошибка try");
+        }
+        Log.d(TAG, "return null");
+        return null;
+    }
+
+    public Bitmap takeScreenshot(View v){
+        v = v.getRootView();
+        v.setDrawingCacheEnabled(true);
+        v.buildDrawingCache(true);
+        Bitmap bitmap = Bitmap.createBitmap(v.getDrawingCache());
+        v.setDrawingCacheEnabled(false);
+        return bitmap;
+    }
 
     //Сделать Bitmap по Activity
     private Bitmap screenShot(Activity activity) {
@@ -250,13 +304,24 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
         long result = temp / 86400000;
         String s3;
 
+        Log.d(TAG, "temp = " + temp + "  result = " + result);
+
         if ((day == dayNumberNext2) && (month == mounthNumberNext2 + 1) && (year == yearNumberNext2)) {
             s3 = String.format("Д.р. - %02d.%02d.%04d",
                     dayNumberNext2, mounthNumberNext2 + 1, yearNumberNext2);
 
-        } else if (result >= 0) {
+        } else if (result > 0) {
             s3 = String.format("%d - %02d.%02d.%04d ост %d дн",
                     i, dayNumberNext2, mounthNumberNext2 + 1, yearNumberNext2, result);
+
+        } else if ((result == 0) && (temp < 86400000)&&(temp > 0)) {
+            s3 = String.format("%d - %02d.%02d.%04d  завтра",
+                    i, dayNumberNext2, mounthNumberNext2 + 1, yearNumberNext2);
+
+        } else if ((result == 0) && (temp > -86400000)&&(temp < 0)) {
+            s3 = String.format("%d - %02d.%02d.%04d  сегодня",
+                    i, dayNumberNext2, mounthNumberNext2 + 1, yearNumberNext2);
+
         } else {
             s3 = String.format("%d - %02d.%02d.%04d",
                     i, dayNumberNext2, mounthNumberNext2 + 1, yearNumberNext2);

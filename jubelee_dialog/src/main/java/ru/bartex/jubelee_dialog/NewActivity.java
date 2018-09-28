@@ -181,11 +181,12 @@ public class NewActivity extends AppCompatActivity  {
                             Log.d(TAG, "Персона заведена под номером: "  + newRowId );
                         }
                         Intent intent = new Intent(NewActivity.this, PersonsListActivity.class);
+                        intent.putExtra(P.FROM_MAIN, P.TO_DIALOG);
                         startActivity(intent);
                         finish();
 
                         //если создать из PersonsListActivity по плюсику в тулбаре
-                    }else {
+                    }else if (requestCode ==333){
                         //пишем в таблицу базы новую строку
                         newRowId = mDbHelper.addPerson(name,day,mounth,year,dr,past_days);
                         // Выводим сообщение в успешном случае или при ошибке
@@ -195,9 +196,9 @@ public class NewActivity extends AppCompatActivity  {
                         } else {
                             Log.d(TAG, "Персона заведена под номером: "  + newRowId );
                         }
-                        Intent intent = new Intent();
-                        intent.putExtra("id_sql", id_sql);
-                        setResult(RESULT_OK, intent);
+                        Intent intent = new Intent(NewActivity.this, PersonsListActivity.class);
+                        intent.putExtra(P.FROM_MAIN, P.TO_DIALOG);
+                        startActivity(intent);
                         finish();
                     }
                 }
