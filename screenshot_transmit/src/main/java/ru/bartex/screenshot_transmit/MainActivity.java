@@ -98,12 +98,51 @@ public class MainActivity extends AppCompatActivity {
             //Log.d(TAG, "Environment.getRootDirectory().getAbsolutePath()" +
             //        Environment.getRootDirectory().getAbsolutePath());
 
-            Bitmap bitmap = takeScreenshot(main);
-            file = takeScreenshot159(bitmap, "savedBitmap.png");
+            //Рабочие две строки ниже
+            //Bitmap bitmap = takeScreenshot(main);
+            //file = takeScreenshot159(bitmap, "savedBitmap.png");
 
+
+/*            //==================Функции через Environment=========================//
+
+            //Return the user data directory.
+            Log.d(TAG, "Environment.getDataDirectory() = " +
+                    Environment.getDataDirectory().getAbsolutePath() );
+            //Return root of the "system" partition holding the core Android OS.
+            Log.d(TAG, "Environment.getRootDirectory().getAbsolutePath() = " +
+                    Environment.getRootDirectory().getAbsolutePath());
+            //Return the primary shared/external storage directory.
+            Log.d(TAG, "Environment.getExternalStorageDirectory() = " +
+                    Environment.getExternalStorageDirectory().getAbsolutePath() );
+            //Get a top-level shared/external storage directory for placing files of a particular type.
+            Log.d(TAG, "Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) = " +
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath() );
+
+        //==================Функции через getApplicationContext()=========================//
+
+            //Returns the absolute path to the directory on the filesystem
+            // where files created with openFileOutput(String, int) are stored.
+            Log.d(TAG, "getApplicationContext().getFilesDir().getAbsolutePath() = " +
+                    getApplicationContext().getFilesDir().getAbsolutePath());
+
+            //Retrieve, creating if needed, a new directory in which the application
+            // can place its own custom data files.
+            Log.d(TAG, "getApplicationContext().getFilesDir().getAbsolutePath() = " +
+                    getApplicationContext().getDir("abc", MODE_PRIVATE).getAbsolutePath());
+
+            //Returns the absolute path to the directory on the primary shared/external storage
+            // device where the application can place persistent files it owns.
+            Log.d(TAG, "getApplicationContext().getFilesDir().getAbsolutePath() = " +
+                    getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath());
+
+*/
+
+            //рабочий код ниже
+            String fileName ="fileName.jpg";
+            file = takeScreenshotInFile(fileName);
             if (file!=null){
                 Log.d(TAG, "После file.length = : " + file.length() + " isFile: " + file.isFile());
-            }else Log.d(TAG, "После  нет файла ");
+            }else Log.d(TAG, "Файл == null  ");
             Log.d(TAG,  " После file.getAbsolutePath() = " + file.getAbsolutePath());
 
             Uri uri = Uri.fromFile(new File(file.getAbsolutePath()));
@@ -118,6 +157,83 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private File takeScreenshotInFile(String fileName) {
+
+            // Создаём bitmap скриншот
+            View v1 = getWindow().getDecorView().getRootView();
+            v1.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+            v1.setDrawingCacheEnabled(false);
+
+        File path = null;
+        File imageFile = null;
+
+        //если нет sd карты, то не работает - нужно знать состояние SD карты
+       // File filesDir = getExternalFilesDir( Environment.DIRECTORY_PICTURES)
+
+        //Получаем состояние SD карты
+        String sdState = android.os.Environment.getExternalStorageState();
+        //если sdState == MEDIA_MOUNTED
+        if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)){
+            Log.d(TAG, "sdState equals(android.os.Environment.MEDIA_MOUNTED) = " + sdState);
+            try {
+            path = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            Log.d(TAG, " takeScreenshotInFile:  path.getAbsolutePath() =  " + path.getAbsolutePath());
+                if(!path.exists()) {
+                    path.mkdirs();
+                    Log.d(TAG, "path не существует - создаём ");
+                }
+            } catch (Throwable e) {
+                Log.d(TAG, " takeScreenshotInFile: Ошибка в try для MEDIA_MOUNTED");
+                e.printStackTrace();
+            }
+            //если sdState != MEDIA_MOUNTEDБ а , например, shared ,  то
+        }else if (sdState.equals(Environment.MEDIA_SHARED)){
+            Log.d(TAG, "sdState NOT equals(android.os.Environment.MEDIA_MOUNTED) = " + sdState);
+            try {
+                path = getFilesDir();
+                if(!path.exists()) {
+                    path.mkdirs();
+                    Log.d(TAG, "path не существует - создаём ");
+                }
+                Log.d(TAG, " takeScreenshotInFile:  path.getAbsolutePath() =  " + path.getAbsolutePath());
+            } catch (Throwable e) {
+                Log.d(TAG, " takeScreenshotInFile: Ошибка в try для MEDIA_SHARED");
+                e.printStackTrace();
+            }
+        }else {
+            Log.d(TAG, " takeScreenshotInFile: это не MEDIA_MOUNTED и не MEDIA_SHARED");
+        }
+        //создаём файл по имени директории и имени файла
+            imageFile = new File(path, fileName);
+        Log.d(TAG, " takeScreenshotInFile:  imageFile.getAbsolutePath() =  " + imageFile.getAbsolutePath());
+
+        try {
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (Throwable e) {
+            Log.d(TAG, " takeScreenshotInFile: Ошибка в try внутр");
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, " takeScreenshotInFile Перед return:   imageFile.length = : " +
+                imageFile.length() + " imageFile isFile: = " + imageFile.isFile() +
+                "  imageFile.isDirectory() = " + imageFile.isDirectory());
+        return imageFile;
+    }
+
+
+
+    private void openScreenshot(File imageFile) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageFile);
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
     }
 
     public Bitmap takeScreenshot(View v){

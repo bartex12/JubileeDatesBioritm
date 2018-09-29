@@ -208,6 +208,9 @@ public class TimeActivity extends AppCompatActivity implements
                 //для 4-0-0 вроде бы без краха, но в файле ничего нет
                 //file = takeScreenshot159For400(bitmap, FILENAME_SD);
 
+                //метод на два варианта- 7-0 и 4-0  Здесь bitmap создается внутри метода
+               //fileScreenShot = takeScreenshotInFile(FILENAME_SD);
+
                 fileScreenShot = takeScreenshot159(bitmap, FILENAME_SD);
                 Log.d(TAG, "AbsolutePath: " + fileScreenShot.getAbsolutePath());
 
@@ -234,6 +237,73 @@ public class TimeActivity extends AppCompatActivity implements
     }
 
     //=================================Функции====================================//
+
+    // метод на 2 варианта MEDIA_MOUNTED и MEDIA_SHARED
+    private File takeScreenshotInFile(String fileName) {
+
+        // Создаём bitmap скриншот
+        View v1 = getWindow().getDecorView().getRootView();
+        v1.setDrawingCacheEnabled(true);
+        Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+        v1.setDrawingCacheEnabled(false);
+
+        File path = null;
+        File imageFile = null;
+
+        //если нет sd карты, то не работает - нужно знать состояние SD карты
+        //File filesDir = getExternalFilesDir( Environment.DIRECTORY_PICTURES);
+
+        //Получаем состояние SD карты
+        String sdState = android.os.Environment.getExternalStorageState();
+        //если sdState == MEDIA_MOUNTED
+        if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)){
+            Log.d(TAG, "sdState equals(android.os.Environment.MEDIA_MOUNTED) = " + sdState);
+            try {
+                path = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                Log.d(TAG, " takeScreenshotInFile:  path.getAbsolutePath() =  " + path.getAbsolutePath());
+                if(!path.exists()) {
+                    path.mkdirs();
+                    Log.d(TAG, "path не существует - создаём ");
+                }
+            } catch (Throwable e) {
+                Log.d(TAG, " takeScreenshotInFile: Ошибка в try для MEDIA_MOUNTED");
+                e.printStackTrace();
+            }
+            //если sdState != MEDIA_MOUNTEDБ а , например, shared ,  то
+        }else {
+            Log.d(TAG, "sdState NOT equals(android.os.Environment.MEDIA_MOUNTED) = " + sdState);
+            try {
+                path = getFilesDir();
+                if(!path.exists()) {
+                    path.mkdirs();
+                    Log.d(TAG, "path не существует - создаём ");
+                }
+                Log.d(TAG, " takeScreenshotInFile:  path.getAbsolutePath() =  " + path.getAbsolutePath());
+            } catch (Throwable e) {
+                Log.d(TAG, " takeScreenshotInFile: Ошибка в try для НЕ  MEDIA_MOUNTED");
+                e.printStackTrace();
+            }
+        }
+        //создаём файл по имени директории и имени файла
+        imageFile = new File(path, fileName);
+        Log.d(TAG, " takeScreenshotInFile:  imageFile.getAbsolutePath() =  " + imageFile.getAbsolutePath());
+
+        try {
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (Throwable e) {
+            Log.d(TAG, " takeScreenshotInFile: Ошибка в try внутр");
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, " takeScreenshotInFile Перед return:   imageFile.length = : " +
+                imageFile.length() + " imageFile isFile: = " + imageFile.isFile() +
+                "  imageFile.isDirectory() = " + imageFile.isDirectory());
+        return imageFile;
+    }
+
 
     private File takeScreenshot159(Bitmap bitmap,String fileName ) {
 
@@ -266,37 +336,6 @@ public class TimeActivity extends AppCompatActivity implements
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 Log.d(TAG, " После File file = " + fileScr.length() +
                         "  isFile: " + fileScr.isFile());
-                return fileScr;
-            } finally {
-                if (fos != null) fos.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, "Ошибка try");
-        }
-        Log.d(TAG, "return null");
-        return null;
-    }
-
-    private File takeScreenshot159For400(Bitmap bitmap,String fileName ) {
-
-        try {
-            FileOutputStream fos = null;
-
-            try {
-                fos = openFileOutput(fileName, MODE_PRIVATE);
-                Log.d(TAG, "FileOutputStream fos  = " + fos);
-
-                File fileScr = getFilesDir();
-                Log.d(TAG, " До  File file = " + fileScr.length() +
-                        "  isDirectory: " + fileScr.isDirectory() + "  isFile: " + fileScr.isFile());
-
-                fileScr =new File(getFilesDir().getAbsolutePath() + "/" + fileName);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-
-                Log.d(TAG, " После File file = " + fileScr.length() +
-                        "  isDirectory: " + fileScr.isDirectory() + "  isFile: " + fileScr.isFile());
-                Log.d(TAG, "AbsolutePath: " + fileScr.getAbsolutePath());
                 return fileScr;
             } finally {
                 if (fos != null) fos.close();
