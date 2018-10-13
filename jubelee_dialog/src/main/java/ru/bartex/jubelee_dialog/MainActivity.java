@@ -115,7 +115,6 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intentAdd);
             }
         });
-        //fab.hide();
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

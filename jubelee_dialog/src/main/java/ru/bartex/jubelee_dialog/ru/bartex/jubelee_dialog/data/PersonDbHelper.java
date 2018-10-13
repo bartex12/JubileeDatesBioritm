@@ -28,6 +28,8 @@ public class PersonDbHelper extends SQLiteOpenHelper{
      // Версия базы данных. При изменении схемы увеличить на единицу
     private static final int DATABASE_VERSION = 1;
 
+
+
      //Конструктор
     public PersonDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -550,7 +552,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
                 null,                  // Don't filter by row groups
                 null);                   // порядок сортировки
 
-        if (cursor != null) {
+        if ((cursor != null) && (cursor.getCount()!=0)){
             cursor.moveToFirst();
             // Узнаем индекс каждого столбца
             int idColumnIndex = cursor.getColumnIndex(PersonTable._ID);

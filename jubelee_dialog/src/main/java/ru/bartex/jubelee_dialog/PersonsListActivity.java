@@ -498,6 +498,4 @@ public class PersonsListActivity extends AppCompatActivity implements DialogSele
         scAdapter = new SimpleCursorAdapter(this, R.layout.list_name_date, mCursor, from, to);
         mListView.setAdapter(scAdapter);
     }
-
-
 }
