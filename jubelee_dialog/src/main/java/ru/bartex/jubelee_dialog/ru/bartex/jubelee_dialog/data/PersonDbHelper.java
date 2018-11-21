@@ -92,6 +92,9 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Person person1 = new Person("Анжелина Джоли","4","06", "1975");
             this.addPerson(person1);
             Log.d(TAG, "MyDatabaseHelper.createDefaultPersonIfNeed ... count = " + this.getPersonsCount());
+            Person person2 = new Person("Арнольд Шварценеггер","30","07", "1947");
+            this.addPerson(person2);
+            Log.d(TAG, "MyDatabaseHelper.createDefaultPersonIfNeed ... count = " + this.getPersonsCount());
         }
     }
 

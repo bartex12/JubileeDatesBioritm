@@ -3,6 +3,7 @@ package ru.bartex.jubelee_dialog;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,7 +20,9 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +76,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                // 0-Круглые даты
+                // 0-Личные даты
                 // 1- Совместные даты
                 // 2 - Биоритмы
                 // 3 - совместимость биоритмов (резерв)
@@ -203,21 +206,51 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, PersonsListActivity.class);
             intent.putExtra(P.FROM_MAIN, P.TO_ONE_DATE);
             startActivity(intent);
+
         } else if (id == R.id.nav_twoDate) {
             Intent intent = new Intent(MainActivity.this, ListDialog_CheckBox.class);
             startActivity(intent);
+
         } else if (id == R.id.nav_bio) {
             Log.d(TAG, "MainActivity onCreate onItemClick P.TO_BIORITM = " + P.TO_BIORITM);
             Intent intent = new Intent(MainActivity.this, PersonsListActivity.class);
             intent.putExtra(P.FROM_MAIN, P.TO_BIORITM);
             startActivity(intent);
+
         } else if (id == R.id.nav_manage) {
             Intent intentSettings = new Intent(this, PrefActivity.class);
             startActivity(intentSettings);
+
         } else if (id == R.id.nav_share) {
+            //поделиться - передаём ссылку на приложение в маркете
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT,
+                    "Приложение для расчёта количества прожитых/совместно прожитых дней: " +
+                            "https://play.google.com/store/apps/details?id=" + getPackageName());
+            //sendIntent.putExtra(Intent.EXTRA_TEXT,
+             //       "Приложение для расчёта количества прожитых/совместно прожитых дней: " +
+              //      "https://play.google.com/store/apps/details?id=" +
+              //      "ru.bartex.jubelee_dialog_singllist");
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);
 
         } else if (id == R.id.nav_send) {
+            //оценить- попадаем на страницу приложения в маркете
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(
+                    "http://play.google.com/store/apps/details?id=" + getPackageName()));
+            //intent.setData(Uri.parse(
+            //        "http://play.google.com/store/apps/details?id=ru.bartex.jubelee_dialog_singllist"));
 
+            startActivity(intent);
+            /*
+            //оценить- попадаем на страницу приложения в маркете
+            Intent intent1 = new Intent(Intent.ACTION_VIEW);
+            //intent1.setData(Uri.parse("market://details?id=" + getPackageName()));
+            intent1.setData(Uri.parse("market://details?id = ru.bartex.jubelee_dialog_singllist"));
+            startActivity(intent1);
+*/
         }else if (id == R.id.nav_help){
             Intent intentHelp = new Intent(this, HelpActivity.class);
             intentHelp.putExtra(P.HELP_FROM, P.HELP_ALL);

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Number_Life</string>
+    <string name="app_name">Прожито дней</string>
     <string name="better_late">- - - - - - - - - -</string>
     <string name="a_little">Маловато будет</string>
     <string name="action_settings">Настройки</string>
@@ -126,13 +126,17 @@
     <string name="title_activity_main_drower">MainDrowerActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">JubileeDays</string>
-    <string name="nav_header_subtitle">Количество прожитых дней</string>
+    <string name="nav_header_title">Прожито дней</string>
+    <string name="nav_header_subtitle">Расчёт числа прожитых/совместно прожитых дней и биоритмы</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="Tools">Настройки</string>
     <string name="Help">Справка</string>
-    <string name="main_menu">Главное меню</string>
+    <string name="main_menu">Прожито дней</string>
+    <string name="Send">Оценить</string>
+    <string name="Share">Поделиться</string>
+
+
 
 
 </resources>

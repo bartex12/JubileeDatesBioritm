@@ -43,6 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="16dp"
-            android:text="Описание"/>
+            android:text="Описание"
+            android:textSize="12sp"/>
     </LinearLayout>
 </LinearLayout>
