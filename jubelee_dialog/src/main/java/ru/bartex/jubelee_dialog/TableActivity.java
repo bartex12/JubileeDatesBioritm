@@ -213,8 +213,20 @@ public class TableActivity extends AppCompatActivity implements View.OnClickList
     //=================================Функции====================================//
 
     private File takeScreenshot159(Bitmap bitmap,String fileName ) {
+        // Запись и считывание зависят от состояния SD карты а также от того,
+        // подключен ли кабель между телефоном и компьютером для передачи данных (например, файлов APK) .
+        // Если кабель подключен, то для Андроид 7 проблем не возникает, а для Андроид 4 работа с файлами
+        // будет затруднена или невозможна, особенно, если телефон подключен как модуль USB
+        // а не как HI Suite для хуавея, например. Это происходит из-за смены состояния
+        // в строке String sdState = android.os.Environment.getExternalStorageState();
+        //С Environment.MEDIA_MOUNTED на Environment.MEDIA_SHARED, в результате чего для Андроид 4
+        // перестаёт работать метод
+        // File dir = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        //И нужно использовать другой каталог File dir = getFilesDir();
+        // Данная ситуация отработана в модуле screenshot_transmit проекта
+        // JubeleeDatesBioritm, где используются разные каталоги в зависимости от состояния SD карты
 
-        //так работает для андроид 7 но не для андроид 4 - крах
+        //так работает для андроид 7 но не для андроид 4 - крах, если подключен шнурком
         File path = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
         if(!path.exists()) {
