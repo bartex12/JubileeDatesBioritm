@@ -252,6 +252,18 @@ public class TimeActivity extends AppCompatActivity implements
 
         //если нет sd карты, то не работает - нужно знать состояние SD карты
         //File filesDir = getExternalFilesDir( Environment.DIRECTORY_PICTURES);
+        // Запись и считывание зависят от состояния SD карты а также от того,
+        // подключен ли кабель между телефоном и компьютером для передачи данных (например, файлов APK) .
+        // Если кабель подключен, то для Андроид 7 проблем не возникает, а для Андроид 4 работа с файлами
+        // будет затруднена или невозможна, особенно, если телефон подключен как модуль USB
+        // а не как HI Suite для хуавея, например. Это происходит из-за смены состояния
+        // в строке String sdState = android.os.Environment.getExternalStorageState();
+        //С Environment.MEDIA_MOUNTED на Environment.MEDIA_SHARED, в результате чего для Андроид 4
+        // перестаёт работать метод
+        // File dir = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        //И нужно использовать другой каталог File dir = getFilesDir();
+        // Данная ситуация отработана в модуле screenshot_transmit проекта
+        // JubeleeDatesBioritm, где используются разные каталоги в зависимости от состояния SD карты
 
         //Получаем состояние SD карты
         String sdState = android.os.Environment.getExternalStorageState();
@@ -304,21 +316,29 @@ public class TimeActivity extends AppCompatActivity implements
         return imageFile;
     }
 
-
+    //метод на один вариант MEDIA_MOUNTED
     private File takeScreenshot159(Bitmap bitmap,String fileName ) {
 
-        //андроид 4 - крах
-        //File path = android.os.Environment.getExternalStorageDirectory();
-        //андроид 4 - крах
-        //String pathString = Environment.getExternalStorageDirectory() + "/Screenshots";
-       // File path =new File(pathString);
+        // Запись и считывание зависят от состояния SD карты а также от того,
+        // подключен ли кабель между телефоном и компьютером для передачи данных (например, файлов APK) .
+        // Если кабель подключен, то для Андроид 7 проблем не возникает, а для Андроид 4 работа с файлами
+        // будет затруднена или невозможна, особенно, если телефон подключен как модуль USB
+        // а не как HI Suite для хуавея, например. Это происходит из-за смены состояния
+        // в строке String sdState = android.os.Environment.getExternalStorageState();
+        //С Environment.MEDIA_MOUNTED на Environment.MEDIA_SHARED, в результате чего для Андроид 4
+        // перестаёт работать метод
+        // File dir = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        //И нужно использовать другой каталог File dir = getFilesDir();
+        // Данная ситуация отработана в модуле screenshot_transmit проекта
+        // JubeleeDatesBioritm, где используются разные каталоги в зависимости от состояния SD карты
 
-        //так работает для андроид 7 но не для андроид 4 - крах
+        //так работает для андроид 7 но не для андроид 4 - крах, если подключен шнурком
         File pathDir = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
         if(!pathDir.exists()) {
+        Log.d(TAG, "takeScreenshot159 SD-карта путь к файлу: ");
             pathDir.mkdirs();
         }
-
         File fileScr = new File(pathDir, fileName);
         // Make sure the Pictures directory exists.
         if (fileScr.isFile()){
