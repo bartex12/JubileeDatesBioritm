@@ -165,7 +165,6 @@ public class MainActivity extends AppCompatActivity {
             v1.setDrawingCacheEnabled(true);
             Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
             v1.setDrawingCacheEnabled(false);
-
         File path = null;
         File imageFile = null;
 
