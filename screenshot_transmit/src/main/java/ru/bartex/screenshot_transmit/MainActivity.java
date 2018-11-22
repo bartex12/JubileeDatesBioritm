@@ -160,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private File takeScreenshotInFile(String fileName) {
-
             // Создаём bitmap скриншот
             View v1 = getWindow().getDecorView().getRootView();
             v1.setDrawingCacheEnabled(true);
