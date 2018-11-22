@@ -198,9 +198,7 @@ public class TimeActivity extends AppCompatActivity implements
                 return true;
 
             case R.id.action_share:
-                //так работает размер 37К
-                Bitmap bitmap = takeScreenshot(main);
-                Log.d(TAG, "OptionsItem = action_share getByteCount = " + bitmap.getByteCount());
+
                 //так тоже работает размер 42К
                 //Bitmap bm = screenShot(this);
                 //file = saveBitmap(bm, "image1.png");
@@ -210,6 +208,10 @@ public class TimeActivity extends AppCompatActivity implements
 
                 //метод на два варианта- 7-0 и 4-0  Здесь bitmap создается внутри метода
                //fileScreenShot = takeScreenshotInFile(FILENAME_SD);
+
+                //так работает размер 37К
+                Bitmap bitmap = takeScreenshot(main);
+                Log.d(TAG, "OptionsItem = action_share getByteCount = " + bitmap.getByteCount());
 
                 fileScreenShot = takeScreenshot159(bitmap, FILENAME_SD);
                 Log.d(TAG, "AbsolutePath: " + fileScreenShot.getAbsolutePath());
