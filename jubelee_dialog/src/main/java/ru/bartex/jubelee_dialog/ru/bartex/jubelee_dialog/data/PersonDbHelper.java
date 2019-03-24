@@ -237,7 +237,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         return person;
     }
 
-
+        //список Person с отмеченными (или нет) галками выбора
     public ArrayList<Person> getAllContactsChoose() {
         ArrayList<Person> contactList = new ArrayList<Person>();
         String selectQuery = "SELECT  * FROM " + TABLE_NAME;
@@ -331,7 +331,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
                 null, null, null, null, null);
     }
 
-    // получить курсор с данными из таблицы TABLE_NAME
+    // получить курсор с данными из таблицы TABLE_NAME, сортировка прямая по COLUMN_NAME
     public Cursor getAllDataSortNameUp() {
         SQLiteDatabase sd = this.getReadableDatabase();
         return sd.query(TABLE_NAME,
@@ -341,7 +341,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
                 null, null, null, null, PersonTable.COLUMN_NAME);
     }
 
-    // получить курсор с данными из таблицы TABLE_NAME
+    // получить курсор с данными из таблицы TABLE_NAME, сортировка обратная по COLUMN_NAME
     public Cursor getAllDataSortNameDown() {
         SQLiteDatabase sd = this.getReadableDatabase();
         return sd.query(TABLE_NAME,
@@ -351,7 +351,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
                 null, null, null, null, PersonTable.COLUMN_NAME + " DESC");
     }
 
-    // получить курсор с данными из таблицы TABLE_NAME
+    // получить курсор с данными из таблицы TABLE_NAME, сортировка по прожитым дням прямая
     public Cursor getAllDataSortDateUp() {
         SQLiteDatabase sd = this.getReadableDatabase();
         return sd.query(TABLE_NAME,
@@ -361,7 +361,7 @@ public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
                 null, null, null, null, PersonTable.COLUMN_PAST_DAYS);
     }
 
-    // получить курсор с данными из таблицы TABLE_NAME
+    // получить курсор с данными из таблицы TABLE_NAME, сортировка по прожитым дням обратная
     public Cursor getAllDataSortDateDown() {
         SQLiteDatabase sd = this.getReadableDatabase();
         return sd.query(TABLE_NAME,

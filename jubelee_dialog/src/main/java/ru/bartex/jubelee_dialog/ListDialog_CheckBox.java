@@ -75,7 +75,7 @@ public class ListDialog_CheckBox extends AppCompatActivity {
         PersonDbHelper mPersonDbHelper = new PersonDbHelper(this);
         //получаем список объектов
         mPersonArrayList = mPersonDbHelper.getAllContactsChoose();
-        //подключаем свой курсор для отображения на экране
+        //подключаем свой адаптер для отображения на экране
         findAdapter = new FindAdapterPerson(this,mPersonArrayList);
         mListView.setAdapter(findAdapter);
 
