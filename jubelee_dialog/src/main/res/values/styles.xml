@@ -8,9 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppDialog" parent="Base.Theme.AppCompat.Light.Dialog">
-
-    </style>
+    <style name="AppDialog" parent="Base.Theme.AppCompat.Light.Dialog"></style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
